@@ -1,4 +1,4 @@
-![Packagist Version](https://img.shields.io/packagist/v/ianhobbsmedia/swiper-block)
+![Packagist Version](https://img.shields.io/packagist/v/codey/swiper-block)
 ![Kirby 4+](https://img.shields.io/badge/Kirby-4%2B-black)
 ![License MIT](https://img.shields.io/badge/license-MIT-green)
 
