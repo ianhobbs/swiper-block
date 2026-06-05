@@ -46,6 +46,12 @@ Kirby serves these automatically from `site/plugins/swiper-block/assets/` — no
 
 ## For plugin developers
 
+### Requirements
+- Node.js 18+
+- npm (included with Node.js)
+
+### Build setup
+
 If you are modifying the plugin source, install Node dependencies and rebuild the assets:
 
 ```bash
@@ -53,10 +59,21 @@ npm install
 npm run build
 ```
 
-This produces:
-- `panel/index.js` — Panel block editor component (from `src/`)
-- `assets/js/swiper-block.js` — Frontend ESM bundle (Swiper + init logic)
-- `assets/css/swiper-block.css` — Swiper styles + block styles
+This builds two separate bundles via Vite:
+
+1. **`panel/index.js`** — Pre-compiled Panel editor (from `src/index.js` + `src/SwiperBlock.vue`)
+   - IIFE bundle with Vue 3 + all dependencies bundled
+   - No `.vue` files on live server (security)
+   - Kirby auto-loads this when the plugin is active
+
+2. **`assets/js/swiper-block.js`** — Frontend ESM module (from `frontend/swiper-block.js`)
+   - Swiper 12 library injected and bundled
+   - Loaded in your site template as `<script type="module">`
+
+3. **CSS outputs** (`panel/style.css`, `assets/css/swiper-block.css`)
+   - Panel UI styles + frontend slider styles
+
+### Development workflow
 
 Run both watchers in parallel during development:
 
@@ -64,7 +81,18 @@ Run both watchers in parallel during development:
 npm run dev
 ```
 
-Commit the rebuilt `assets/` files alongside your source changes.
+This rebuilds `panel/` and `assets/` whenever source files change.
+
+### Deployment
+
+Always commit the pre-built outputs to version control:
+
+```bash
+git add panel/index.js panel/style.css assets/
+git commit -m "Build: update plugin assets"
+```
+
+When deploying, Kirby will never see `.vue` files or source code — only the static compiled bundles.
 
 ---
 
