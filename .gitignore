@@ -39,3 +39,6 @@ public/build/
 
 # Misc
 Thumbs.db
+
+# Local reminders
+reminder.md

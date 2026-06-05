@@ -1,6 +1,6 @@
 {
   "name": "codey/swiper-block",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Kirby CMS layout block plugin — Swiper 12 slider with panel editor and image cropping",
   "type": "kirby-plugin",
   "license": "MIT",
