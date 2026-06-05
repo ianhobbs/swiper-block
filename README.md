@@ -15,7 +15,7 @@ A Kirby CMS layout block plugin that renders a full-featured [Swiper 12](https:/
 ### Via Composer (recommended)
 
 ```bash
-composer require ianhobbsmedia/swiper-block
+composer require codey/swiper-block
 ```
 
 ### Manual
