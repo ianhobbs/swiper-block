@@ -1,3 +1,7 @@
+![Packagist Version](https://img.shields.io/packagist/v/ianhobbsmedia/swiper-block)
+![Kirby 4+](https://img.shields.io/badge/Kirby-4%2B-black)
+![License MIT](https://img.shields.io/badge/license-MIT-green)
+
 # Kirby Swiper Block
 
 A Kirby CMS layout block plugin that renders a full-featured [Swiper 12](https://swiperjs.com/) slider with a Panel editor, responsive image cropping, lazy loading, and LQIP blur-up placeholders.
@@ -26,9 +30,23 @@ git clone https://github.com/ianhobbsmedia/kirby-swiper-block site/plugins/swipe
 
 ---
 
-## Build assets
+## Frontend assets
 
-Install dependencies and build both the Panel Vue component and the frontend bundle:
+The pre-built CSS and JS are committed to the repository, so no build step is needed when installing via Composer. Add them to your site templates using Kirby's plugin asset helper. In `site/snippets/footer.php` (or wherever you load assets):
+
+```php
+<?php $plugin = $kirby->plugin('ianhobbsmedia/swiper-block') ?>
+<link rel="stylesheet" href="<?= $plugin->asset('css/swiper-block.css')->url() ?>">
+<script type="module" src="<?= $plugin->asset('js/swiper-block.js')->url() ?>"></script>
+```
+
+Kirby serves these automatically from `site/plugins/swiper-block/assets/` — no copying required.
+
+---
+
+## For plugin developers
+
+If you are modifying the plugin source, install Node dependencies and rebuild the assets:
 
 ```bash
 npm install
@@ -36,26 +54,17 @@ npm run build
 ```
 
 This produces:
-- `panel/index.js` — Panel block editor component
+- `panel/index.js` — Panel block editor component (from `src/`)
 - `assets/js/swiper-block.js` — Frontend ESM bundle (Swiper + init logic)
 - `assets/css/swiper-block.css` — Swiper styles + block styles
 
-During development, run both watchers in parallel:
+Run both watchers in parallel during development:
 
 ```bash
 npm run dev
 ```
 
----
-
-## Frontend assets
-
-Add the built CSS and JS to your site templates. In `site/snippets/footer.php` (or wherever you load assets):
-
-```php
-<link rel="stylesheet" href="<?= $kirby->url('assets') ?>/css/swiper-block.css">
-<script type="module" src="<?= $kirby->url('assets') ?>/js/swiper-block.js"></script>
-```
+Commit the rebuilt `assets/` files alongside your source changes.
 
 ---
 
@@ -114,4 +123,4 @@ Thumbs are pre-generated on image upload so the first page load never stalls.
 
 ## License
 
-MIT © [Ian Hobbs](https://ianhobbsmedia.com)
+MIT © [Ian Hobbs](https://ianhobbsmedia.com.au)

@@ -1,9 +1,8 @@
 name: Swiper Slider
-icon: image
+icon: swiper-block
 
 # ── Slide collection ───────────────────────────────────────────────────────────
 fields:
-
   slides:
     label: Slides
     type: structure

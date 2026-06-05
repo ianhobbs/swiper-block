@@ -11,6 +11,10 @@ use Kirby\Cms\App as Kirby;
 
 Kirby::plugin('ianhobbsmedia/swiper-block', [
 
+    'icons' => [
+        'swiper-block' => file_get_contents(__DIR__ . '/assets/icons/swiper-block.svg'),
+    ],
+
     // ── Thumb presets ───────────────────────────────────────────────────────
     // Referenced in the snippet as ->thumb('swiper-*')
     'thumbs' => [
