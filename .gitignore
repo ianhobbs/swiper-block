@@ -1,0 +1,41 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+dist/
+build/
+.vite/
+.parcel-cache/
+
+# Composer / PHP
+/vendor/
+/.idea/
+/.vscode/
+/.cache/
+composer.phar
+*.log
+
+# Environment
+.env
+.env.*
+
+# Coverage, tests
+/coverage/
+phpunit.xml.cache
+
+# Editor backups
+*~
+
+# Lock files (libraries typically don't commit composer.lock)
+composer.lock
+
+# Frontend
+public/build/
+
+# IDE
+.idea/
+.vscode/
+
+# Misc
+Thumbs.db

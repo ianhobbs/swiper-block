@@ -1,0 +1,26 @@
+{
+  "name": "kirby-swiper-block",
+  "version": "1.0.0",
+  "description": "Kirby CMS layout block plugin — Swiper 12 slider with panel editor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:panel\" \"npm run dev:frontend\"",
+    "dev:panel": "kirkyup src/index.js --out panel/index.js --watch",
+    "dev:frontend": "vite build --watch --config vite.frontend.config.js",
+    "build": "npm run build:panel && npm run build:frontend",
+    "build:panel": "kirkyup src/index.js --out panel/index.js",
+    "build:frontend": "vite build --config vite.frontend.config.js"
+  },
+  "dependencies": {
+    "swiper": "^12.0.3"
+  },
+  "devDependencies": {
+    "@kirbyup/cli": "^2.2.0",
+    "concurrently": "^9.1.0",
+    "vite": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
