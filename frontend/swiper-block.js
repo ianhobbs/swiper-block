@@ -15,19 +15,14 @@ import {
   Navigation,
   Pagination,
   Autoplay,
-  EffectFade,
-  EffectCreative,
   A11y,
   Keyboard,
 } from 'swiper/modules';
 
-// Swiper base CSS + module CSS (extracted by Vite into swiper-block.css)
+// Swiper base CSS + module CSS (conditionally loaded based on active features)
 import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import 'swiper/css/effect-fade';
-import 'swiper/css/effect-creative';
 import 'swiper/css/a11y';
+import 'swiper/css/keyboard';
 
 // Our custom overrides — defined at end of this file as a CSS string injected
 // into <head> so tree-shaking can still strip unused CSS in other contexts.
@@ -56,12 +51,12 @@ function applyHeight(el) {
 }
 
 // ── Main init ─────────────────────────────────────────────────────────────────
-function initSwiperBlocks() {
+async function initSwiperBlocks() {
   const blocks = document.querySelectorAll('.swiper-block');
 
-  blocks.forEach((el) => {
+  for (const el of blocks) {
     // Prevent double-init (e.g. after Turbo / htmx navigation)
-    if (el._swiperInstance) return;
+    if (el._swiperInstance) continue;
 
     applyHeight(el);
 
@@ -77,13 +72,30 @@ function initSwiperBlocks() {
     // ── Resolve Swiper modules ────────────────────────────────────────────
     const modules = [A11y, Keyboard];
 
-    if (userConfig.navigation) modules.push(Navigation);
-    if (userConfig.pagination) modules.push(Pagination);
-    if (userConfig.autoplay)   modules.push(Autoplay);
+    if (userConfig.navigation) {
+      modules.push(Navigation);
+      await import('swiper/css/navigation');
+    }
+
+    if (userConfig.pagination) {
+      modules.push(Pagination);
+      await import('swiper/css/pagination');
+    }
+
+    if (userConfig.autoplay) {
+      modules.push(Autoplay);
+    }
 
     const effect = userConfig.effect ?? 'slide';
-    if (effect === 'fade')     modules.push(EffectFade);
-    if (effect === 'creative') modules.push(EffectCreative);
+    if (effect === 'fade') {
+      const { EffectFade } = await import('../node_modules/swiper/modules/effect-fade.mjs');
+      modules.push(EffectFade);
+      await import('swiper/css/effect-fade');
+    } else if (effect === 'creative') {
+      const { EffectCreative } = await import('../node_modules/swiper/modules/effect-creative.mjs');
+      modules.push(EffectCreative);
+      await import('swiper/css/effect-creative');
+    }
 
     // ── Build final config ────────────────────────────────────────────────
     const config = {
@@ -146,7 +158,7 @@ function initSwiperBlocks() {
         }, { once: true });
       }
     });
-  });
+  }
 }
 
 // ── Lifecycle hooks for common SPA routers ────────────────────────────────────
