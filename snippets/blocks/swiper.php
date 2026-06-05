@@ -3,44 +3,114 @@
  * Swiper Block Snippet
  *
  * Renders a Swiper 12 slider from a Kirby layout block.
- * Image cropping is handled via Kirby thumb presets defined in index.php.
+ * CDN scripts and plugin CSS are injected automatically on first use —
+ * no manual changes to your templates are required.
  *
  * @var \Kirby\Cms\Block $block
  */
 
-// ── Resolve slides ────────────────────────────────────────────────────────────
+// ── Bail if no slides ────────────────────────────────────────────────────────
 $slides = $block->slides()->toStructure();
+if ($slides->count() === 0) return;
 
-if ($slides->count() === 0) {
-    return; // Nothing to render
+// ── Inject CDN + plugin assets once per page ─────────────────────────────────
+// Uses a static flag so multiple blocks on the same page only load assets once.
+static $swiperAssetsLoaded = false;
+if (!$swiperAssetsLoaded) {
+    $swiperAssetsLoaded = true;
+    $plugin = kirby()->plugin('ianhobbsmedia/swiper-block');
+    echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">' . "\n";
+    echo '<link rel="stylesheet" href="' . $plugin->asset('css/swiper-block.css')->url() . '">' . "\n";
+    echo '<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js" defer></script>' . "\n";
+    echo '<script src="' . $plugin->asset('js/swiper-block.js')->url() . '" defer></script>' . "\n";
 }
 
-// ── Slider config from block fields ──────────────────────────────────────────
-$effect          = $block->effect()->or('slide')->value();
-$speed           = (int) $block->speed()->or(600)->value();
-$autoplay        = $block->autoplay()->isTrue();
-$autoplayDelay   = (int) $block->autoplay_delay()->or(4000)->value();
-$loop            = $block->loop()->isTrue();
+// ── Tab 2: Layout ─────────────────────────────────────────────────────────────
+$spvRaw         = $block->slides_per_view()->or('1')->value();
+$slidesPerView  = $spvRaw === 'auto' ? 'auto' : (int) $spvRaw;
+$slidesPerGroup = (int) $block->slides_per_group()->or(1)->value();
+$spaceBetween   = (int) $block->space_between()->or(0)->value();
+$centeredSlides = $block->centered_slides()->isTrue();
+$direction      = $block->direction()->or('horizontal')->value();
+$initialSlide   = (int) $block->initial_slide()->or(0)->value();
+$aspectRatio    = $block->aspect_ratio()->or('16:9')->value();
+$customHeight   = (int) $block->custom_height()->or(600)->value();
+
+// ── Tab 3: Animation ──────────────────────────────────────────────────────────
+$effect         = $block->effect()->or('slide')->value();
+$speed          = (int) $block->speed()->or(600)->value();
+$loop           = $block->loop()->isTrue();
+$autoplay       = $block->autoplay()->isTrue();
+$autoplayDelay  = (int) $block->autoplay_delay()->or(4000)->value();
+$autoplayPause  = $block->autoplay_pause_on_hover()->isTrue();
+$freeMode       = $block->free_mode()->isTrue();
+$freeMomentum   = $block->free_mode_momentum()->isTrue();
+
+// ── Tab 4: Controls ───────────────────────────────────────────────────────────
 $showNav         = $block->show_navigation()->isTrue();
 $showPagination  = $block->show_pagination()->isTrue();
-$aspectRatio     = $block->aspect_ratio()->or('16:9')->value();
-$customHeight    = (int) $block->custom_height()->or(600)->value();
+$paginationType  = $block->pagination_type()->or('bullets')->value();
+$dynamicBullets  = $block->dynamic_bullets()->isTrue();
+$keyboardControl = $block->keyboard_control()->isTrue();
+$mousewheel      = $block->mousewheel()->isTrue();
 
-// Build the data-config JSON passed to swiper-block.js
-$swiperConfig = json_encode([
-    'effect'     => $effect,
-    'speed'      => $speed,
-    'loop'       => $loop,
-    'navigation' => $showNav,
-    'pagination' => $showPagination,
-    'autoplay'   => $autoplay ? ['delay' => $autoplayDelay, 'disableOnInteraction' => false] : false,
-    'creativeEffect' => [
+// ── Tab 5: Touch & Input ──────────────────────────────────────────────────────
+$grabCursor    = $block->grab_cursor()->isTrue();
+$simulateTouch = $block->simulate_touch()->isTrue();
+$threshold     = (int) $block->threshold()->or(5)->value();
+$longSwipes    = $block->long_swipes()->isTrue();
+$resistance    = $block->resistance()->isTrue();
+
+// ── Build JS config object ────────────────────────────────────────────────────
+// Keys that map 1:1 to Swiper options are passed through directly.
+// Keys prefixed with context (autoplay*, pagination*, free*) are transformed
+// into proper Swiper sub-objects by swiper-block.js.
+$jsConfig = [
+    // Layout
+    'direction'      => $direction,
+    'slidesPerView'  => $slidesPerView,
+    'slidesPerGroup' => $slidesPerGroup,
+    'spaceBetween'   => $spaceBetween,
+    'centeredSlides' => $centeredSlides,
+    'initialSlide'   => $initialSlide,
+
+    // Animation
+    'effect'               => $effect,
+    'speed'                => $speed,
+    'loop'                 => $loop,
+    'autoplay'             => $autoplay,
+    'autoplayDelay'        => $autoplayDelay,
+    'autoplayPauseOnHover' => $autoplayPause,
+    'freeMode'             => $freeMode,
+    'freeModeMomentum'     => $freeMomentum,
+
+    // Controls
+    'showNavigation'  => $showNav,
+    'showPagination'  => $showPagination,
+    'paginationType'  => $paginationType,
+    'dynamicBullets'  => $dynamicBullets,
+    'keyboardControl' => $keyboardControl,
+    'mousewheel'      => $mousewheel,
+
+    // Touch
+    'grabCursor'    => $grabCursor,
+    'simulateTouch' => $simulateTouch,
+    'threshold'     => $threshold,
+    'longSwipes'    => $longSwipes,
+    'resistance'    => $resistance,
+];
+
+// Creative effect config — only included when needed
+if ($effect === 'creative') {
+    $jsConfig['creativeEffect'] = [
         'prev' => ['shadow' => true, 'translate' => [0, 0, -400]],
         'next' => ['translate' => ['100%', 0, 0]],
-    ],
-], JSON_HEX_QUOT | JSON_HEX_TAG);
+    ];
+}
 
-// Aspect-ratio CSS custom property
+$swiperConfig = json_encode($jsConfig, JSON_HEX_QUOT | JSON_HEX_TAG);
+
+// ── Aspect-ratio CSS custom property ─────────────────────────────────────────
 if ($aspectRatio === 'custom') {
     $aspectStyle = "--swiper-block-height:{$customHeight}px";
 } else {
@@ -80,14 +150,12 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
       $imageField = $slide->image()->toFiles()->first();
 
       if ($imageField) {
-          // Generate cropped/sized thumbs via presets from index.php
-          $xlThumb   = $imageField->thumb('swiper-xl');
-          $lgThumb   = $imageField->thumb('swiper-lg');
-          $mdThumb   = $imageField->thumb('swiper-md');
-          $smThumb   = $imageField->thumb('swiper-sm');
-          $lqip      = $imageField->thumb('swiper-lqip');
-
-          $altText   = $imageField->alt()->or($slide->heading())->value();
+          $xlThumb = $imageField->thumb('swiper-xl');
+          $lgThumb = $imageField->thumb('swiper-lg');
+          $mdThumb = $imageField->thumb('swiper-md');
+          $smThumb = $imageField->thumb('swiper-sm');
+          $lqip    = $imageField->thumb('swiper-lqip');
+          $altText = $imageField->alt()->or($slide->heading())->value();
       }
 
       $opacity  = (int) $slide->overlay_opacity()->or(30)->value();
@@ -104,7 +172,6 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
       <?php if ($imageField) : ?>
       <figure class="swiper-slide__media" aria-hidden="true">
 
-        <?php /* LQIP blur-up placeholder */ ?>
         <img
           class="swiper-slide__lqip"
           src="<?= $lqip->url() ?>"
@@ -114,7 +181,6 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
           aria-hidden="true"
         >
 
-        <?php /* Responsive picture with WebP + srcset */ ?>
         <picture>
           <?php if ($xlThumb) : ?>
           <source

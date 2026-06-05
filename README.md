@@ -1,4 +1,4 @@
-![Packagist Version](https://img.shields.io/packagist/v/codey/swiper-block)
+![Packagist Version](https://img.shields.io/packagist/v/ianhobbsmedia/swiper-block)
 ![Kirby 4+](https://img.shields.io/badge/Kirby-4%2B-black)
 ![License MIT](https://img.shields.io/badge/license-MIT-green)
 
@@ -6,7 +6,9 @@
 
 A Kirby CMS layout block plugin that renders a full-featured [Swiper 12](https://swiperjs.com/) slider with a Panel editor, responsive image cropping, lazy loading, and LQIP blur-up placeholders.
 
-**Requires:** Kirby 4 or 5 · PHP 8.1+ · Node 18+
+Swiper is loaded via CDN — no npm or build step required to use the plugin.
+
+**Requires:** Kirby 4 or 5 · PHP 8.1+
 
 ---
 
@@ -15,84 +17,24 @@ A Kirby CMS layout block plugin that renders a full-featured [Swiper 12](https:/
 ### Via Composer (recommended)
 
 ```bash
-composer require codey/swiper-block
+composer require ianhobbsmedia/swiper-block
 ```
 
 ### Manual
 
-1. Download or clone this repository into your site's `site/plugins/` directory:
+Clone into your site's `site/plugins/` directory:
 
 ```bash
 git clone https://github.com/ianhobbsmedia/kirby-swiper-block site/plugins/swiper-block
 ```
 
-2. Build the frontend and Panel assets (see [Build assets](#build-assets) below).
-
 ---
 
-## Frontend assets
+## Zero-config setup
 
-The pre-built CSS and JS are committed to the repository, so no build step is needed when installing via Composer. Add them to your site templates using Kirby's plugin asset helper. In `site/snippets/footer.php` (or wherever you load assets):
+No template changes needed. When a page contains a Swiper block, the snippet automatically injects the Swiper CDN scripts and plugin CSS **once per page load** using a static flag. Everything is self-contained.
 
-```php
-<?php $plugin = $kirby->plugin('ianhobbsmedia/swiper-block') ?>
-<link rel="stylesheet" href="<?= $plugin->asset('css/swiper-block.css')->url() ?>">
-<script type="module" src="<?= $plugin->asset('js/swiper-block.js')->url() ?>"></script>
-```
-
-Kirby serves these automatically from `site/plugins/swiper-block/assets/` — no copying required.
-
----
-
-## For plugin developers
-
-### Requirements
-- Node.js 18+
-- npm (included with Node.js)
-
-### Build setup
-
-If you are modifying the plugin source, install Node dependencies and rebuild the assets:
-
-```bash
-npm install
-npm run build
-```
-
-This builds two separate bundles via Vite:
-
-1. **`panel/index.js`** — Pre-compiled Panel editor (from `src/index.js` + `src/SwiperBlock.vue`)
-   - IIFE bundle with Vue 3 + all dependencies bundled
-   - No `.vue` files on live server (security)
-   - Kirby auto-loads this when the plugin is active
-
-2. **`assets/js/swiper-block.js`** — Frontend ESM module (from `frontend/swiper-block.js`)
-   - Swiper 12 library injected and bundled
-   - Loaded in your site template as `<script type="module">`
-
-3. **CSS outputs** (`panel/style.css`, `assets/css/swiper-block.css`)
-   - Panel UI styles + frontend slider styles
-
-### Development workflow
-
-Run both watchers in parallel during development:
-
-```bash
-npm run dev
-```
-
-This rebuilds `panel/` and `assets/` whenever source files change.
-
-### Deployment
-
-Always commit the pre-built outputs to version control:
-
-```bash
-git add panel/index.js panel/style.css assets/
-git commit -m "Build: update plugin assets"
-```
-
-When deploying, Kirby will never see `.vue` files or source code — only the static compiled bundles.
+If you prefer to control asset placement (e.g. move them to `<head>` for performance), add these lines to your layout template and set `SWIPER_ASSETS_LOADED` in your config — see [Manual asset loading](#manual-asset-loading) below.
 
 ---
 
@@ -108,44 +50,132 @@ fields:
       - swiper
 ```
 
-Each slide supports:
+The block editor opens with **5 tabs** covering all configuration options:
+
+### Tab 1 — Slides (per-slide settings)
 
 | Field | Description |
 |---|---|
-| Image | Single image (min. 1920 × 810 px recommended) |
+| Image | Single image — min. 1920 × 810 px recommended |
 | Heading | Slide title |
 | Subtext / Caption | Optional body text |
 | CTA Link + Label | Optional call-to-action button |
 | Overlay Opacity | Dark overlay on the image (0–90%) |
-| Content Position | Left / Centre / Right text alignment |
+| Content Position | Left / Centre / Right |
 
-Global slider options:
+### Tab 2 — Layout
 
-| Option | Values |
-|---|---|
-| Transition Effect | Slide, Fade, Creative (zoom) |
-| Transition Speed | 100–3000 ms |
-| Autoplay | On / Off (configurable delay) |
-| Loop | On / Off |
-| Arrows | Visible / Hidden |
-| Pagination dots | Visible / Hidden |
-| Aspect Ratio | 21:9, 16:9, 4:3, 1:1, or custom height |
+| Field | Default | Description |
+|---|---|---|
+| Aspect Ratio | 16:9 | 21:9 / 16:9 / 4:3 / 1:1 / Custom height |
+| Custom Height | 600 px | Fixed height in px (when Aspect Ratio = Custom) |
+| Slide Direction | Horizontal | Horizontal or Vertical |
+| Slides Visible | 1 | 1 / 2 / 3 / 4 / Auto |
+| Advance Per Click | 1 | Slides to jump per navigation action |
+| Gap Between Slides | 0 px | Spacing between slides |
+| Centre Active Slide | Off | Keeps the active slide centred |
+| Starting Slide | 0 | Zero-based index of the first visible slide |
+
+### Tab 3 — Animation
+
+| Field | Default | Description |
+|---|---|---|
+| Transition Effect | Slide | Slide / Fade / Creative (zoom) / Coverflow |
+| Transition Speed | 600 ms | 100–3000 ms |
+| Loop | On | Infinite loop |
+| Autoplay | Off | Auto-advances slides |
+| Autoplay Delay | 4000 ms | Delay between slides (when Autoplay is On) |
+| Pause on Hover | On | Pauses autoplay on mouse enter (when Autoplay is On) |
+| Free Mode | Off | Slides move freely without snapping |
+| Free Mode Momentum | On | Momentum-based deceleration (when Free Mode is On) |
+
+### Tab 4 — Controls
+
+| Field | Default | Description |
+|---|---|---|
+| Arrow Buttons | Visible | Previous / Next navigation arrows |
+| Pagination | Visible | Pagination indicator |
+| Pagination Style | Bullets | Bullets / Fraction (2/5) / Progress Bar |
+| Dynamic Bullets | On | Active bullet enlarges relative to neighbours |
+| Keyboard Navigation | On | Arrow keys navigate slides when in viewport |
+| Mousewheel Control | Off | Scroll wheel advances slides |
+
+### Tab 5 — Touch & Input
+
+| Field | Default | Description |
+|---|---|---|
+| Grab Cursor | On | Shows a hand cursor when dragging on desktop |
+| Touch on Desktop | On | Allows mouse drag to simulate touch |
+| Swipe Threshold | 5 px | Minimum drag distance to register a swipe |
+| Long Swipes | On | Long swipe gestures advance the slider |
+| Edge Resistance | On | Drag resistance at the first and last slide |
 
 ---
 
 ## Image presets
 
-The plugin registers five thumb presets used for responsive image serving:
+The plugin registers five thumb presets for responsive image serving:
 
-| Preset | Size | Use |
+| Preset | Size | Viewport |
 |---|---|---|
-| `swiper-xl` | 1920 × 810 | Full-width hero (≥1400 px viewport) |
-| `swiper-lg` | 1400 × 590 | Desktop (≥900 px) |
-| `swiper-md` | 900 × 506 | Tablet (≥640 px) |
+| `swiper-xl` | 1920 × 810 | ≥ 1400 px |
+| `swiper-lg` | 1400 × 590 | ≥ 900 px |
+| `swiper-md` | 900 × 506 | ≥ 640 px |
 | `swiper-sm` | 640 × 480 | Mobile fallback |
-| `swiper-lqip` | 40 × 17 | Blurred placeholder |
+| `swiper-lqip` | 40 × 17 | Blurred placeholder (blur-up effect) |
 
-Thumbs are pre-generated on image upload so the first page load never stalls.
+Thumbs are pre-generated on image upload so the first page load never stalls on thumb generation.
+
+---
+
+## Manual asset loading
+
+By default the snippet injects Swiper's CDN links at the point the block is rendered in the page body. For performance-sensitive sites you may want to place them in `<head>` instead. Add this to your head snippet:
+
+```php
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
+<link rel="stylesheet" href="<?= $kirby->plugin('ianhobbsmedia/swiper-block')->asset('css/swiper-block.css')->url() ?>">
+```
+
+And before `</body>`:
+
+```php
+<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js" defer></script>
+<script src="<?= $kirby->plugin('ianhobbsmedia/swiper-block')->asset('js/swiper-block.js')->url() ?>" defer></script>
+```
+
+Then suppress auto-injection in `site/config/config.php`:
+
+```php
+return [
+    'ianhobbsmedia.swiper-block.injectAssets' => false,
+];
+```
+
+---
+
+## For plugin developers
+
+Node is only required if you are modifying the **Panel editor** component (`src/SwiperBlock.vue`). The frontend JS (`assets/js/swiper-block.js`) is plain hand-authored JavaScript — no build step needed.
+
+### Panel build
+
+```bash
+npm install
+npm run build      # compiles src/ → panel/index.js
+npm run dev        # watch mode
+```
+
+### Deployment
+
+Commit the compiled Panel output alongside your source changes:
+
+```bash
+git add panel/index.js assets/
+git commit -m "Build: update panel and assets"
+```
+
+Kirby will never see `.vue` files on the live server — only the pre-compiled `panel/index.js`.
 
 ---
 

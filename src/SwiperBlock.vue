@@ -30,6 +30,7 @@
         <div class="k-swiper-block-preview__meta">
           <k-icon type="loader" />
           {{ slideCount }} slide{{ slideCount !== 1 ? 's' : '' }}
+          &middot; {{ ratioLabel }}
           &middot; {{ effectLabel }}
           <template v-if="content.autoplay"> &middot; Autoplay</template>
         </div>
@@ -70,6 +71,30 @@ export default {
       const map = { slide: 'Slide', fade: 'Fade', creative: 'Creative' };
       return map[this.content?.effect] ?? 'Slide';
     },
+
+    ratioLabel() {
+      const map = {
+        '21:9': '21:9',
+        '16:9': '16:9',
+        '4:3': '4:3',
+        '3:4': '3:4',
+        '2:3': '2:3',
+        '1:1': '1:1',
+      };
+      return map[this.content?.aspect_ratio] ?? '16:9';
+    },
+
+    thumbAspectRatio() {
+      const map = {
+        '21:9': '21 / 9',
+        '16:9': '16 / 9',
+        '4:3': '4 / 3',
+        '3:4': '3 / 4',
+        '2:3': '2 / 3',
+        '1:1': '1 / 1',
+      };
+      return map[this.content?.aspect_ratio] || '16 / 9';
+    },
   },
 
   methods: {
@@ -84,6 +109,7 @@ export default {
         backgroundImage: `url(${file.url})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        aspectRatio: this.thumbAspectRatio,
       };
     },
   },
