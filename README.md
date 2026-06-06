@@ -149,7 +149,7 @@ Then suppress auto-injection in `site/config/config.php`:
 
 ```php
 return [
-    'ianhobbsmedia.swiper-block.injectAssets' => false,
+    'codey.swiper-block.injectAssets' => false,
 ];
 ```
 

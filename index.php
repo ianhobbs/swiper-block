@@ -34,7 +34,7 @@ Kirby::plugin('codey/swiper-block', [
 
     // ── Block models ────────────────────────────────────────────────────────
     'blockModels' => [
-        'swiper' => Kirby\Cms\Block::class,
+        'swiper' => \Kirby\Cms\Block::class,
     ],
 
     // ── Snippets ─────────────────────────────────────────────────────────────
