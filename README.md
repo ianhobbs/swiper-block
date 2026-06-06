@@ -12,7 +12,12 @@ Swiper is loaded via CDN — no npm or build step required to use the plugin.
 
 ---
 
-## Installation
+## Installation 
+
+## ----- NOTE  BROKEN ------------
+
+This plugin is in development don't use it.
+
 
 ### Via Composer (recommended)
 
