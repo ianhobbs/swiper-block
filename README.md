@@ -17,7 +17,8 @@ Swiper is loaded via CDN — no npm or build step required to use the plugin.
 ### Via Composer (recommended)
 
 ```bash
-composer require ianhobbsmedia/swiper-block
+composer require codey/swiper-block
+
 ```
 
 ### Manual
