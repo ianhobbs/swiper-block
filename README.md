@@ -26,7 +26,7 @@ composer require codey/swiper-block
 Clone into your site's `site/plugins/` directory:
 
 ```bash
-git clone https://github.com/ianhobbsmedia/kirby-swiper-block site/plugins/swiper-block
+git clone https://github.com/ianhobbs/swiper-block site/plugins/swiper-block
 ```
 
 ---
@@ -135,14 +135,14 @@ By default the snippet injects Swiper's CDN links at the point the block is rend
 
 ```php
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
-<link rel="stylesheet" href="<?= $kirby->plugin('ianhobbsmedia/swiper-block')->asset('css/swiper-block.css')->url() ?>">
+<link rel="stylesheet" href="<?= $kirby->plugin('codey/swiper-block')->asset('css/swiper-block.css')->url() ?>">
 ```
 
 And before `</body>`:
 
 ```php
 <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js" defer></script>
-<script src="<?= $kirby->plugin('ianhobbsmedia/swiper-block')->asset('js/swiper-block.js')->url() ?>" defer></script>
+<script src="<?= $kirby->plugin('codey/swiper-block')->asset('js/swiper-block.js')->url() ?>" defer></script>
 ```
 
 Then suppress auto-injection in `site/config/config.php`:

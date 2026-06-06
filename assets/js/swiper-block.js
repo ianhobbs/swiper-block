@@ -5,7 +5,7 @@
  * Swiper using the CDN global (window.Swiper) loaded by the snippet.
  *
  * No build step required. Served directly as a Kirby plugin asset:
- *   kirby()->plugin('ianhobbsmedia/swiper-block')->asset('js/swiper-block.js')
+ *   kirby()->plugin('codey/swiper-block')->asset('js/swiper-block.js')
  *
  * The swiper-bundle CDN script pre-registers all modules, so no explicit
  * modules array is needed in the config object.

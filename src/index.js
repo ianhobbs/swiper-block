@@ -6,7 +6,7 @@
  */
 import SwiperBlock from './SwiperBlock.vue';
 
-window.panel.plugin('ianhobbsmedia/swiper-block', {
+window.panel.plugin('codey/swiper-block', {
   blocks: {
     swiper: SwiperBlock,
   },
