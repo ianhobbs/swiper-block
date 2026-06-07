@@ -46,8 +46,19 @@
 export default {
   name: 'SwiperBlock',
 
-  // Inherit standard Kirby block props
-  extends: 'k-block',
+  // Declare all standard Kirby block props so v-bind="$props" passes them to k-block
+  props: {
+    content:     { type: Object,  default: () => ({}) },
+    disabled:    { type: Boolean, default: false },
+    endpoints:   { type: Object,  default: () => ({}) },
+    fieldset:    { type: Object,  default: () => ({}) },
+    id:          { type: String,  default: '' },
+    isHidden:    { type: Boolean, default: false },
+    isMergeable: { type: Boolean, default: false },
+    name:        { type: String,  default: '' },
+    next:        { type: Object,  default: null },
+    prev:        { type: Object,  default: null },
+  },
 
   computed: {
     slides() {

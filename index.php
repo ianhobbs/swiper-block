@@ -32,14 +32,23 @@ Kirby::plugin('ianhobbs/kirby-swiper-block', [
         'swiper-lqip' => ['width' =>   40, 'height' =>   17, 'crop' => true, 'quality' => 30, 'blur' => 4],
     ],
 
+    // ── Blueprints ───────────────────────────────────────────────────────────
+    // Explicit registration required — auto-discovery fails when the plugin
+    // is symlinked from outside site/plugins/ (rootRelativePath becomes null).
+    'blueprints' => [
+        'blocks/swiper' => __DIR__ . '/blueprints/blocks/swiper.yml',
+    ],
+
+    // ── Snippets ─────────────────────────────────────────────────────────────
+    // Same reason — must be explicit when symlinked outside site/plugins/.
+    'snippets' => [
+        'blocks/swiper' => __DIR__ . '/snippets/blocks/swiper.php',
+    ],
+
     // ── Block models ────────────────────────────────────────────────────────
     'blockModels' => [
         'swiper' => \Kirby\Cms\Block::class,
     ],
-
-    // ── Snippets ─────────────────────────────────────────────────────────────
-    // Kirby auto-discovers blueprints/blocks/ and snippets/blocks/
-    // so no explicit registration is needed; listed here for clarity.
 
     // ── Hooks ────────────────────────────────────────────────────────────────
     // Pre-generate thumbs when a slide image is uploaded so the first

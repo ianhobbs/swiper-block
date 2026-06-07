@@ -27,7 +27,10 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // All dependencies (Vue, Swiper) are bundled into the single file
-        // so Kirby only needs to load one script
+        // so Kirby only needs to load one script.
+        // Ensure extracted CSS is named index.css so Kirby auto-loads it.
+        assetFileNames: (assetInfo) =>
+          assetInfo.name?.endsWith('.css') ? 'index.css' : assetInfo.name,
       },
     },
     sourcemap: false,
