@@ -1,4 +1,4 @@
-![Packagist Version](https://img.shields.io/packagist/v/codey/swiper-block)
+![Packagist Version](https://img.shields.io/packagist/v/ianhobbs/kirby-swiper-block)
 ![Kirby 4+](https://img.shields.io/badge/Kirby-4%2B-black)
 ![License MIT](https://img.shields.io/badge/license-MIT-green)
 
@@ -22,7 +22,7 @@ This plugin is in development don't use it.
 ### Via Composer (recommended)
 
 ```bash
-composer require codey/swiper-block
+composer require ianhobbs/kirby-swiper-block
 
 ```
 
@@ -140,21 +140,21 @@ By default the snippet injects Swiper's CDN links at the point the block is rend
 
 ```php
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
-<link rel="stylesheet" href="<?= $kirby->plugin('codey/swiper-block')->asset('css/swiper-block.css')->url() ?>">
+<link rel="stylesheet" href="<?= $kirby->plugin('ianhobbs/kirby-swiper-block')->asset('css/swiper-block.css')->url() ?>">
 ```
 
 And before `</body>`:
 
 ```php
 <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js" defer></script>
-<script src="<?= $kirby->plugin('codey/swiper-block')->asset('js/swiper-block.js')->url() ?>" defer></script>
+<script src="<?= $kirby->plugin('ianhobbs/kirby-swiper-block')->asset('js/swiper-block.js')->url() ?>" defer></script>
 ```
 
 Then suppress auto-injection in `site/config/config.php`:
 
 ```php
 return [
-    'codey.swiper-block.injectAssets' => false,
+    'ianhobbs.kirby-swiper-block.injectAssets' => false,
 ];
 ```
 

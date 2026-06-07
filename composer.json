@@ -1,10 +1,10 @@
 {
-  "name": "codey/swiper-block",
+  "name": "ianhobbs/kirby-swiper-block",
   "description": "Kirby CMS layout block plugin — Swiper 12 slider with panel editor and image cropping",
   "type": "kirby-plugin",
   "license": "MIT",
   "authors": [
-    { "name": "Ian Hobbs", "email": "ian@codey.net.au" }
+    { "name": "Ian Hobbs", "email": "admin@ianhobbsmedia.com" }
   ],
   "keywords": [
     "kirby",
@@ -12,16 +12,19 @@
     "kirby-plugin"
   ],
   "require": {
-    "php": ">=8.3",
-    "getkirby/composer-installer": "^1.1"
+    "php": ">=8.3"
   },
   "require-dev": {
-    "getkirby/cms": "^4.0 || ^5.0"
+    "bnomei/kirby-mcp": "^1.8"
   },
   "extra": {
-    "installer-name": "swiper-block"
+    "installer-name": "kirby-swiper-block"
   },
   "config": {
-    "optimize-autoloader": true
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "getkirby/composer-installer": true,
+      "php-http/discovery": false
+    }
   }
 }

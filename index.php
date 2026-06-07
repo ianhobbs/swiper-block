@@ -11,7 +11,7 @@
 
 use Kirby\Cms\App as Kirby;
 
-Kirby::plugin('codey/swiper-block', [
+Kirby::plugin('ianhobbs/kirby-swiper-block', [
 
     'icons' => [
         'swiper-block' => file_get_contents(__DIR__ . '/assets/icons/swiper-block.svg'),

@@ -10,6 +10,10 @@ build/
 
 # Composer / PHP
 /vendor/
+/kirby/
+
+# Kirby MCP (local dev tool, not part of the plugin)
+/.kirby-mcp/
 /.idea/
 /.vscode/
 /.cache/

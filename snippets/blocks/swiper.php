@@ -18,7 +18,7 @@ if ($slides->count() === 0) return;
 static $swiperAssetsLoaded = false;
 if (!$swiperAssetsLoaded) {
     $swiperAssetsLoaded = true;
-    $plugin = kirby()->plugin('codey/swiper-block');
+    $plugin = kirby()->plugin('ianhobbs/kirby-swiper-block');
     echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">' . "\n";
     echo '<link rel="stylesheet" href="' . $plugin->asset('css/swiper-block.css')->url() . '">' . "\n";
     echo '<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js" defer></script>' . "\n";
