@@ -13,6 +13,8 @@ use Kirby\Cms\App as Kirby;
 
 Kirby::plugin('ianhobbs/kirby-swiper-block', [
 
+    'version' => '1.1.0',
+
     'icons' => [
         'swiper-block' => file_get_contents(__DIR__ . '/assets/icons/swiper-block.svg'),
     ],
