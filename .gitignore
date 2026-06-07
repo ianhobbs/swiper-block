@@ -27,6 +27,7 @@ composer.phar
 # Coverage, tests
 /coverage/
 phpunit.xml.cache
+.phpunit.cache/
 
 # Editor backups
 *~

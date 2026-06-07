@@ -1,0 +1,1 @@
+<?php /* minimal test template */ ?>
