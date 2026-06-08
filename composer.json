@@ -16,14 +16,15 @@
   },
   "require-dev": {
     "getkirby/cms": "^5.0",
-    "pestphp/pest": "^3.0",
-    "bnomei/kirby-mcp": "^1.8"
+    "pestphp/pest": "^3.0"
   },
   "extra": {
     "installer-name": "kirby-swiper-block"
   },
   "scripts": {
-    "test": "pest --colors=always"
+    "test": "pest --colors=always",
+    "test:coverage": "pest --colors=always --coverage",
+    "test:watch": "pest --colors=always --watch"
   },
   "config": {
     "optimize-autoloader": true,
