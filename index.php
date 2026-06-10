@@ -34,6 +34,17 @@ Kirby::plugin('ianhobbs/kirby-swiper-block', [
         'swiper-lqip' => ['width' =>   40, 'height' =>   17, 'crop' => true, 'quality' => 30, 'blur' => 4],
     ],
 
+    // ── Custom field type ────────────────────────────────────────────────────
+    // Extends the built-in files field so Kirby will look for the
+    // k-swiper-slide-image-field-preview Vue component when rendering the
+    // structure table column — giving us a proper image thumbnail preview
+    // instead of the default filename text.
+    'fields' => [
+        'swiper-slide-image' => [
+            'extends' => 'files',
+        ],
+    ],
+
     // ── Blueprints ───────────────────────────────────────────────────────────
     // Explicit registration required — auto-discovery fails when the plugin
     // is symlinked from outside site/plugins/ (rootRelativePath becomes null).

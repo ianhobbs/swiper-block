@@ -129,7 +129,7 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
   style="<?= $aspectStyle ?>"
   data-swiper-config="<?= htmlspecialchars($swiperConfig, ENT_QUOTES, 'UTF-8') ?>"
   aria-roledescription="carousel"
-  aria-label="<?= $block->slides()->count() ?> slides"
+  aria-label="<?= $slides->count() ?> slides"
 >
 
   <?php if ($showNav) : ?>

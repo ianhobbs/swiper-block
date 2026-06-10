@@ -10,9 +10,6 @@ Swiper is loaded via CDN — no npm or build step required to use the plugin.
 
 **Requires:** Kirby 4 or 5 · PHP 8.1+
 
-## NOTE :: this is still being develped. --pre -beta !!
-### don't use this while this notice is active
-
 ---
 
 ## Installation 
