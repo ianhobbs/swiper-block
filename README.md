@@ -172,20 +172,22 @@ Node is only required if you are modifying the **Panel editor** component (`src/
 
 ```bash
 npm install
-npm run build      # compiles src/ → panel/index.js
-npm run dev        # watch mode
+npm run build      # compiles src/ → index.js + index.css (plugin root)
+npm run dev        # kirbyup dev server with hot reload
 ```
+
+The bundle is built with [kirbyup](https://github.com/johannschopplich/kirbyup), Kirby's official Panel plugin bundler — it compiles against the Panel's own Vue 2.7 runtime, and Kirby auto-loads `index.js` / `index.css` from the plugin root.
 
 ### Deployment
 
 Commit the compiled Panel output alongside your source changes:
 
 ```bash
-git add panel/index.js assets/
+git add index.js index.css assets/
 git commit -m "Build: update panel and assets"
 ```
 
-Kirby will never see `.vue` files on the live server — only the pre-compiled `panel/index.js`.
+Kirby will never see `.vue` files on the live server — only the pre-compiled `index.js`.
 
 ---
 
