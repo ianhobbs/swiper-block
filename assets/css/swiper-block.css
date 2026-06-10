@@ -56,25 +56,30 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
   object-position: center;
 }
 
+/* The LQIP is a cover backdrop: it fills the whole box (blurred), so any
+   letterbox area left by the contained sharp image reads as intentional. */
 .swiper-slide__lqip {
   z-index: 1;
+  object-fit: cover;
   filter: blur(8px);
   transform: scale(1.05);
-  transition: opacity 0.4s;
 }
 
+/* The sharp image is contained, not cropped: it shows in full and fills its
+   constrained axis — vertical (portrait) crops fill the height, horizontal
+   (landscape) crops fill the width — within the box's aspect_ratio. */
 .swiper-slide__img {
   z-index: 2;
+  object-fit: contain;
   opacity: 0;
   transition: opacity 0.5s;
 }
 
-.swiper-slide-media.is-loaded .swiper-slide__lqip { opacity: 0; }
-.swiper-slide-media.is-loaded .swiper-slide__img  { opacity: 1; }
+/* Reveal the sharp image; the blurred LQIP stays behind as the backdrop. */
+.swiper-slide-media.is-loaded .swiper-slide__img { opacity: 1; }
 
 /* ── Slide content ───────────────────────────────────────────────────────── */
 .swiper-slide-caption {

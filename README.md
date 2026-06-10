@@ -156,6 +156,18 @@ return [
   `swiper-lqip-*` placeholder.
 - The largest entry in the chosen srcset doubles as the `<img src>` fallback for
   browsers that don't support `srcset`.
+- The `sizes` attribute is computed per slide from **Slides Visible**
+  (`slidesPerView`) and **Gap Between Slides** (`spaceBetween`), so the browser
+  downloads an image matched to the slot it actually fills — not the whole
+  viewport. A single full-width slide stays `100vw`; 3-per-view becomes
+  `calc((100vw − gaps) / 3)`; `auto` assumes 3 across (a safe floor of at least
+  three images per page width). Define enough srcset steps (the sets above have
+  four) so the browser has candidates at every slot size.
+- Slides show the **whole** orientation crop (`object-fit: contain`), so it fills
+  its constrained axis without being re-cropped to the box: **Vertical** (portrait)
+  crops fill the slide **height**, **Horizontal** (landscape) crops fill the
+  **width**. Any leftover space is backed by the blurred LQIP, so letterbox areas
+  read as intentional rather than empty bars.
 - All crops are **webp** for smaller payloads (the 1920px landscape crop is
   typically ~20% the size of the source JPG).
 

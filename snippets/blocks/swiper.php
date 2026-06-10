@@ -46,6 +46,22 @@ $lqipPreset       = $orientation === 'vertical' ? 'swiper-lqip-vert' : 'swiper-l
 $srcsetSizes      = kirby()->option("thumbs.srcsets.{$srcsetName}", []);
 $baseThumbOptions = $srcsetSizes ? end($srcsetSizes) : null;
 
+// Responsive `sizes` hint for the slide images.
+// Each slide's rendered width is deterministic from slidesPerView + spaceBetween
+// (the slider uses one fixed slidesPerView, no breakpoints), so we tell the
+// browser the real fraction it occupies instead of always assuming full width.
+// Hybrid rule: a single full-width slide stays 100vw (crisp heroes); 2+ per view
+// size to their true fraction; 'auto' assumes 3 across — a safe floor of at least
+// three images per page width when the real width isn't knowable server-side.
+$sizesN = $slidesPerView === 'auto' ? 3 : max(1, (int) $slidesPerView);
+if ($sizesN <= 1) {
+    $imgSizes = '100vw';
+} elseif ($spaceBetween > 0) {
+    $imgSizes = sprintf('calc((100vw - %dpx) / %d)', ($sizesN - 1) * $spaceBetween, $sizesN);
+} else {
+    $imgSizes = sprintf('calc(100vw / %d)', $sizesN);
+}
+
 // ── Tab 3: Animation ──────────────────────────────────────────────────────────
 $effect         = $block->effect()->or('slide')->value();
 $speed          = (int) $block->speed()->or(600)->value();
@@ -75,6 +91,7 @@ $resistance    = $block->resistance()->isTrue();
 // Keys that map 1:1 to Swiper options are passed through directly.
 // Keys prefixed with context (autoplay*, pagination*, free*) are transformed
 // into proper Swiper sub-objects by swiper-block.js.
+
 $jsConfig = [
     // Layout
     'direction'      => $direction,
@@ -192,7 +209,7 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
           class="swiper-slide__img"
           src="<?= $base->url() ?>"
           srcset="<?= $srcset ?>"
-          sizes="100vw"
+          sizes="<?= $imgSizes ?>"
           width="<?= $base->width() ?>"
           height="<?= $base->height() ?>"
           alt="<?= htmlspecialchars($altText, ENT_QUOTES, 'UTF-8') ?>"
