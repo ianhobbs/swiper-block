@@ -1,8 +1,8 @@
 /**
  * Kirby Panel — Swiper Block component registration
  *
- * Compiled by Vite into panel/index.js, which Kirby auto-loads
- * when the plugin is active.
+ * Compiled by kirbyup into index.js / index.css in the plugin root,
+ * which Kirby auto-loads when the plugin is active.
  */
 import SwiperBlock from './SwiperBlock.vue';
 
@@ -10,6 +10,18 @@ window.panel.plugin('ianhobbs/kirby-swiper-block', {
 
   blocks: {
     swiper: SwiperBlock,
+  },
+
+  fields: {
+    /**
+     * The swiper-slide-image field extends the built-in files field in PHP
+     * (index.php), so the Panel input can simply reuse the stock files-field
+     * component. Without this registration the Panel cannot resolve a
+     * k-swiper-slide-image-field component and the drawer form errors out.
+     */
+    'swiper-slide-image': {
+      extends: 'k-files-field',
+    },
   },
 
   components: {

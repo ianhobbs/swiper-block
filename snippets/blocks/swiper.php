@@ -36,6 +36,16 @@ $initialSlide   = (int) $block->initial_slide()->or(0)->value();
 $aspectRatio    = $block->aspect_ratio()->or('16:9')->value();
 $customHeight   = (int) $block->custom_height()->or(600)->value();
 
+// Responsive image set — see thumbs.srcsets in the site config.
+// Landscape (swiper-horiz) vs portrait (swiper-vert) crops, plus the
+// matching blurred LQIP preset. All output as webp.
+$orientation      = $block->orientation()->or('horizontal')->value();
+$srcsetName       = $orientation === 'vertical' ? 'swiper-vert' : 'swiper-horiz';
+$lqipPreset       = $orientation === 'vertical' ? 'swiper-lqip-vert' : 'swiper-lqip-horiz';
+// Largest entry in the set doubles as the non-srcset fallback src.
+$srcsetSizes      = kirby()->option("thumbs.srcsets.{$srcsetName}", []);
+$baseThumbOptions = $srcsetSizes ? end($srcsetSizes) : null;
+
 // ── Tab 3: Animation ──────────────────────────────────────────────────────────
 $effect         = $block->effect()->or('slide')->value();
 $speed          = (int) $block->speed()->or(600)->value();
@@ -150,11 +160,9 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
       $imageField = $slide->image()->toFiles()->first();
 
       if ($imageField) {
-          $xlThumb = $imageField->thumb('swiper-xl');
-          $lgThumb = $imageField->thumb('swiper-lg');
-          $mdThumb = $imageField->thumb('swiper-md');
-          $smThumb = $imageField->thumb('swiper-sm');
-          $lqip    = $imageField->thumb('swiper-lqip');
+          $lqip    = $imageField->thumb($lqipPreset);
+          $base    = $baseThumbOptions ? $imageField->thumb($baseThumbOptions) : $imageField;
+          $srcset  = $imageField->srcset($srcsetName);
           $altText = $imageField->alt()->or($slide->heading())->value();
       }
 
@@ -181,42 +189,17 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
           aria-hidden="true"
         >
 
-        <picture>
-          <?php if ($xlThumb) : ?>
-          <source
-            media="(min-width: 1400px)"
-            srcset="<?= $xlThumb->url() ?>"
-            width="<?= $xlThumb->width() ?>"
-            height="<?= $xlThumb->height() ?>"
-          >
-          <?php endif ?>
-
-          <source
-            media="(min-width: 900px)"
-            srcset="<?= $lgThumb->url() ?>"
-            width="<?= $lgThumb->width() ?>"
-            height="<?= $lgThumb->height() ?>"
-          >
-
-          <source
-            media="(min-width: 640px)"
-            srcset="<?= $mdThumb->url() ?>"
-            width="<?= $mdThumb->width() ?>"
-            height="<?= $mdThumb->height() ?>"
-          >
-
-          <img
-            class="swiper-slide__img"
-            src="<?= $smThumb->url() ?>"
-            srcset="<?= $smThumb->url() ?> 640w, <?= $mdThumb->url() ?> 900w, <?= $lgThumb->url() ?> 1400w<?= $xlThumb ? ', ' . $xlThumb->url() . ' 1920w' : '' ?>"
-            sizes="100vw"
-            width="<?= $smThumb->width() ?>"
-            height="<?= $smThumb->height() ?>"
-            alt="<?= htmlspecialchars($altText, ENT_QUOTES, 'UTF-8') ?>"
-            loading="<?= $index === 1 ? 'eager' : 'lazy' ?>"
-            decoding="<?= $index === 1 ? 'sync' : 'async' ?>"
-          >
-        </picture>
+        <img
+          class="swiper-slide__img"
+          src="<?= $base->url() ?>"
+          srcset="<?= $srcset ?>"
+          sizes="100vw"
+          width="<?= $base->width() ?>"
+          height="<?= $base->height() ?>"
+          alt="<?= htmlspecialchars($altText, ENT_QUOTES, 'UTF-8') ?>"
+          loading="<?= $index === 1 ? 'eager' : 'lazy' ?>"
+          decoding="<?= $index === 1 ? 'sync' : 'async' ?>"
+        >
 
         <?php if ($opacity > 0) : ?>
         <div

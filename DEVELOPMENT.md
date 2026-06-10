@@ -122,8 +122,8 @@ composer start
 ```bash
 cd /path/to/kirby-swiper-block
 npm install
-npm run build       # one-off build → panel/index.js + panel/index.css
-npm run dev         # watch mode — rebuilds on save
+npm run build       # one-off build → index.js + index.css (plugin root)
+npm run dev         # kirbyup dev server — hot-reloads on save
 ```
 
 ### Visual test checklist
@@ -154,14 +154,14 @@ mcp_dump()           — instrument templates/snippets for runtime inspection
 
 ## Panel asset build
 
-The Panel Vue component is pre-built and committed to `panel/index.js` and `panel/index.css`. End users do not need Node.
+The Panel Vue component is pre-built and committed to `index.js` and `index.css` in the plugin root — the only locations Kirby auto-loads Panel assets from. End users do not need Node.
 
 | Command | Output |
 |---|---|
-| `npm run build` | `panel/index.js`, `panel/index.css` |
-| `npm run dev` | watch mode — rebuilds on `src/` changes |
+| `npm run build` | `index.js`, `index.css` (plugin root) |
+| `npm run dev` | kirbyup dev server — hot-reloads on `src/` changes |
 
-Vite is configured in `vite.panel.config.js`. CSS output is forced to `panel/index.css` (Kirby auto-loads this name).
+The bundle is built with [kirbyup](https://github.com/johannschopplich/kirbyup), the official Kirby Panel plugin bundler. It compiles SFCs against the Panel's bundled Vue 2.7 runtime (instead of shipping a second copy of Vue) and strips `process.env` references that would crash in the browser.
 
 ---
 
