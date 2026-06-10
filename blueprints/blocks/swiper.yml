@@ -124,6 +124,18 @@ tabs:
             text: Vertical
         width: 1/3
 
+      orientation:
+        label: Orientation
+        type: select
+        default: horizontal
+        options:
+          - value: horizontal
+            text: Horizontal (landscape 16:9)
+          - value: vertical
+            text: Vertical (portrait 9:16)
+        help: Image crop set. Horizontal uses the swiper-horiz srcset, Vertical uses swiper-vert.
+        width: 1/3
+
       slides_per_view:
         label: Slides Visible
         type: select

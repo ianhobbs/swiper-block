@@ -71,7 +71,8 @@ The block editor opens with **5 tabs** covering all configuration options:
 |---|---|---|
 | Aspect Ratio | 16:9 | 21:9 / 16:9 / 4:3 / 1:1 / Custom height |
 | Custom Height | 600 px | Fixed height in px (when Aspect Ratio = Custom) |
-| Slide Direction | Horizontal | Horizontal or Vertical |
+| Slide Direction | Horizontal | Scroll direction — Horizontal or Vertical |
+| Orientation | Horizontal | Image crop set — Horizontal (16:9 → `swiper-horiz`) or Vertical (9:16 → `swiper-vert`) |
 | Slides Visible | 1 | 1 / 2 / 3 / 4 / Auto |
 | Advance Per Click | 1 | Slides to jump per navigation action |
 | Gap Between Slides | 0 px | Spacing between slides |
@@ -114,19 +115,57 @@ The block editor opens with **5 tabs** covering all configuration options:
 
 ---
 
-## Image presets
+## Image presets (required config)
 
-The plugin registers five thumb presets for responsive image serving:
+The snippet serves responsive images with Kirby's native `srcset()`, generating
+**webp** crops in two orientations. Because Kirby plugins can't register global
+`thumbs.presets` / `thumbs.srcsets`, **you must add these to your site's
+`site/config/config.php`** — the snippet reads them by name:
 
-| Preset | Size | Viewport |
-|---|---|---|
-| `swiper-xl` | 1920 × 810 | ≥ 1400 px |
-| `swiper-lg` | 1400 × 590 | ≥ 900 px |
-| `swiper-md` | 900 × 506 | ≥ 640 px |
-| `swiper-sm` | 640 × 480 | Mobile fallback |
-| `swiper-lqip` | 40 × 17 | Blurred placeholder (blur-up effect) |
+```php
+return [
+    'thumbs' => [
+        'presets' => [
+            // Blurred LQIP placeholders (blur-up effect)
+            'swiper-lqip-horiz' => ['width' => 40, 'height' => 23, 'crop' => true, 'quality' => 30, 'blur' => 4, 'format' => 'webp'],
+            'swiper-lqip-vert'  => ['width' => 23, 'height' => 40, 'crop' => true, 'quality' => 30, 'blur' => 4, 'format' => 'webp'],
+        ],
+        'srcsets' => [
+            // Landscape (16:9) — used when Orientation = Horizontal
+            'swiper-horiz' => [
+                '640w'  => ['width' =>  640, 'height' =>  360, 'crop' => true, 'quality' => 80, 'format' => 'webp'],
+                '900w'  => ['width' =>  900, 'height' =>  506, 'crop' => true, 'quality' => 82, 'format' => 'webp'],
+                '1400w' => ['width' => 1400, 'height' =>  788, 'crop' => true, 'quality' => 85, 'format' => 'webp'],
+                '1920w' => ['width' => 1920, 'height' => 1080, 'crop' => true, 'quality' => 85, 'format' => 'webp'],
+            ],
+            // Portrait (9:16) — used when Orientation = Vertical
+            'swiper-vert' => [
+                '480w'  => ['width' =>  480, 'height' =>  854, 'crop' => true, 'quality' => 80, 'format' => 'webp'],
+                '640w'  => ['width' =>  640, 'height' => 1138, 'crop' => true, 'quality' => 82, 'format' => 'webp'],
+                '810w'  => ['width' =>  810, 'height' => 1440, 'crop' => true, 'quality' => 85, 'format' => 'webp'],
+                '1080w' => ['width' => 1080, 'height' => 1920, 'crop' => true, 'quality' => 85, 'format' => 'webp'],
+            ],
+        ],
+    ],
+];
+```
 
-Thumbs are pre-generated on image upload so the first page load never stalls on thumb generation.
+**How it maps to the Panel:**
+
+- The **Orientation** field (Layout tab) selects which srcset the slide uses —
+  `swiper-horiz` (Horizontal) or `swiper-vert` (Vertical), plus the matching
+  `swiper-lqip-*` placeholder.
+- The largest entry in the chosen srcset doubles as the `<img src>` fallback for
+  browsers that don't support `srcset`.
+- All crops are **webp** for smaller payloads (the 1920px landscape crop is
+  typically ~20% the size of the source JPG).
+
+> The descriptor keys (`640w`, `900w`, …) must be valid srcset width descriptors —
+> Kirby uses them verbatim in the generated `srcset` attribute. Keep the names
+> `swiper-horiz`, `swiper-vert`, `swiper-lqip-horiz`, `swiper-lqip-vert` exactly,
+> since the snippet looks them up by name.
+
+Thumbs are generated on demand by Kirby's media manager and cached under `/media`.
 
 ---
 
