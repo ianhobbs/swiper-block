@@ -134,7 +134,7 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
 ?>
 
 <div
-  class="swiper-block<?= $effect !== 'slide' ? ' swiper-block--' . $effect : '' ?>"
+  class="swiper swiper-block<?= $effect !== 'slide' ? ' swiper-block--' . $effect : '' ?>"
   id="<?= $uid ?>"
   style="<?= $aspectStyle ?>"
   data-swiper-config="<?= htmlspecialchars($swiperConfig, ENT_QUOTES, 'UTF-8') ?>"

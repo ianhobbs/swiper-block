@@ -16,11 +16,12 @@ test('renders nothing when slides is empty', function () {
 
 // ── Wrapper structure ─────────────────────────────────────────────────────────
 
-test('renders swiper-block wrapper div', function () {
+test('renders container with both swiper and swiper-block classes', function () {
     $html = renderBlock(makeBlock(['slides' => [
         ['heading' => 'Test Slide', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '30', 'content_position' => 'center'],
     ]]));
-    expect($html)->toContain('class="swiper-block"');
+    // `swiper` (Swiper's convention, base CSS) + `swiper-block` (our override hook)
+    expect($html)->toContain('class="swiper swiper-block"');
 });
 
 test('wrapper has unique id attribute', function () {

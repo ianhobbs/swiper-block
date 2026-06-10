@@ -70,18 +70,19 @@
 
         // ── Controls ──────────────────────────────────────────────────────────
 
-        // Navigation — scoped to this block's ID so multiple blocks don't collide
+        // Navigation — pass the elements directly (scoped to this block,
+        // so multiple sliders on a page never collide)
         navigation: raw.showNavigation
           ? {
-              nextEl: '#' + el.id + ' .swiper-button-next',
-              prevEl: '#' + el.id + ' .swiper-button-prev',
+              nextEl: el.querySelector('.swiper-button-next'),
+              prevEl: el.querySelector('.swiper-button-prev'),
             }
           : false,
 
         // Pagination
         pagination: raw.showPagination
           ? {
-              el:             '#' + el.id + ' .swiper-pagination',
+              el:             el.querySelector('.swiper-pagination'),
               type:           raw.paginationType || 'bullets',
               clickable:      true,
               dynamicBullets: raw.dynamicBullets !== false
