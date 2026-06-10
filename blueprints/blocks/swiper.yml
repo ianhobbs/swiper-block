@@ -25,7 +25,7 @@ tabs:
 
           image:
             label: Image
-            type: swiper-slide-image
+            type: files
             max: 1
             uploads:
               parent: site

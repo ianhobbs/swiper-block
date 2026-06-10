@@ -213,14 +213,14 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
       <?php endif ?>
 
       <?php if ($slide->heading()->isNotEmpty() || $slide->subtext()->isNotEmpty() || $slide->link()->isNotEmpty()) : ?>
-      <div class="swiper-slide__content swiper-slide__content--<?= $position ?>">
+      <div class="swiper-slide-caption swiper-slide-caption--<?= $position ?>">
 
         <?php if ($slide->heading()->isNotEmpty()) : ?>
-        <h2 class="swiper-slide__heading"><?= $slide->heading()->html() ?></h2>
+        <h2 class="swiper-slide-heading"><?= $slide->heading()->html() ?></h2>
         <?php endif ?>
 
         <?php if ($slide->subtext()->isNotEmpty()) : ?>
-        <p class="swiper-slide__subtext"><?= $slide->subtext()->html() ?></p>
+        <p class="swiper-slide-subtext"><?= $slide->subtext()->html() ?></p>
         <?php endif ?>
 
         <?php if ($slide->link()->isNotEmpty()) : ?>

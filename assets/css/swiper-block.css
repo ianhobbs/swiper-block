@@ -8,41 +8,42 @@
  * classes: `swiper` (Swiper's convention) + `swiper-block` (our override hook).
  */
 
-/* ── Aspect-ratio container ──────────────────────────────────────────────── */
-/* The ratio box gives the slider its height; Swiper's .swiper supplies the
-   overflow/positioning. Height is driven by --swiper-block-ratio (e.g. 16:9)
-   or --swiper-block-height (custom fixed height), set inline by the snippet. */
+/* ── Slide layout: image figure on top, caption below ───────────────────────
+   The container is auto-height: each slide stacks its figure (which carries the
+   aspect ratio) and the caption beneath it in normal flow. Swiper's autoHeight
+   option (set in swiper-block.js) grows the slider to fit the active slide.
+   Ratio is driven by --swiper-block-ratio (e.g. 16:9) or --swiper-block-height
+   (custom fixed image height), set inline on .swiper-block by the snippet. */
 .swiper-block {
   --swiper-block-ratio: 56.25%;
   --swiper-block-height: 0;
   width: 100%;
-  height: var(--swiper-block-height, 0);
-  padding-bottom: var(--swiper-block-ratio);
   position: relative;
-  overflow: hidden;
 }
 
-/* Fixed-height mode (aspect_ratio = custom) cancels the padding-ratio box */
-.swiper-block[style*="--swiper-block-height"] {
-  padding-bottom: 0;
-}
-
-/* Wrapper fills the ratio box, which has no intrinsic content height */
-.swiper-block .swiper-wrapper {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-}
-
+/* Stack figure + caption; height:auto overrides Swiper's default 100% so the
+   caption is never clipped */
 .swiper-block .swiper-slide {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+/* ── Slide media (aspect-ratio box + LQIP blur-up) ──────────────────────────
+   The figure is the ratio box; the images fill it absolutely. */
+.swiper-slide__media {
+  position: relative;
+  width: 100%;
+  height: 0;
+  margin: 0;
+  padding-bottom: var(--swiper-block-ratio);
   overflow: hidden;
 }
 
-/* ── Slide media (LQIP blur-up) ──────────────────────────────────────────── */
-.swiper-slide__media {
-  margin: 0;
-  position: absolute;
-  inset: 0;
+/* Custom fixed-height mode (aspect_ratio = custom) */
+.swiper-block[style*="--swiper-block-height"] .swiper-slide__media {
+  height: var(--swiper-block-height);
+  padding-bottom: 0;
 }
 
 .swiper-slide__lqip,
@@ -75,13 +76,13 @@
   z-index: 3;
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / var(--overlay-opacity, 0.3));
+  background: rgb(0 0 0 / var(--overlay-opacity, 0));
 }
 
 /* ── Slide content ───────────────────────────────────────────────────────── */
-.swiper-slide__content {
+.swiper-slide-caption {
   z-index: 10;
-  position: absolute;
+  position: relative;
   inset: 0;
   display: flex;
   flex-direction: column;
@@ -92,12 +93,12 @@
   color: #fff;
 }
 
-.swiper-slide__content--left {
+.swiper-slide-caption--left {
   text-align: left;
   align-items: flex-start;
 }
 
-.swiper-slide__content--center {
+.swiper-slide-caption--center {
   text-align: center;
   align-items: center;
   margin-inline: auto;
@@ -105,13 +106,13 @@
   right: 0;
 }
 
-.swiper-slide__content--right {
+.swiper-slide-caption--right {
   text-align: right;
   align-items: flex-end;
   margin-left: auto;
 }
 
-.swiper-slide__heading {
+.swiper-slide-heading {
   margin: 0;
   font-size: clamp(1.5rem, 4vw, 3rem);
   font-weight: 700;
@@ -119,7 +120,7 @@
   text-shadow: 0 2px 8px #00000059;
 }
 
-.swiper-slide__subtext {
+.swiper-slide-subtext {
   margin: 0;
   font-size: clamp(1rem, 2vw, 1.25rem);
   line-height: 1.5;

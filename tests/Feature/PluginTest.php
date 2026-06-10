@@ -46,9 +46,10 @@ test('plugin does not register a thumbs extension', function () {
     expect($plugin->extends())->not->toHaveKey('thumbs');
 });
 
-test('swiper-slide-image field type is registered', function () {
+test('plugin does not register a custom slide-image field type', function () {
+    // The slide image uses the stock `files` field. A custom `swiper-slide-image`
+    // type was tried (for a thumbnail column preview) but broke block editing with
+    // "The fieldset undefined could not be found" — guard against re-introducing it.
     $plugin = App::instance()->plugin('ianhobbs/kirby-swiper-block');
-    $fields = $plugin->extends()['fields'] ?? [];
-    expect($fields)->toHaveKey('swiper-slide-image');
-    expect($fields['swiper-slide-image']['extends'])->toBe('files');
+    expect($plugin->extends())->not->toHaveKey('fields');
 });
