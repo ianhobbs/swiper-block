@@ -62,7 +62,6 @@ The block editor opens with **5 tabs** covering all configuration options:
 | Heading | Slide title |
 | Subtext / Caption | Optional body text |
 | CTA Link + Label | Optional call-to-action button |
-| Overlay Opacity | Dark overlay on the image (0–90%) |
 | Content Position | Left / Centre / Right |
 
 ### Tab 2 — Layout

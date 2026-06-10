@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "kirbyup serve src/index.js",
-    "build": "kirbyup src/index.js"
+    "build": "kirbyup src/index.js",
+    "watch": "kirbyup src/index.js --watch"
   },
   "engines": {
     "node": ">=18.0.0"

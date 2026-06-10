@@ -39,7 +39,7 @@ test('slides tab has slides structure field', function () {
 
 test('slides structure has required sub-fields', function () {
     $fields = $this->blueprint['tabs']['slides']['fields']['slides']['fields'];
-    expect($fields)->toHaveKeys(['image', 'heading', 'subtext', 'link', 'link_text', 'overlay_opacity', 'content_position']);
+    expect($fields)->toHaveKeys(['image', 'heading', 'subtext', 'link', 'link_text', 'content_position']);
 });
 
 test('layout tab has aspect_ratio select field', function () {

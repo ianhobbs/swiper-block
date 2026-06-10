@@ -143,7 +143,7 @@
       // ── LQIP blur-up ─────────────────────────────────────────────────────────
       // Reveal the full-res image once loaded, fading out the blurred placeholder.
       el.querySelectorAll('.swiper-slide__img').forEach(function (img) {
-        var media = img.closest('.swiper-slide__media');
+        var media = img.closest('.swiper-slide-media');
         if (!media) return;
         if (img.complete) {
           media.classList.add('is-loaded');

@@ -166,7 +166,6 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
           $altText = $imageField->alt()->or($slide->heading())->value();
       }
 
-      $opacity  = (int) $slide->overlay_opacity()->or(30)->value();
       $position = $slide->content_position()->or('center')->value();
     ?>
 
@@ -178,7 +177,7 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
     >
 
       <?php if ($imageField) : ?>
-      <figure class="swiper-slide__media" aria-hidden="true">
+      <figure class="swiper-slide-media" aria-hidden="true">
 
         <img
           class="swiper-slide__lqip"
@@ -201,14 +200,6 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
           decoding="<?= $index === 1 ? 'sync' : 'async' ?>"
         >
 
-        <?php if ($opacity > 0) : ?>
-        <div
-          class="swiper-slide__overlay"
-          style="--overlay-opacity:<?= $opacity / 100 ?>"
-          aria-hidden="true"
-        ></div>
-        <?php endif ?>
-
       </figure>
       <?php endif ?>
 
@@ -216,13 +207,11 @@ $uid = 'sb-' . substr(md5($block->id()), 0, 8);
       <div class="swiper-slide-caption swiper-slide-caption--<?= $position ?>">
 
         <?php if ($slide->heading()->isNotEmpty()) : ?>
-        <h2 class="swiper-slide-heading"><?= $slide->heading()->html() ?></h2>
+        <p class="swiper-slide-heading"><?= $slide->heading()->html() ?>
         <?php endif ?>
-
         <?php if ($slide->subtext()->isNotEmpty()) : ?>
-        <p class="swiper-slide-subtext"><?= $slide->subtext()->html() ?></p>
+        <span class="swiper-slide-subtext "><?= $slide->subtext()->html() ?></span></p>
         <?php endif ?>
-
         <?php if ($slide->link()->isNotEmpty()) : ?>
         <a
           class="swiper-slide__cta"

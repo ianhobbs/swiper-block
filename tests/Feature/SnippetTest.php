@@ -18,7 +18,7 @@ test('renders nothing when slides is empty', function () {
 
 test('renders container with both swiper and swiper-block classes', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => 'Test Slide', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '30', 'content_position' => 'center'],
+        ['heading' => 'Test Slide', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]));
     // `swiper` (Swiper's convention, base CSS) + `swiper-block` (our override hook)
     expect($html)->toContain('class="swiper swiper-block"');
@@ -26,14 +26,14 @@ test('renders container with both swiper and swiper-block classes', function () 
 
 test('wrapper has unique id attribute', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]));
     expect($html)->toMatch('/id="sb-[a-f0-9]{8}"/');
 });
 
 test('wrapper has aria carousel role', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]));
     expect($html)->toContain('aria-roledescription="carousel"');
 });
@@ -42,7 +42,7 @@ test('wrapper has aria carousel role', function () {
 
 test('data-swiper-config attribute contains valid json', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]));
 
     preg_match('/data-swiper-config="([^"]+)"/', $html, $m);
@@ -57,7 +57,7 @@ test('data-swiper-config reflects effect setting', function () {
     $html = renderBlock(makeBlock([
         'effect' => 'fade',
         'slides' => [
-            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
 
@@ -70,7 +70,7 @@ test('data-swiper-config includes loop setting', function () {
     $html = renderBlock(makeBlock([
         'loop'   => 'true',
         'slides' => [
-            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
 
@@ -85,7 +85,7 @@ test('16:9 aspect ratio sets css ratio variable', function () {
     $html = renderBlock(makeBlock([
         'aspect_ratio' => '16:9',
         'slides' => [
-            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
     expect($html)->toContain('--swiper-block-ratio:');
@@ -96,7 +96,7 @@ test('custom aspect ratio sets css height variable', function () {
         'aspect_ratio'  => 'custom',
         'custom_height' => '500',
         'slides' => [
-            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
     expect($html)->toContain('--swiper-block-height:500px');
@@ -108,7 +108,7 @@ test('navigation buttons render when show_navigation is true', function () {
     $html = renderBlock(makeBlock([
         'show_navigation' => 'true',
         'slides' => [
-            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
     expect($html)->toContain('swiper-button-prev')
@@ -119,7 +119,7 @@ test('navigation buttons are hidden when show_navigation is false', function () 
     $html = renderBlock(makeBlock([
         'show_navigation' => 'false',
         'slides' => [
-            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
     expect($html)->not->toContain('swiper-button-prev');
@@ -129,7 +129,7 @@ test('pagination div renders when show_pagination is true', function () {
     $html = renderBlock(makeBlock([
         'show_pagination' => 'true',
         'slides' => [
-            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
     expect($html)->toContain('swiper-pagination');
@@ -139,7 +139,7 @@ test('pagination is absent when show_pagination is false', function () {
     $html = renderBlock(makeBlock([
         'show_pagination' => 'false',
         'slides' => [
-            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
     expect($html)->not->toContain('swiper-pagination');
@@ -149,21 +149,21 @@ test('pagination is absent when show_pagination is false', function () {
 
 test('heading renders in slide', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => 'My Heading', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+        ['heading' => 'My Heading', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]));
     expect($html)->toContain('My Heading');
 });
 
 test('subtext renders in slide', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => '', 'image' => [], 'subtext' => 'Caption text', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+        ['heading' => '', 'image' => [], 'subtext' => 'Caption text', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]));
     expect($html)->toContain('Caption text');
 });
 
 test('cta link renders when provided', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => '', 'image' => [], 'subtext' => '', 'link' => 'https://example.com', 'link_text' => 'Click here', 'overlay_opacity' => '0', 'content_position' => 'center'],
+        ['heading' => '', 'image' => [], 'subtext' => '', 'link' => 'https://example.com', 'link_text' => 'Click here', 'content_position' => 'center'],
     ]]));
     expect($html)->toContain('https://example.com')
                  ->toContain('Click here');
@@ -171,16 +171,16 @@ test('cta link renders when provided', function () {
 
 test('cta link is absent when link field is empty', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => 'Title', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+        ['heading' => 'Title', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]));
     expect($html)->not->toContain('swiper-slide__cta');
 });
 
 test('multiple slides render multiple swiper-slide divs', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => 'Slide 1', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
-        ['heading' => 'Slide 2', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
-        ['heading' => 'Slide 3', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+        ['heading' => 'Slide 1', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+        ['heading' => 'Slide 2', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+        ['heading' => 'Slide 3', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]));
     expect(substr_count($html, 'class="swiper-slide"'))->toBe(3);
 });
@@ -189,7 +189,7 @@ test('multiple slides render multiple swiper-slide divs', function () {
 
 test('slide has aria role group and roledescription', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => 'A11y Slide', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+        ['heading' => 'A11y Slide', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]));
     expect($html)->toContain('role="group"')
                  ->toContain('aria-roledescription="slide"');
@@ -197,8 +197,8 @@ test('slide has aria role group and roledescription', function () {
 
 test('slide label contains correct index', function () {
     $html = renderBlock(makeBlock(['slides' => [
-        ['heading' => 'First',  'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
-        ['heading' => 'Second', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+        ['heading' => 'First',  'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+        ['heading' => 'Second', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]));
     expect($html)->toContain('Slide 1 of 2')
                  ->toContain('Slide 2 of 2');
@@ -210,7 +210,7 @@ test('non-slide effect adds modifier class to wrapper', function () {
     $html = renderBlock(makeBlock([
         'effect' => 'fade',
         'slides' => [
-            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
     expect($html)->toContain('swiper-block--fade');
@@ -220,7 +220,7 @@ test('default slide effect does not add modifier class', function () {
     $html = renderBlock(makeBlock([
         'effect' => 'slide',
         'slides' => [
-            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'overlay_opacity' => '0', 'content_position' => 'center'],
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
     expect($html)->not->toContain('swiper-block--slide');

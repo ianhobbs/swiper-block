@@ -14,6 +14,10 @@
    option (set in swiper-block.js) grows the slider to fit the active slide.
    Ratio is driven by --swiper-block-ratio (e.g. 16:9) or --swiper-block-height
    (custom fixed image height), set inline on .swiper-block by the snippet. */
+
+.text figure .swiper-slide-media {
+  margin: 0;
+}
 .swiper-block {
   --swiper-block-ratio: 56.25%;
   --swiper-block-height: 0;
@@ -31,7 +35,7 @@
 
 /* ── Slide media (aspect-ratio box + LQIP blur-up) ──────────────────────────
    The figure is the ratio box; the images fill it absolutely. */
-.swiper-slide__media {
+.swiper-slide-media {
   position: relative;
   width: 100%;
   height: 0;
@@ -41,7 +45,7 @@
 }
 
 /* Custom fixed-height mode (aspect_ratio = custom) */
-.swiper-block[style*="--swiper-block-height"] .swiper-slide__media {
+.swiper-block[style*="--swiper-block-height"] .swiper-slide-media {
   height: var(--swiper-block-height);
   padding-bottom: 0;
 }
@@ -69,15 +73,8 @@
   transition: opacity 0.5s;
 }
 
-.swiper-slide__media.is-loaded .swiper-slide__lqip { opacity: 0; }
-.swiper-slide__media.is-loaded .swiper-slide__img  { opacity: 1; }
-
-.swiper-slide__overlay {
-  z-index: 3;
-  position: absolute;
-  inset: 0;
-  background: rgb(0 0 0 / var(--overlay-opacity, 0));
-}
+.swiper-slide-media.is-loaded .swiper-slide__lqip { opacity: 0; }
+.swiper-slide-media.is-loaded .swiper-slide__img  { opacity: 1; }
 
 /* ── Slide content ───────────────────────────────────────────────────────── */
 .swiper-slide-caption {
@@ -89,8 +86,7 @@
   justify-content: center;
   gap: 1rem;
   max-width: 70ch;
-  padding: clamp(1.5rem, 5vw, 4rem);
-  color: #fff;
+  color: default;
 }
 
 .swiper-slide-caption--left {
@@ -114,18 +110,15 @@
 
 .swiper-slide-heading {
   margin: 0;
-  font-size: clamp(1.5rem, 4vw, 3rem);
-  font-weight: 700;
+  font-size: default;
   line-height: 1.15;
-  text-shadow: 0 2px 8px #00000059;
 }
 
 .swiper-slide-subtext {
   margin: 0;
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-size: default;
   line-height: 1.5;
   opacity: 0.9;
-  text-shadow: 0 1px 4px #0000004d;
 }
 
 .swiper-slide__cta {
