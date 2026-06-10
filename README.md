@@ -154,6 +154,14 @@ return [
 ];
 ```
 
+
+## Notes
+
+The slider container height and width needs to be defined. 
+So you'll need to add custom classes to your layout field.
+
+Css parent hooks are available.
+
 ---
 
 ## For plugin developers

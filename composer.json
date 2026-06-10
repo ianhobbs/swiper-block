@@ -9,13 +9,16 @@
   "keywords": [
     "kirby",
     "kirby-cms",
-    "kirby-plugin"
+    "kirby-plugin",
+    "layout-block",
+    "swiper",
+    "kirby5"
   ],
   "require": {
     "php": ">=8.3"
   },
   "require-dev": {
-    "getkirby/cms": "^5.0",
+    "getkirby/cms": "^5.1",
     "pestphp/pest": "^3.0"
   },
   "extra": {
