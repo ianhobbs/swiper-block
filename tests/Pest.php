@@ -28,7 +28,9 @@ function makeBlock(array $content = []): Kirby\Cms\Block
         $encoded[$key] = is_array($value) ? Yaml::encode($value) : $value;
     }
 
-    return new Kirby\Cms\Block([
+    // factory() resolves the registered block model (SwiperBlock), so its
+    // computed methods (jsConfig, imgSizes, …) are available in tests.
+    return Kirby\Cms\Block::factory([
         'content' => array_merge([
             'slides'                  => '',
             'aspect_ratio'            => '16:9',
