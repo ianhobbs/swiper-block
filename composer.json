@@ -15,10 +15,10 @@
     "kirby5"
   ],
   "require": {
-    "php": ">=8.3"
+    "php": ">=8.3",
+    "getkirby/composer-installer": "^1.2"
   },
   "require-dev": {
-    "getkirby/cms": "^5.1",
     "pestphp/pest": "^3.0"
   },
   "extra": {
