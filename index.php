@@ -15,7 +15,7 @@ use IanHobbs\Swiper\SwiperBlock;
 
 Kirby::plugin('ianhobbs/kirby-swiper-block', [
 
-    'version' => '1.3.0',
+    'version' => '1.3.1',
 
     'icons' => [
         'swiper-block' => file_get_contents(__DIR__ . '/assets/icons/swiper-block.svg'),

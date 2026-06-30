@@ -70,6 +70,8 @@ The block editor opens with **5 tabs** covering all configuration options:
 |---|---|---|
 | Aspect Ratio | 16:9 | 21:9 / 16:9 / 4:3 / 1:1 / Custom height |
 | Custom Height | 600 px | Fixed height in px (when Aspect Ratio = Custom) |
+| Slider Height | 0 (auto) | Explicit container height in px / vh / svh — `0` = auto. Decouples height from images so text-only slides don't collapse; **takes precedence over Aspect Ratio**. See [Slider height & avoiding collapse](#slider-height--avoiding-collapse) |
+| Height Unit | px | Unit for Slider Height — px / vh / svh |
 | Slide Direction | Horizontal | Scroll direction — Horizontal or Vertical |
 | Orientation | Horizontal | Image crop set — Horizontal (16:9 → `swiper-horiz`) or Vertical (9:16 → `swiper-vert`) |
 | Slides Visible | 1 | 1 / 2 / 3 / 4 / Auto |
@@ -205,12 +207,26 @@ return [
 ```
 
 
-## Notes
+## Slider height & avoiding collapse
 
-The slider container height and width needs to be defined. 
-So you'll need to add custom classes to your layout field.
+Swiper containers have **no intrinsic height** — a slider whose slides have nothing
+to give them height collapses to zero. This block handles that for you in two ways,
+both applied automatically to the `.swiper-block` parent `<div>` via an inline CSS
+custom property (no template or layout-class changes required):
 
-Css parent hooks are available.
+- **Aspect Ratio** (default) — each slide's height comes from its **image**, sized to
+  the chosen ratio (16:9, 4:3, …) or a Custom pixel height. This is image-driven, so a
+  **text-only or empty slide has no height and collapses.**
+- **Slider Height** — sets an **explicit height on the container** (in `px`, `vh`, or
+  `svh`), decoupled from the images. Use it for text-only slides, mixed-content
+  sliders, or fixed-height heroes. When set (non-zero) it **takes precedence over
+  Aspect Ratio**: images fill the container as a cover backdrop and captions overlay
+  them. Leave it at `0` to keep the aspect-ratio behaviour.
+
+> You no longer need to add custom classes to your layout field to give the slider a
+> height — set **Slider Height** in the Layout tab instead. The plugin's CSS reads the
+> value from the parent `.swiper-block` element, so per-block height control lives
+> entirely in the Panel.
 
 ---
 

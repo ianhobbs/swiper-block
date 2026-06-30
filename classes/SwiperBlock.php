@@ -98,19 +98,48 @@ class SwiperBlock extends Block
 
     // ── Layout / wrapper ─────────────────────────────────────────────────────
 
-    /** Inline style carrying the aspect-ratio (or fixed height) CSS custom prop. */
+    /** Inline style carrying the aspect-ratio (or fixed height) CSS custom props. */
     public function aspectStyle(): string
     {
+        $styles = [];
+
+        // Explicit container height (Slider Height field) — decouples the slider
+        // height from the image box so text-only / empty slides don't collapse.
+        // Emitted first; the stylesheet lets it take precedence over the ratio.
+        if ($height = $this->sliderHeight()) {
+            $styles[] = "--swiper-block-fixed-height:{$height}";
+        }
+
         $aspect = $this->aspect_ratio()->or('16:9')->value();
 
         if ($aspect === 'custom') {
-            $height = (int) $this->custom_height()->or(600)->value();
-            return "--swiper-block-height:{$height}px";
+            $custom    = (int) $this->custom_height()->or(600)->value();
+            $styles[]  = "--swiper-block-height:{$custom}px";
+        } else {
+            [$w, $h]  = explode(':', $aspect);
+            $pct      = round(((float) $h / (float) $w) * 100, 4);
+            $styles[] = "--swiper-block-ratio:{$pct}%";
         }
 
-        [$w, $h] = explode(':', $aspect);
-        $pct     = round(((float) $h / (float) $w) * 100, 4);
-        return "--swiper-block-ratio:{$pct}%";
+        return implode(';', $styles);
+    }
+
+    /**
+     * Explicit container height as a CSS length (e.g. "600px", "80vh"), or null
+     * when the editor left it at auto (0). Drives an explicit height on the
+     * parent <div> so the slider never collapses when slides have no image.
+     */
+    public function sliderHeight(): ?string
+    {
+        $value = (int) $this->slider_height()->or(0)->value();
+        if ($value <= 0) {
+            return null;
+        }
+
+        $unit = $this->slider_height_unit()->or('px')->value();
+        $unit = in_array($unit, ['px', 'vh', 'svh', 'dvh'], true) ? $unit : 'px';
+
+        return "{$value}{$unit}";
     }
 
     /** Stable unique id so multiple blocks on a page don't collide. */

@@ -61,6 +61,30 @@ test('aspectStyle outputs a ratio percentage or a fixed height', function () {
         ->toBe('--swiper-block-height:500px');
 });
 
+// ── sliderHeight (explicit container height) ──────────────────────────────────
+
+test('sliderHeight returns a CSS length, or null when auto (0)', function () {
+    expect(makeBlock(['slider_height' => '0'])->sliderHeight())->toBeNull();
+    expect(makeBlock(['slider_height' => '600'])->sliderHeight())->toBe('600px');
+    expect(makeBlock(['slider_height' => '80', 'slider_height_unit' => 'vh'])->sliderHeight())->toBe('80vh');
+    // Unknown unit falls back to px
+    expect(makeBlock(['slider_height' => '50', 'slider_height_unit' => 'bogus'])->sliderHeight())->toBe('50px');
+});
+
+test('aspectStyle prepends an explicit container height that wins over the ratio', function () {
+    // Auto (0) leaves the ratio output untouched
+    expect(makeBlock(['slider_height' => '0'])->aspectStyle())
+        ->toBe('--swiper-block-ratio:56.25%');
+
+    // Explicit height is emitted first, alongside the ratio var
+    expect(makeBlock(['slider_height' => '720'])->aspectStyle())
+        ->toBe('--swiper-block-fixed-height:720px;--swiper-block-ratio:56.25%');
+
+    // Chosen unit is carried through
+    expect(makeBlock(['slider_height' => '80', 'slider_height_unit' => 'vh'])->aspectStyle())
+        ->toBe('--swiper-block-fixed-height:80vh;--swiper-block-ratio:56.25%');
+});
+
 // ── orientation → thumb presets ───────────────────────────────────────────────
 
 test('thumb presets follow the orientation', function () {

@@ -103,6 +103,33 @@ tabs:
           aspect_ratio: custom
         width: 1/3
 
+      slider_height:
+        label: Slider Height
+        type: number
+        default: 0
+        min: 0
+        max: 2000
+        step: 10
+        help: >
+          Explicit height for the slider container. 0 = auto (height follows the
+          image aspect ratio). Set this for text-only slides or fixed-height heroes —
+          it takes precedence over Aspect Ratio and stops empty slides collapsing.
+        width: 1/3
+
+      slider_height_unit:
+        label: Height Unit
+        type: select
+        default: px
+        options:
+          - value: px
+            text: Pixels (px)
+          - value: vh
+            text: Viewport height (vh)
+          - value: svh
+            text: Small viewport (svh)
+        help: Unit for Slider Height. Ignored when Slider Height is 0.
+        width: 1/3
+
       direction:
         label: Slide Direction
         type: select

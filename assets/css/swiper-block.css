@@ -9,11 +9,12 @@
  */
 
 /* ── Slide layout: image figure on top, caption below ───────────────────────
-   The container is auto-height: each slide stacks its figure (which carries the
-   aspect ratio) and the caption beneath it in normal flow. Swiper's autoHeight
-   option (set in swiper-block.js) grows the slider to fit the active slide.
-   Ratio is driven by --swiper-block-ratio (e.g. 16:9) or --swiper-block-height
-   (custom fixed image height), set inline on .swiper-block by the snippet. */
+   By default the slider has no explicit height: each slide stacks its figure
+   (which carries the aspect ratio via --swiper-block-ratio, e.g. 16:9) and the
+   caption beneath it in normal flow, so the container takes the height of its
+   tallest slide. --swiper-block-height (custom fixed image height) and
+   --swiper-block-fixed-height (explicit container height) are set inline on
+   .swiper-block by the snippet when chosen in the Panel. */
 
 .text figure .swiper-slide-media {
   margin: 0;
@@ -48,6 +49,29 @@
 .swiper-block[style*="--swiper-block-height"] .swiper-slide-media {
   height: var(--swiper-block-height);
   padding-bottom: 0;
+}
+
+/* ── Explicit container height (Slider Height field) ────────────────────────
+   --swiper-block-fixed-height gives the .swiper-block PARENT an explicit height,
+   decoupled from the image box, so text-only or empty slides never collapse. It
+   takes precedence over the aspect ratio (these rules come last): the media fills
+   the slide as a cover backdrop and the caption overlays it. */
+.swiper-block[style*="--swiper-block-fixed-height"] {
+  height: var(--swiper-block-fixed-height);
+}
+.swiper-block[style*="--swiper-block-fixed-height"] .swiper-slide {
+  height: 100%;
+  position: relative;
+}
+.swiper-block[style*="--swiper-block-fixed-height"] .swiper-slide-media {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  padding-bottom: 0;
+}
+.swiper-block[style*="--swiper-block-fixed-height"] .swiper-slide-caption {
+  height: 100%;
+  padding: 2rem;
 }
 
 .swiper-slide__lqip,

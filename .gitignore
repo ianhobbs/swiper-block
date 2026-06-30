@@ -35,3 +35,4 @@ phpunit.xml.cache
 /.idea/
 /.vscode/
 *~
+CLAUDE.md
