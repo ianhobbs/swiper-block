@@ -1,5 +1,6 @@
-# macOS
+# OS junk
 .DS_Store
+Thumbs.db
 
 # Node
 node_modules/
@@ -7,45 +8,30 @@ dist/
 build/
 .vite/
 .parcel-cache/
+public/build/
 
 # Composer / PHP
 /vendor/
 /kirby/
+composer.phar
+*.log
+# Libraries typically don't commit composer.lock
+composer.lock
 
 # Kirby MCP (local dev tool, not part of the plugin)
 /.kirby-mcp/
-/.idea/
-/.vscode/
 /.cache/
-composer.phar
-*.log
 
 # Environment
 .env
 .env.*
 
-# Coverage, tests
+# Coverage / tests
 /coverage/
 phpunit.xml.cache
 .phpunit.cache/
 
-# Editor backups
+# IDE / editor
+/.idea/
+/.vscode/
 *~
-
-# Lock files (libraries typically don't commit composer.lock)
-composer.lock
-
-# Frontend
-public/build/
-
-# IDE
-.idea/
-.vscode/
-
-# Misc
-Thumbs.db
-
-# Local reminders
-reminder.md
-repository-open-graph-template.psd
-repository-open-graph-template.png
