@@ -1,6 +1,7 @@
 <?php
 
 @include_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/classes/SwiperBlock.php';
 
 /**
  * Kirby Swiper Block Plugin
@@ -10,6 +11,7 @@
  */
 
 use Kirby\Cms\App as Kirby;
+use IanHobbs\Swiper\SwiperBlock;
 
 Kirby::plugin('ianhobbs/kirby-swiper-block', [
 
@@ -41,7 +43,9 @@ Kirby::plugin('ianhobbs/kirby-swiper-block', [
     ],
 
     // ── Block models ────────────────────────────────────────────────────────
+    // Custom model centralises the block's computed values (JS config, aspect
+    // CSS, thumb presets, responsive `sizes`) so the snippet stays markup-only.
     'blockModels' => [
-        'swiper' => \Kirby\Cms\Block::class,
+        'swiper' => SwiperBlock::class,
     ],
 ]);
