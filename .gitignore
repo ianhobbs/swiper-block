@@ -13,6 +13,7 @@ public/build/
 # Composer / PHP
 /vendor/
 /kirby/
+/kirby
 composer.phar
 *.log
 # Libraries typically don't commit composer.lock
