@@ -17,8 +17,9 @@ if ($slides->count() === 0) return;
 
 // ── Inject CDN + plugin assets once per page ─────────────────────────────────
 // Uses a static flag so multiple blocks on the same page only load assets once.
+// Honour the injectAssets option — sites that load Swiper themselves can disable it.
 static $swiperAssetsLoaded = false;
-if (!$swiperAssetsLoaded) {
+if (!$swiperAssetsLoaded && kirby()->option('ianhobbs.kirby-swiper-block.injectAssets', true)) {
     $swiperAssetsLoaded = true;
     $plugin = kirby()->plugin('ianhobbs/kirby-swiper-block');
     echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">' . "\n";
