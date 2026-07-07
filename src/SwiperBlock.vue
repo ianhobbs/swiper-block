@@ -1,65 +1,42 @@
 <template>
-  <!-- Kirby block wrapper — gives us the standard block toolbar (move, delete, etc.) -->
-  <k-block
-    v-bind="$props"
-    v-on="$listeners"
-    class="k-swiper-block"
-    :draggable="true"
-  >
-    <!-- ── Collapsed preview ─────────────────────────────────────────────── -->
-    <template #preview>
-      <div class="k-swiper-block-preview">
-        <div class="k-swiper-block-preview__thumbs">
-          <template v-if="hasThumbs">
-            <div
-              v-for="(slide, i) in previewSlides"
-              :key="i"
-              class="k-swiper-block-preview__thumb"
-              :style="thumbStyle(slide)"
-            >
-              <span v-if="slide.heading" class="k-swiper-block-preview__label">
-                {{ slide.heading }}
-              </span>
-            </div>
-          </template>
-          <div v-else class="k-swiper-block-preview__empty">
-            <k-icon type="image" />
-            <span>No slides yet</span>
-          </div>
+  <!--
+    Collapsed block preview. Registered via blocks: { swiper } which Kirby
+    wraps as `k-block-type-swiper` extending `k-block-type-default`, so the
+    block chrome (toolbar, drawer, content prop) is inherited — this component
+    only renders the preview. Do NOT wrap <k-block> here: that re-resolves
+    k-block-type-swiper and recurses infinitely.
+  -->
+  <div class="k-swiper-block-preview" @dblclick="open">
+    <div class="k-swiper-block-preview__thumbs">
+      <template v-if="hasThumbs">
+        <div
+          v-for="(slide, i) in previewSlides"
+          :key="i"
+          class="k-swiper-block-preview__thumb"
+          :style="thumbStyle(slide)"
+        >
+          <span v-if="slide.heading" class="k-swiper-block-preview__label">
+            {{ slide.heading }}
+          </span>
         </div>
-        <div class="k-swiper-block-preview__meta">
-          <k-icon type="loader" />
-          {{ slideCount }} slide{{ slideCount !== 1 ? 's' : '' }}
-          &middot; {{ ratioLabel }}
-          &middot; {{ effectLabel }}
-          <template v-if="content.autoplay"> &middot; Autoplay</template>
-        </div>
+      </template>
+      <div v-else class="k-swiper-block-preview__empty">
+        <k-icon type="image" />
+        <span>No slides yet</span>
       </div>
-    </template>
-
-    <!-- ── Open / Edit state — rendered by Kirby's block form ────────────── -->
-    <!-- The blueprint fields are shown automatically via <k-block-fields>    -->
-  </k-block>
+    </div>
+    <div class="k-swiper-block-preview__meta">
+      <k-icon type="loader" />
+      {{ slideCount }} slide{{ slideCount !== 1 ? 's' : '' }}
+      &middot; {{ ratioLabel }}
+      &middot; {{ effectLabel }}
+      <template v-if="content.autoplay"> &middot; Autoplay</template>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'SwiperBlock',
-
-  // Declare all standard Kirby block props so v-bind="$props" passes them to k-block
-  props: {
-    content:     { type: Object,  default: () => ({}) },
-    disabled:    { type: Boolean, default: false },
-    endpoints:   { type: Object,  default: () => ({}) },
-    fieldset:    { type: Object,  default: () => ({}) },
-    id:          { type: String,  default: '' },
-    isHidden:    { type: Boolean, default: false },
-    isMergeable: { type: Boolean, default: false },
-    name:        { type: String,  default: '' },
-    next:        { type: Object,  default: null },
-    prev:        { type: Object,  default: null },
-  },
-
   computed: {
     slides() {
       return Array.isArray(this.content?.slides) ? this.content.slides : [];
@@ -131,6 +108,7 @@ export default {
 /* ── Panel preview styles ─────────────────────────────────────────────────── */
 .k-swiper-block-preview {
   padding: var(--spacing-2);
+  cursor: pointer;
 }
 
 .k-swiper-block-preview__thumbs {

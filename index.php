@@ -39,7 +39,8 @@ Kirby::plugin('ianhobbs/kirby-swiper-block', [
     // Explicit registration required — auto-discovery fails when the plugin
     // is symlinked from outside site/plugins/ (rootRelativePath becomes null).
     'blueprints' => [
-        'blocks/swiper' => __DIR__ . '/blueprints/blocks/swiper.yml',
+        'blocks/swiper'       => __DIR__ . '/blueprints/blocks/swiper.yml',
+        'files/swiper-image'  => __DIR__ . '/blueprints/files/swiper-image.yml',
     ],
 
     // ── Snippets ─────────────────────────────────────────────────────────────

@@ -1,0 +1,13 @@
+title: Swiper Slide Image
+accept:
+  mime: image/jpeg, image/png, image/webp
+
+tabs:
+  content:
+    label: File
+    icon: image
+    fields:
+      alt:
+        label: Alt text
+        type: text
+        help: Describes the image for screen readers and SEO. Falls back to the slide heading.
