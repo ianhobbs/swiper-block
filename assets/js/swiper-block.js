@@ -42,6 +42,9 @@
       var config = {
 
         // ── Layout ────────────────────────────────────────────────────────────
+        // Captions sit below the figure, so slide heights vary — let Swiper grow
+        // the container to fit the active slide.
+        autoHeight:     true,
         direction:      raw.direction     || 'horizontal',
         slidesPerView:  raw.slidesPerView || 1,       // int or 'auto'
         slidesPerGroup: raw.slidesPerGroup || 1,
