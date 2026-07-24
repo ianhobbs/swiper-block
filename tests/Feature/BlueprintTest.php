@@ -42,22 +42,19 @@ test('slides structure has required sub-fields', function () {
     expect($fields)->toHaveKeys(['image', 'heading', 'subtext', 'link', 'link_text', 'content_position']);
 });
 
-test('layout tab has aspect_ratio select field', function () {
+test('layout tab has no fixed-ratio directives (native by default)', function () {
     $fields = $this->blueprint['tabs']['layout']['fields'];
-    expect($fields)->toHaveKey('aspect_ratio');
-    expect($fields['aspect_ratio']['type'])->toBe('select');
+    // Ratio/orientation controls were removed — each slide uses its image's
+    // native ratio. Only the explicit Slider Height override remains.
+    expect($fields)->not->toHaveKey('aspect_ratio');
+    expect($fields)->not->toHaveKey('custom_height');
+    expect($fields)->not->toHaveKey('orientation');
 });
 
-test('aspect_ratio includes 16:9 option', function () {
-    $options = $this->blueprint['tabs']['layout']['fields']['aspect_ratio']['options'];
-    $values  = array_column($options, 'value');
-    expect($values)->toContain('16:9');
-});
-
-test('aspect_ratio includes custom height option', function () {
-    $options = $this->blueprint['tabs']['layout']['fields']['aspect_ratio']['options'];
-    $values  = array_column($options, 'value');
-    expect($values)->toContain('custom');
+test('layout tab keeps the slider height override', function () {
+    $fields = $this->blueprint['tabs']['layout']['fields'];
+    expect($fields)->toHaveKey('slider_height');
+    expect($fields['slider_height']['type'])->toBe('number');
 });
 
 test('animation tab has effect field with slide fade creative options', function () {

@@ -10,9 +10,9 @@
 
 /* ── Slide layout: image figure on top, caption below ───────────────────────
    By default the slider has no explicit height: each slide stacks its figure
-   (which carries the aspect ratio via --swiper-block-ratio, e.g. 16:9) and the
-   caption beneath it in normal flow, so the container takes the height of its
-   tallest slide. --swiper-block-height (custom fixed image height) and
+   (which carries the image's native aspect-ratio inline) and the caption
+   beneath it in normal flow, so the container takes the height of its tallest
+   slide. --swiper-block-height (custom fixed image height) and
    --swiper-block-fixed-height (explicit container height) are set inline on
    .swiper-block by the snippet when chosen in the Panel. */
 
@@ -48,6 +48,13 @@
 /* Custom fixed-height mode (aspect_ratio = custom) */
 .swiper-block[style*="--swiper-block-height"] .swiper-slide-media {
   height: var(--swiper-block-height);
+  padding-bottom: 0;
+}
+
+/* Native mode: the figure carries an inline aspect-ratio (the image's real
+   ratio), so drop the padding-ratio box and let it size itself. */
+.swiper-slide-media[style*="aspect-ratio"] {
+  height: auto;
   padding-bottom: 0;
 }
 

@@ -75,34 +75,6 @@ tabs:
     icon: box
     fields:
 
-      aspect_ratio:
-        label: Aspect Ratio
-        type: select
-        default: "16:9"
-        options:
-          - value: "21:9"
-            text: "21 : 9  (cinematic)"
-          - value: "16:9"
-            text: "16 : 9  (widescreen)"
-          - value: "4:3"
-            text: "4 : 3"
-          - value: "1:1"
-            text: "1 : 1  (square)"
-          - value: custom
-            text: Custom height
-        width: 1/3
-
-      custom_height:
-        label: Custom Height (px)
-        type: number
-        default: 600
-        min: 200
-        max: 1200
-        step: 10
-        when:
-          aspect_ratio: custom
-        width: 1/3
-
       slider_height:
         label: Slider Height
         type: number
@@ -111,9 +83,9 @@ tabs:
         max: 2000
         step: 10
         help: >
-          Explicit height for the slider container. 0 = auto (height follows the
-          image aspect ratio). Set this for text-only slides or fixed-height heroes —
-          it takes precedence over Aspect Ratio and stops empty slides collapsing.
+          Explicit height for the slider container. 0 = auto (each slide follows
+          its image's native ratio). Set this for text-only slides or fixed-height
+          heroes — it overrides the native ratio and stops empty slides collapsing.
         width: 1/3
 
       slider_height_unit:
@@ -141,17 +113,6 @@ tabs:
             text: Vertical
         width: 1/3
 
-      orientation:
-        label: Orientation
-        type: select
-        default: horizontal
-        options:
-          - value: horizontal
-            text: Horizontal (landscape 16:9)
-          - value: vertical
-            text: Vertical (portrait 9:16)
-        help: Image crop set. Horizontal uses the swiper-horiz srcset, Vertical uses swiper-vert.
-        width: 1/3
 
       slides_per_view:
         label: Slides Visible

@@ -51,24 +51,53 @@ class SwiperBlock extends Block
         return $this->orientation()->or('horizontal')->value();
     }
 
-    /** Named srcset for the chosen orientation. */
-    public function srcsetName(): string
+    /**
+     * Native mode: crop nothing — each image keeps its own ratio. Thumbs are
+     * built width-only (inline, no site config) and the figure takes the
+     * image's real aspect-ratio (set per slide in the snippet).
+     */
+    public function isNative(): bool
     {
+        return $this->aspect_ratio()->or('native')->value() === 'native';
+    }
+
+    /**
+     * Responsive srcset. Fixed-ratio modes use the named, cropped per-orientation
+     * srcset from site config. Native mode returns a width-only set inline so the
+     * source ratio survives — no config, no crop.
+     */
+    public function srcsetName(): string|array
+    {
+        if ($this->isNative()) {
+            return [
+                '640w'  => ['width' =>  640, 'format' => 'webp', 'quality' => 80],
+                '900w'  => ['width' =>  900, 'format' => 'webp', 'quality' => 82],
+                '1400w' => ['width' => 1400, 'format' => 'webp', 'quality' => 85],
+                '1920w' => ['width' => 1920, 'format' => 'webp', 'quality' => 85],
+            ];
+        }
         return $this->orientationValue() === 'vertical' ? 'swiper-vert' : 'swiper-horiz';
     }
 
-    /** LQIP preset for the chosen orientation. */
-    public function lqipPreset(): string
+    /** LQIP placeholder. Native uses a width-only tiny (keeps the image ratio). */
+    public function lqipPreset(): string|array
     {
+        if ($this->isNative()) {
+            return ['width' => 48, 'blur' => 4, 'quality' => 30, 'format' => 'webp'];
+        }
         return $this->orientationValue() === 'vertical' ? 'swiper-lqip-vert' : 'swiper-lqip-horiz';
     }
 
     /**
-     * Largest entry in the chosen srcset — doubles as the non-srcset `<img src>`
-     * fallback. Null when the consuming site hasn't defined the srcset.
+     * Largest thumb — the non-srcset `<img src>` fallback. Native uses a
+     * width-only 1920 (uncropped); fixed modes use the largest entry of the
+     * named srcset. Null when the site hasn't defined that srcset.
      */
     public function baseThumbOptions(): array|null
     {
+        if ($this->isNative()) {
+            return ['width' => 1920, 'format' => 'webp', 'quality' => 85];
+        }
         $srcset = kirby()->option('thumbs.srcsets.' . $this->srcsetName(), []);
         return $srcset ? end($srcset) : null;
     }
@@ -110,16 +139,15 @@ class SwiperBlock extends Block
             $styles[] = "--swiper-block-fixed-height:{$height}";
         }
 
-        $aspect = $this->aspect_ratio()->or('16:9')->value();
+        $aspect = $this->aspect_ratio()->or('native')->value();
 
         if ($aspect === 'custom') {
             $custom    = (int) $this->custom_height()->or(600)->value();
             $styles[]  = "--swiper-block-height:{$custom}px";
-        } else {
-            [$w, $h]  = explode(':', $aspect);
-            $pct      = round(((float) $h / (float) $w) * 100, 4);
-            $styles[] = "--swiper-block-ratio:{$pct}%";
         }
+        // 'native' (default): no container ratio — each figure sets its own
+        // aspect-ratio from the image's real dimensions (see the snippet).
+        // Named ratios (16:9 etc) removed from the design plan.
 
         return implode(';', $styles);
     }

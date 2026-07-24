@@ -80,7 +80,7 @@ $imgSizes         = $block->imgSizes();
     >
 
       <?php if ($imageField) : ?>
-      <figure class="swiper-slide-media" aria-hidden="true">
+      <figure class="swiper-slide-media" aria-hidden="true"<?php if ($block->isNative()) : ?> style="aspect-ratio:<?= $imageField->width() ?>/<?= $imageField->height() ?>"<?php endif ?>>
 
         <img
           class="swiper-slide__lqip"
