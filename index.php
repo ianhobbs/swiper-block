@@ -15,7 +15,7 @@ use IanHobbs\Swiper\SwiperBlock;
 
 Kirby::plugin('ianhobbs/kirby-swiper-block', [
 
-    'version' => '1.3.2',
+    'version' => '1.3.3',
 
     // Set to false to skip the automatic CDN + plugin asset injection
     // (e.g. when Swiper is already bundled/loaded globally by the site).

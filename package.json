@@ -1,6 +1,6 @@
 {
   "name": "ianhobbs-kirby-swiper-block",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Kirby CMS layout block plugin — Swiper 12 slider with panel editor",
   "private": true,
   "type": "module",
