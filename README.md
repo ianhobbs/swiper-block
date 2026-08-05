@@ -1,33 +1,35 @@
 ![Packagist Version](https://img.shields.io/packagist/v/ianhobbs/kirby-swiper-block)
-![Kirby 4+](https://img.shields.io/badge/Kirby-4%2B-black)
+![Kirby 5](https://img.shields.io/badge/Kirby-5-black)
 ![License MIT](https://img.shields.io/badge/license-MIT-green)
 
 # Kirby Swiper Block
 
-A Kirby CMS layout block plugin that renders a full-featured [Swiper 12](https://swiperjs.com/) slider with a Panel editor, responsive image cropping, lazy loading, and LQIP blur-up placeholders.
+A Kirby CMS layout block plugin that renders a full-featured [Swiper 12](https://swiperjs.com/) slider with a Panel editor, responsive WebP images, lazy loading, and LQIP blur-up placeholders.
 
-Swiper is loaded via CDN — no npm or build step required to use the plugin.
+Swiper is loaded via CDN — no npm or build step required to use the plugin. No site config required either: images are handled entirely by the plugin.
 
-**Requires:** Kirby 4 or 5 · PHP 8.1+
+**Requires:** Kirby 5 · PHP 8.3+
 
 ---
 
-## Installation 
-
+## Installation
 
 ### Via Composer (recommended)
 
 ```bash
 composer require ianhobbs/kirby-swiper-block
-
 ```
+
+This installs to `site/plugins/kirby-swiper-block/` — not `vendor/` — via
+[`getkirby/composer-installer`](https://github.com/getkirby/composer-installer), so Kirby
+auto-loads it.
 
 ### Manual
 
 Clone into your site's `site/plugins/` directory:
 
 ```bash
-git clone https://github.com/ianhobbs/swiper-block site/plugins/swiper-block
+git clone https://github.com/ianhobbs/swiper-block site/plugins/kirby-swiper-block
 ```
 
 ---
@@ -36,7 +38,7 @@ git clone https://github.com/ianhobbs/swiper-block site/plugins/swiper-block
 
 No template changes needed. When a page contains a Swiper block, the snippet automatically injects the Swiper CDN scripts and plugin CSS **once per page load** using a static flag. Everything is self-contained.
 
-If you prefer to control asset placement (e.g. move them to `<head>` for performance), add these lines to your layout template and set `SWIPER_ASSETS_LOADED` in your config — see [Manual asset loading](#manual-asset-loading) below.
+If you prefer to control asset placement (e.g. move them to `<head>` for performance), see [Manual asset loading](#manual-asset-loading) below.
 
 ---
 
@@ -58,23 +60,22 @@ The block editor opens with **5 tabs** covering all configuration options:
 
 | Field | Description |
 |---|---|
-| Image | Single image — min. 1920 × 810 px recommended |
+| Image | Single image — min. 1920 px wide recommended. JPG, PNG or WebP |
 | Heading | Slide title |
 | Subtext / Caption | Optional body text |
 | CTA Link + Label | Optional call-to-action button |
 | Content Position | Left / Centre / Right |
 
+Uploads use the plugin's `swiper-image` file blueprint, which adds an **Alt text** field. Alt text falls back to the slide heading when left empty.
+
 ### Tab 2 — Layout
 
 | Field | Default | Description |
 |---|---|---|
-| Aspect Ratio | 16:9 | 21:9 / 16:9 / 4:3 / 1:1 / Custom height |
-| Custom Height | 600 px | Fixed height in px (when Aspect Ratio = Custom) |
-| Slider Height | 0 (auto) | Explicit container height in px / vh / svh — `0` = auto. Decouples height from images so text-only slides don't collapse; **takes precedence over Aspect Ratio**. See [Slider height & avoiding collapse](#slider-height--avoiding-collapse) |
+| Slider Height | 0 (auto) | Explicit container height — `0` means each slide keeps its image's own ratio. See [Slider height & avoiding collapse](#slider-height--avoiding-collapse) |
 | Height Unit | px | Unit for Slider Height — px / vh / svh |
 | Slide Direction | Horizontal | Scroll direction — Horizontal or Vertical |
-| Orientation | Horizontal | Image crop set — Horizontal (16:9 → `swiper-horiz`) or Vertical (9:16 → `swiper-vert`) |
-| Slides Visible | 1 | 1 / 2 / 3 / 4 / Auto |
+| Slides Visible | 1 | 1 / 2 / 3 / 4 / Auto (by width) |
 | Advance Per Click | 1 | Slides to jump per navigation action |
 | Gap Between Slides | 0 px | Spacing between slides |
 | Centre Active Slide | Off | Keeps the active slide centred |
@@ -92,6 +93,8 @@ The block editor opens with **5 tabs** covering all configuration options:
 | Pause on Hover | On | Pauses autoplay on mouse enter (when Autoplay is On) |
 | Free Mode | Off | Slides move freely without snapping |
 | Free Mode Momentum | On | Momentum-based deceleration (when Free Mode is On) |
+
+Fade and Creative effects require **Slides Visible = 1**.
 
 ### Tab 4 — Controls
 
@@ -116,67 +119,37 @@ The block editor opens with **5 tabs** covering all configuration options:
 
 ---
 
-## Image presets (required config)
+## How images are handled
 
-The snippet serves responsive images with Kirby's native `srcset()`, generating
-**webp** crops in two orientations. Because Kirby plugins can't register global
-`thumbs.presets` / `thumbs.srcsets`, **you must add these to your site's
-`site/config/config.php`** — the snippet reads them by name:
+**No `thumbs` configuration is required.** Earlier versions asked you to copy named
+`thumbs.presets` / `thumbs.srcsets` into `site/config/config.php`. That is no longer the
+case — the block builds every thumb inline, so it works on a stock Kirby install.
 
-```php
-return [
-    'thumbs' => [
-        'presets' => [
-            // Blurred LQIP placeholders (blur-up effect)
-            'swiper-lqip-horiz' => ['width' => 40, 'height' => 23, 'crop' => true, 'quality' => 30, 'blur' => 4, 'format' => 'webp'],
-            'swiper-lqip-vert'  => ['width' => 23, 'height' => 40, 'crop' => true, 'quality' => 30, 'blur' => 4, 'format' => 'webp'],
-        ],
-        'srcsets' => [
-            // Landscape (16:9) — used when Orientation = Horizontal
-            'swiper-horiz' => [
-                '640w'  => ['width' =>  640, 'height' =>  360, 'crop' => true, 'quality' => 80, 'format' => 'webp'],
-                '900w'  => ['width' =>  900, 'height' =>  506, 'crop' => true, 'quality' => 82, 'format' => 'webp'],
-                '1400w' => ['width' => 1400, 'height' =>  788, 'crop' => true, 'quality' => 85, 'format' => 'webp'],
-                '1920w' => ['width' => 1920, 'height' => 1080, 'crop' => true, 'quality' => 85, 'format' => 'webp'],
-            ],
-            // Portrait (9:16) — used when Orientation = Vertical
-            'swiper-vert' => [
-                '480w'  => ['width' =>  480, 'height' =>  854, 'crop' => true, 'quality' => 80, 'format' => 'webp'],
-                '640w'  => ['width' =>  640, 'height' => 1138, 'crop' => true, 'quality' => 82, 'format' => 'webp'],
-                '810w'  => ['width' =>  810, 'height' => 1440, 'crop' => true, 'quality' => 85, 'format' => 'webp'],
-                '1080w' => ['width' => 1080, 'height' => 1920, 'crop' => true, 'quality' => 85, 'format' => 'webp'],
-            ],
-        ],
-    ],
-];
-```
+Images are **never cropped**. Each slide keeps its source image's own aspect ratio: the
+snippet reads the image's real dimensions and sets them as an inline `aspect-ratio` on the
+slide's `<figure>`, so a portrait and a landscape image can sit in the same slider without
+either being re-framed.
 
-**How it maps to the Panel:**
+What the block generates per slide, all **WebP**:
 
-- The **Orientation** field (Layout tab) selects which srcset the slide uses —
-  `swiper-horiz` (Horizontal) or `swiper-vert` (Vertical), plus the matching
-  `swiper-lqip-*` placeholder.
-- The largest entry in the chosen srcset doubles as the `<img src>` fallback for
-  browsers that don't support `srcset`.
-- The `sizes` attribute is computed per slide from **Slides Visible**
-  (`slidesPerView`) and **Gap Between Slides** (`spaceBetween`), so the browser
-  downloads an image matched to the slot it actually fills — not the whole
-  viewport. A single full-width slide stays `100vw`; 3-per-view becomes
-  `calc((100vw − gaps) / 3)`; `auto` assumes 3 across (a safe floor of at least
-  three images per page width). Define enough srcset steps (the sets above have
-  four) so the browser has candidates at every slot size.
-- Slides show the **whole** orientation crop (`object-fit: contain`), so it fills
-  its constrained axis without being re-cropped to the box: **Vertical** (portrait)
-  crops fill the slide **height**, **Horizontal** (landscape) crops fill the
-  **width**. Any leftover space is backed by the blurred LQIP, so letterbox areas
-  read as intentional rather than empty bars.
-- All crops are **webp** for smaller payloads (the 1920px landscape crop is
-  typically ~20% the size of the source JPG).
+| Purpose | Output |
+|---|---|
+| `srcset` | Width-only variants at 640 / 900 / 1400 / 1920 px (quality 80–85) |
+| `<img src>` fallback | Uncropped 1920 px (quality 85) |
+| LQIP placeholder | 48 px wide, blurred, quality 30 |
 
-> The descriptor keys (`640w`, `900w`, …) must be valid srcset width descriptors —
-> Kirby uses them verbatim in the generated `srcset` attribute. Keep the names
-> `swiper-horiz`, `swiper-vert`, `swiper-lqip-horiz`, `swiper-lqip-vert` exactly,
-> since the snippet looks them up by name.
+Further behaviour worth knowing:
+
+- The `sizes` attribute is computed per block from **Slides Visible** (`slidesPerView`) and
+  **Gap Between Slides** (`spaceBetween`), so the browser downloads an image matched to the
+  slot it actually fills — not the whole viewport. A single full-width slide stays `100vw`;
+  3-per-view becomes `calc((100vw − gaps) / 3)`; `auto` assumes 3 across, a safe floor of at
+  least three images per page width.
+- The sharp image is `object-fit: contain`, so it is shown in full. The blurred LQIP sits
+  behind it as an `object-fit: cover` backdrop, so any letterbox area reads as intentional
+  rather than as empty bars.
+- The first slide loads with `loading="eager"` / `decoding="sync"`; every later slide is
+  `lazy` / `async`.
 
 Thumbs are generated on demand by Kirby's media manager and cached under `/media`.
 
@@ -206,33 +179,38 @@ return [
 ];
 ```
 
+---
 
 ## Slider height & avoiding collapse
 
-Swiper containers have **no intrinsic height** — a slider whose slides have nothing
-to give them height collapses to zero. This block handles that for you in two ways,
-both applied automatically to the `.swiper-block` parent `<div>` via an inline CSS
-custom property (no template or layout-class changes required):
+Swiper containers have **no intrinsic height** — a slider whose slides have nothing to give
+them height collapses to zero. The block handles that in two ways, both applied automatically
+to the `.swiper-block` parent `<div>` via an inline CSS custom property (no template or
+layout-class changes required):
 
-- **Aspect Ratio** (default) — each slide's height comes from its **image**, sized to
-  the chosen ratio (16:9, 4:3, …) or a Custom pixel height. This is image-driven, so a
-  **text-only or empty slide has no height and collapses.**
-- **Slider Height** — sets an **explicit height on the container** (in `px`, `vh`, or
-  `svh`), decoupled from the images. Use it for text-only slides, mixed-content
-  sliders, or fixed-height heroes. When set (non-zero) it **takes precedence over
-  Aspect Ratio**: images fill the container as a cover backdrop and captions overlay
-  them. Leave it at `0` to keep the aspect-ratio behaviour.
+- **Auto** (`Slider Height = 0`, the default) — each slide's height comes from its **image**,
+  at the image's own aspect ratio. Because this is image-driven, a **text-only or empty slide
+  has no height and collapses.**
+- **Slider Height** — sets an **explicit height on the container** (in `px`, `vh`, or `svh`),
+  decoupled from the images. Use it for text-only slides, mixed-content sliders, or
+  fixed-height heroes. When set, the media fills the slide box and the caption overlays it.
 
-> You no longer need to add custom classes to your layout field to give the slider a
-> height — set **Slider Height** in the Layout tab instead. The plugin's CSS reads the
-> value from the parent `.swiper-block` element, so per-block height control lives
-> entirely in the Panel.
+> You don't need to add custom classes to your layout field to give the slider a height — set
+> **Slider Height** in the Layout tab instead. The plugin's CSS reads the value from the parent
+> `.swiper-block` element, so per-block height control lives entirely in the Panel.
 
 ---
 
 ## For plugin developers
 
-Node is only required if you are modifying the **Panel editor** component (`src/SwiperBlock.vue`). The frontend JS (`assets/js/swiper-block.js`) is plain hand-authored JavaScript — no build step needed.
+```bash
+composer install     # PHP deps + a local Kirby in kirby/ (dev-only)
+composer test        # Pest suite
+```
+
+Node is only required if you are modifying the **Panel editor** component
+(`src/SwiperBlock.vue`). The frontend JS (`assets/js/swiper-block.js`) is plain hand-authored
+JavaScript — no build step needed.
 
 ### Panel build
 
@@ -244,6 +222,19 @@ npm run dev        # kirbyup dev server with hot reload
 
 The bundle is built with [kirbyup](https://github.com/johannschopplich/kirbyup), Kirby's official Panel plugin bundler — it compiles against the Panel's own Vue 2.7 runtime, and Kirby auto-loads `index.js` / `index.css` from the plugin root.
 
+### Local dev site
+
+For visual testing with real images, scaffold a throwaway Kirby site that loads the plugin
+exactly the way a consumer does:
+
+```bash
+composer dev:setup   # scaffold dev/ (gitignored)
+composer dev         # serve on http://localhost:8000, Panel at /panel
+```
+
+Create an account at `/panel`, add a Swiper block, upload images. The scaffold never
+overwrites existing files, so your content survives a re-run.
+
 ### Deployment
 
 Commit the compiled Panel output alongside your source changes:
@@ -254,6 +245,9 @@ git commit -m "Build: update panel and assets"
 ```
 
 Kirby will never see `.vue` files on the live server — only the pre-compiled `index.js`.
+Development material (`tests/`, `dev/`, `bin/`, `src/`, npm and PHPUnit config) is stripped
+from the released package via `.gitattributes` `export-ignore`, so `composer require` pulls
+only the runtime files.
 
 ---
 
