@@ -28,7 +28,7 @@
     <div class="k-swiper-block-preview__meta">
       <k-icon type="loader" />
       {{ slideCount }} slide{{ slideCount !== 1 ? 's' : '' }}
-      &middot; {{ ratioLabel }}
+      &middot; {{ heightLabel }}
       &middot; {{ effectLabel }}
       <template v-if="content.autoplay"> &middot; Autoplay</template>
     </div>
@@ -56,32 +56,23 @@ export default {
     },
 
     effectLabel() {
-      const map = { slide: 'Slide', fade: 'Fade', creative: 'Creative' };
+      const map = {
+        slide: 'Slide',
+        fade: 'Fade',
+        creative: 'Creative',
+        coverflow: 'Coverflow',
+      };
       return map[this.content?.effect] ?? 'Slide';
     },
 
-    ratioLabel() {
-      const map = {
-        '21:9': '21:9',
-        '16:9': '16:9',
-        '4:3': '4:3',
-        '3:4': '3:4',
-        '2:3': '2:3',
-        '1:1': '1:1',
-      };
-      return map[this.content?.aspect_ratio] ?? '16:9';
-    },
-
-    thumbAspectRatio() {
-      const map = {
-        '21:9': '21 / 9',
-        '16:9': '16 / 9',
-        '4:3': '4 / 3',
-        '3:4': '3 / 4',
-        '2:3': '2 / 3',
-        '1:1': '1 / 1',
-      };
-      return map[this.content?.aspect_ratio] || '16 / 9';
+    // Slider Height replaced the old Aspect Ratio field: 0 means each slide
+    // follows its image's native ratio, anything else is an explicit container
+    // height in the chosen unit.
+    heightLabel() {
+      const height = Number(this.content?.slider_height) || 0;
+      if (height <= 0) return 'Auto height';
+      const unit = this.content?.slider_height_unit || 'px';
+      return `${height}${unit}`;
     },
   },
 
@@ -97,7 +88,6 @@ export default {
         backgroundImage: `url(${file.url})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        aspectRatio: this.thumbAspectRatio,
       };
     },
   },
