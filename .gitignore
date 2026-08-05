@@ -15,6 +15,11 @@ public/build/
 /kirby/
 /kirby
 composer.phar
+
+# Local Kirby dev site for visual testing — holds real images and Panel
+# accounts, neither of which belong in the plugin repo. Recreate with:
+#   composer dev:setup
+/dev/
 *.log
 # Libraries typically don't commit composer.lock
 composer.lock

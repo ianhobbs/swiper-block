@@ -1,0 +1,25 @@
+# What ships to consumers.
+#
+# `composer require` pulls the GitHub dist archive, which honours export-ignore.
+# Everything below is development-only: it stays in the git repo (contributors
+# clone, so they still get it) but is stripped from the released package.
+#
+# Deliberately NOT ignored — these are what the plugin needs at runtime, or are
+# the toolset consumers actually use:
+#   index.php  index.js  index.css  composer.json  README.md
+#   assets/  blueprints/  classes/  snippets/
+
+/.github/           export-ignore
+/.claude/           export-ignore
+/bin/               export-ignore
+/dev/               export-ignore
+/src/               export-ignore
+/tests/             export-ignore
+
+/.gitattributes     export-ignore
+/.gitignore         export-ignore
+/CLAUDE.md          export-ignore
+/DEVELOPMENT.md     export-ignore
+/package.json       export-ignore
+/package-lock.json  export-ignore
+/phpunit.xml        export-ignore

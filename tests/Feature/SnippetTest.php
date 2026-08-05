@@ -79,27 +79,28 @@ test('data-swiper-config includes loop setting', function () {
     expect($config['loop'])->toBeTrue();
 });
 
-// ── Aspect ratio ──────────────────────────────────────────────────────────────
+// ── Slider height ─────────────────────────────────────────────────────────────
 
-test('16:9 aspect ratio sets css ratio variable', function () {
+test('auto height emits no sizing custom properties', function () {
     $html = renderBlock(makeBlock([
-        'aspect_ratio' => '16:9',
+        'slider_height' => '0',
         'slides' => [
             ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
-    expect($html)->toContain('--swiper-block-ratio:');
+    expect($html)->toContain('style=""')
+                 ->not->toContain('--swiper-block-');
 });
 
-test('custom aspect ratio sets css height variable', function () {
+test('explicit slider height sets the fixed-height custom property', function () {
     $html = renderBlock(makeBlock([
-        'aspect_ratio'  => 'custom',
-        'custom_height' => '500',
+        'slider_height'      => '80',
+        'slider_height_unit' => 'vh',
         'slides' => [
             ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
-    expect($html)->toContain('--swiper-block-height:500px');
+    expect($html)->toContain('--swiper-block-fixed-height:80vh');
 });
 
 // ── Navigation & pagination ───────────────────────────────────────────────────

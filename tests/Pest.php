@@ -33,8 +33,6 @@ function makeBlock(array $content = []): Kirby\Cms\Block
     return Kirby\Cms\Block::factory([
         'content' => array_merge([
             'slides'                  => '',
-            'aspect_ratio'            => '16:9',
-            'custom_height'           => '600',
             'slider_height'           => '0',
             'slider_height_unit'      => 'px',
             'direction'               => 'horizontal',

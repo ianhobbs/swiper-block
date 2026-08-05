@@ -53,12 +53,18 @@ test('imgSizes reflects slidesPerView and the gap', function () {
     expect(makeBlock(['slides_per_view' => 'auto'])->imgSizes())->toBe('calc(100vw / 3)');
 });
 
+// ── native ratio ──────────────────────────────────────────────────────────────
+
+test('blocks are native-ratio now that the aspect ratio field is gone', function () {
+    expect(makeBlock()->isNative())->toBeTrue();
+});
+
 // ── aspectStyle ───────────────────────────────────────────────────────────────
 
-test('aspectStyle outputs a ratio percentage or a fixed height', function () {
-    expect(makeBlock(['aspect_ratio' => '16:9'])->aspectStyle())->toBe('--swiper-block-ratio:56.25%');
-    expect(makeBlock(['aspect_ratio' => 'custom', 'custom_height' => '500'])->aspectStyle())
-        ->toBe('--swiper-block-height:500px');
+test('aspectStyle is empty in native mode with no explicit height', function () {
+    // Native mode sets no container ratio — each figure carries its own
+    // aspect-ratio inline, from the image's real dimensions (see the snippet).
+    expect(makeBlock()->aspectStyle())->toBe('');
 });
 
 // ── sliderHeight (explicit container height) ──────────────────────────────────
@@ -71,30 +77,37 @@ test('sliderHeight returns a CSS length, or null when auto (0)', function () {
     expect(makeBlock(['slider_height' => '50', 'slider_height_unit' => 'bogus'])->sliderHeight())->toBe('50px');
 });
 
-test('aspectStyle prepends an explicit container height that wins over the ratio', function () {
-    // Auto (0) leaves the ratio output untouched
-    expect(makeBlock(['slider_height' => '0'])->aspectStyle())
-        ->toBe('--swiper-block-ratio:56.25%');
+test('aspectStyle carries only the explicit container height', function () {
+    // Auto (0) emits nothing at all
+    expect(makeBlock(['slider_height' => '0'])->aspectStyle())->toBe('');
 
-    // Explicit height is emitted first, alongside the ratio var
     expect(makeBlock(['slider_height' => '720'])->aspectStyle())
-        ->toBe('--swiper-block-fixed-height:720px;--swiper-block-ratio:56.25%');
+        ->toBe('--swiper-block-fixed-height:720px');
 
     // Chosen unit is carried through
     expect(makeBlock(['slider_height' => '80', 'slider_height_unit' => 'vh'])->aspectStyle())
-        ->toBe('--swiper-block-fixed-height:80vh;--swiper-block-ratio:56.25%');
+        ->toBe('--swiper-block-fixed-height:80vh');
 });
 
-// ── orientation → thumb presets ───────────────────────────────────────────────
+// ── thumb presets ─────────────────────────────────────────────────────────────
 
-test('thumb presets follow the orientation', function () {
-    $h = makeBlock(['orientation' => 'horizontal']);
-    expect($h->srcsetName())->toBe('swiper-horiz');
-    expect($h->lqipPreset())->toBe('swiper-lqip-horiz');
+test('native mode builds thumbs inline so no site config is required', function () {
+    $block = makeBlock();
 
-    $v = makeBlock(['orientation' => 'vertical']);
-    expect($v->srcsetName())->toBe('swiper-vert');
-    expect($v->lqipPreset())->toBe('swiper-lqip-vert');
+    // Width-only srcset — no crop, so the source ratio survives.
+    $srcset = $block->srcsetName();
+    expect($srcset)->toBeArray()->toHaveKeys(['640w', '900w', '1400w', '1920w']);
+    expect($srcset['1920w'])->not->toHaveKey('height');
+    expect($srcset['1920w']['format'])->toBe('webp');
+
+    // LQIP is width-only too, for the same reason.
+    expect($block->lqipPreset())->toBeArray()->toHaveKey('blur');
+    expect($block->lqipPreset())->not->toHaveKey('height');
+
+    // <img src> fallback is an uncropped 1920 — no named srcset lookup.
+    expect($block->baseThumbOptions())->toBe([
+        'width' => 1920, 'format' => 'webp', 'quality' => 85,
+    ]);
 });
 
 // ── uid ───────────────────────────────────────────────────────────────────────
