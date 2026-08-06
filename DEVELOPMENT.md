@@ -121,8 +121,15 @@ composer install
 composer start          # php -S localhost:8000 kirby/router.php
 ```
 
-Open `http://localhost:8000/panel`, create an account, add a Swiper block to Dev Home and
-upload images.
+Open `http://localhost:8000/panel` and create an account.
+
+On a fresh clone the frontend returns 404 until a page exists — `content/` is gitignored, so
+no page ships with the repo. In the Panel, add a page from the site's Pages section (template
+**Dev Home**), then add a Swiper block and upload images. `/` renders it from then on.
+
+Content is deliberately not tracked: Kirby rewrites the page's `.txt` on every Panel edit, so
+a committed seed page would show as permanently modified — and uploaded images would follow it
+into the repo.
 
 What's tracked: `index.php`, `site/blueprints/`, `site/templates/`, `site/config/` and the
 `site/plugins/kirby-swiper-block` symlink. What never is: `content/`, `media/`,
