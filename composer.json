@@ -18,6 +18,9 @@
     "php": ">=8.3",
     "getkirby/composer-installer": "^1.2"
   },
+  "conflict": {
+    "getkirby/cms": "<5.0.0 || >=6.0.0"
+  },
   "extra": {
     "installer-name": "kirby-swiper-block"
   },

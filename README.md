@@ -10,6 +10,9 @@ Swiper is loaded via CDN — no npm or build step required to use the plugin. No
 
 **Requires:** Kirby 5 · PHP 8.3+
 
+This release line is pinned to Kirby 5. Composer will refuse to install it alongside Kirby 6 —
+K6 moves the Panel to Vue 3 and will be supported by a separate `v2.x` line.
+
 ---
 
 ## Installation
