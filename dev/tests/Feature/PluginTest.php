@@ -14,11 +14,11 @@ test('plugin registers with correct id', function () {
     expect($plugin)->not->toBeNull();
 });
 
-test('plugin version is set to 1.3.4 in registration', function () {
+test('plugin version is set to 1.3.5 in registration', function () {
     // Plugin::version() reads from composer.json (not present in dev/test env).
     // The 'version' key in Kirby::plugin() lives in extends() — test that.
     $plugin = App::instance()->plugin('ianhobbs/kirby-swiper-block');
-    expect($plugin->extends()['version'])->toBe('1.3.4');
+    expect($plugin->extends()['version'])->toBe('1.3.5');
 });
 
 test('blueprint blocks/swiper is registered', function () {
