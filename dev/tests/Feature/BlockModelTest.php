@@ -53,6 +53,51 @@ test('imgSizes reflects slidesPerView and the gap', function () {
     expect(makeBlock(['slides_per_view' => 'auto'])->imgSizes())->toBe('calc(100vw / 3)');
 });
 
+test('a block with no layout field behaves as a full-width row of its own', function () {
+    // Blocks fields, ad-hoc blocks, previews: no column to detect.
+    expect(makeBlock()->columnSpan())->toBe(12);
+    expect(makeBlock()->isRowDuplicate())->toBeFalse();
+});
+
+test('Column Width overrides the detected column and is clamped to twelfths', function () {
+    expect(makeBlock(['column_width' => '6'])->columnSpan())->toBe(6);
+    expect(makeBlock(['column_width' => '2'])->columnSpan())->toBe(2);
+
+    // Out of range or nonsense falls back rather than producing absurd sizes.
+    expect(makeBlock(['column_width' => '99'])->columnSpan())->toBe(12);
+    expect(makeBlock(['column_width' => '0'])->columnSpan())->toBe(1);
+    expect(makeBlock(['column_width' => 'half'])->columnSpan())->toBe(12);
+});
+
+test('imgSizes narrows with the column and keeps the stacked size first', function () {
+    // Part-width columns stack full-width on small screens, so two candidates.
+    expect(makeBlock(['column_width' => '6'])->imgSizes())
+        ->toBe('(max-width: 768px) 100vw, 50vw');
+
+    expect(makeBlock(['column_width' => '4', 'slides_per_view' => '2'])->imgSizes())
+        ->toBe('(max-width: 768px) calc(100vw / 2), calc(33.3333vw / 2)');
+
+    expect(makeBlock(['column_width' => '8', 'slides_per_view' => '3', 'space_between' => '16'])->imgSizes())
+        ->toBe('(max-width: 768px) calc((100vw - 32px) / 3), calc((66.6667vw - 32px) / 3)');
+
+    // Full width stays a single candidate — nothing to stack.
+    expect(makeBlock(['column_width' => '12'])->imgSizes())->toBe('100vw');
+});
+
+test('the stacking breakpoint is configurable', function () {
+    $default = kirby();
+    $default->clone(['options' => ['ianhobbs.kirby-swiper-block.stackBreakpoint' => '60rem']]);
+    restore_error_handler();
+    restore_exception_handler();
+
+    expect(makeBlock(['column_width' => '6'])->imgSizes())
+        ->toBe('(max-width: 60rem) 100vw, 50vw');
+
+    $default->clone();
+    restore_error_handler();
+    restore_exception_handler();
+});
+
 // ── native ratio ──────────────────────────────────────────────────────────────
 
 test('blocks are native-ratio now that the aspect ratio field is gone', function () {
@@ -108,6 +153,44 @@ test('native mode builds thumbs inline so no site config is required', function 
     expect($block->baseThumbOptions())->toBe([
         'width' => 1920, 'format' => 'webp', 'quality' => 85,
     ]);
+});
+
+// ── Caption typography & colour ───────────────────────────────────────────────
+
+test('caption size classes default and reject values outside the scale', function () {
+    expect(makeBlock()->headingSizeClass())->toBe('text-4xl');
+    expect(makeBlock()->subtextSizeClass())->toBe('text-lg');
+
+    expect(makeBlock(['heading_size' => 'text-6xl'])->headingSizeClass())->toBe('text-6xl');
+    expect(makeBlock(['subtext_size' => 'text-sm'])->subtextSizeClass())->toBe('text-sm');
+
+    // Anything off the list falls back — the value lands in a class attribute.
+    expect(makeBlock(['heading_size' => 'text-9xl'])->headingSizeClass())->toBe('text-4xl');
+    expect(makeBlock(['heading_size' => 'foo" onload="x'])->headingSizeClass())->toBe('text-4xl');
+    expect(makeBlock(['subtext_size' => 'text-7xl'])->subtextSizeClass())->toBe('text-lg');
+});
+
+test('verticalPosition accepts the three placements and defaults to middle', function () {
+    expect(SwiperBlock::verticalPosition('top'))->toBe('top');
+    expect(SwiperBlock::verticalPosition('bottom'))->toBe('bottom');
+    expect(SwiperBlock::verticalPosition(null))->toBe('middle');
+    expect(SwiperBlock::verticalPosition(''))->toBe('middle');
+    expect(SwiperBlock::verticalPosition('sideways'))->toBe('middle');
+});
+
+test('cssColor passes hex and functional colours, drops anything else', function () {
+    expect(SwiperBlock::cssColor('#fff'))->toBe('#fff');
+    expect(SwiperBlock::cssColor('#ffcc00'))->toBe('#ffcc00');
+    expect(SwiperBlock::cssColor('#ffcc0080'))->toBe('#ffcc0080');
+    expect(SwiperBlock::cssColor(' rgba(0, 0, 0, 0.5) '))->toBe('rgba(0, 0, 0, 0.5)');
+    expect(SwiperBlock::cssColor('hsl(210 40% 50%)'))->toBe('hsl(210 40% 50%)');
+
+    expect(SwiperBlock::cssColor(null))->toBeNull();
+    expect(SwiperBlock::cssColor(''))->toBeNull();
+    expect(SwiperBlock::cssColor('red'))->toBeNull();          // keyword — not stored by the field
+    expect(SwiperBlock::cssColor('#12345'))->toBeNull();       // malformed hex
+    expect(SwiperBlock::cssColor('url(javascript:alert(1))'))->toBeNull();
+    expect(SwiperBlock::cssColor('#fff;background:url(x)'))->toBeNull();
 });
 
 // ── uid ───────────────────────────────────────────────────────────────────────

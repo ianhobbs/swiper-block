@@ -42,6 +42,36 @@ test('slides structure has required sub-fields', function () {
     expect($fields)->toHaveKeys(['image', 'heading', 'subtext', 'link', 'link_text', 'content_position']);
 });
 
+test('slides structure has per-slide caption colour and vertical position', function () {
+    $fields = $this->blueprint['tabs']['slides']['fields']['slides']['fields'];
+
+    expect($fields['caption_color']['type'])->toBe('color');
+    expect($fields['caption_color']['alpha'])->toBeTrue();
+
+    $values = array_column($fields['content_position_y']['options'], 'value');
+    expect($values)->toBe(['top', 'middle', 'bottom']);
+    expect($fields['content_position_y']['default'])->toBe('middle');
+});
+
+test('layout tab offers Tailwind-named caption sizes', function () {
+    $fields = $this->blueprint['tabs']['layout']['fields'];
+
+    expect($fields['heading_size']['default'])->toBe('text-4xl');
+    expect($fields['subtext_size']['default'])->toBe('text-lg');
+
+    // Every offered value must be one the model accepts, and one the CSS
+    // fallback table covers — otherwise a non-Tailwind site gets no size at all.
+    $headings = array_column($fields['heading_size']['options'], 'value');
+    $subtexts = array_column($fields['subtext_size']['options'], 'value');
+    expect($headings)->toBe(IanHobbs\Swiper\SwiperBlock::HEADING_SIZES);
+    expect($subtexts)->toBe(IanHobbs\Swiper\SwiperBlock::SUBTEXT_SIZES);
+
+    $css = file_get_contents(__DIR__ . '/../../../assets/css/swiper-block.css');
+    foreach (array_unique([...$headings, ...$subtexts]) as $class) {
+        expect($css)->toContain(".swiper-slide-caption .{$class})");
+    }
+});
+
 test('layout tab has no fixed-ratio directives (native by default)', function () {
     $fields = $this->blueprint['tabs']['layout']['fields'];
     // Ratio/orientation controls were removed — each slide uses its image's
@@ -49,6 +79,17 @@ test('layout tab has no fixed-ratio directives (native by default)', function ()
     expect($fields)->not->toHaveKey('aspect_ratio');
     expect($fields)->not->toHaveKey('custom_height');
     expect($fields)->not->toHaveKey('orientation');
+});
+
+test('layout tab has the column width hint, defaulting to auto-detect', function () {
+    $field = $this->blueprint['tabs']['layout']['fields']['column_width'];
+
+    expect($field['default'])->toBe('auto');
+
+    // Every option must be 'auto' or a twelfth the model accepts.
+    foreach (array_column($field['options'], 'value') as $value) {
+        expect($value === 'auto' || ((int) $value >= 1 && (int) $value <= 12))->toBeTrue();
+    }
 });
 
 test('layout tab keeps the slider height override', function () {

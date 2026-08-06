@@ -186,6 +186,60 @@ test('multiple slides render multiple swiper-slide divs', function () {
     expect(substr_count($html, 'class="swiper-slide"'))->toBe(3);
 });
 
+// ── Caption typography, colour & placement ────────────────────────────────────
+
+test('caption carries both placement classes', function () {
+    $html = renderBlock(makeBlock(['slides' => [
+        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '',
+         'content_position' => 'right', 'content_position_y' => 'bottom'],
+    ]]));
+    expect($html)->toContain('swiper-slide-caption--right')
+                 ->toContain('swiper-slide-caption--bottom');
+});
+
+test('caption falls back to middle when no vertical position is stored', function () {
+    $html = renderBlock(makeBlock(['slides' => [
+        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+    ]]));
+    expect($html)->toContain('swiper-slide-caption--middle');
+});
+
+test('heading and subtext carry the block-level Tailwind size classes', function () {
+    $html = renderBlock(makeBlock([
+        'heading_size' => 'text-6xl',
+        'subtext_size' => 'text-xl',
+        'slides' => [
+            ['heading' => 'Big', 'image' => [], 'subtext' => 'Small', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+        ],
+    ]));
+    expect($html)->toContain('class="swiper-slide-heading text-6xl"')
+                 ->toContain('class="swiper-slide-subtext text-xl"');
+});
+
+test('caption colour renders as an inline color when set', function () {
+    $html = renderBlock(makeBlock(['slides' => [
+        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '',
+         'content_position' => 'center', 'caption_color' => '#ffcc00'],
+    ]]));
+    expect($html)->toContain('style="color:#ffcc00"');
+});
+
+test('no caption colour means no inline style, so the page colour is inherited', function () {
+    $html = renderBlock(makeBlock(['slides' => [
+        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+    ]]));
+    expect($html)->not->toContain('style="color:');
+});
+
+test('an unsafe stored caption colour is dropped rather than emitted', function () {
+    $html = renderBlock(makeBlock(['slides' => [
+        ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '',
+         'content_position' => 'center', 'caption_color' => 'red;background:url(evil)'],
+    ]]));
+    expect($html)->not->toContain('background:url')
+                 ->not->toContain('style="color:');
+});
+
 // ── Accessibility ─────────────────────────────────────────────────────────────
 
 test('slide has aria role group and roledescription', function () {

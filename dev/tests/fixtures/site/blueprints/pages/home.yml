@@ -1,1 +1,8 @@
 title: Home
+
+fields:
+  # The real-world host for the block: a layout field whose fieldsets include
+  # `swiper`, with themed settings and multi-column layouts. Mirrors how the
+  # plugin is actually consumed — see fields/layout.yml.
+  layout:
+    extends: fields/layout

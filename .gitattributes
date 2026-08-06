@@ -15,6 +15,7 @@
 /src/               export-ignore
 
 /.gitattributes     export-ignore
+/.mcp.json          export-ignore
 /.gitignore         export-ignore
 /CLAUDE.md          export-ignore
 /DEVELOPMENT.md     export-ignore

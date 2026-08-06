@@ -5,7 +5,8 @@
   "type": "project",
   "require-dev": {
     "getkirby/cms": "^5.0",
-    "pestphp/pest": "^3.0"
+    "pestphp/pest": "^3.0",
+    "bnomei/kirby-mcp": "^1.11"
   },
   "scripts": {
     "test": "pest --colors=always",
@@ -18,7 +19,6 @@
   "scripts-descriptions": {
     "test": "Run the Pest suite against the plugin in the parent directory",
     "start" : "Runs kirby's built in server"
-
   },
   "config": {
     "optimize-autoloader": true,

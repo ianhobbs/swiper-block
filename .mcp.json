@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "kirby": {
+      "type": "stdio",
+      "command": "dev/vendor/bin/kirby-mcp",
+      "args": [
+        "--project=dev"
+      ],
+      "env": {}
+    }
+  }
+}

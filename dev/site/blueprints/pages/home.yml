@@ -7,8 +7,37 @@ sections:
   content:
     type: fields
     fields:
-      slider:
-        label: Swiper blocks
-        type: blocks
+      # A layout field, not a plain blocks field: the block's real host. Column
+      # widths drive the responsive `sizes` hint and the one-slider-per-row rule,
+      # neither of which is visible in a plain blocks field.
+      layout:
+        label: Page layout
+        type: layout
+        settings:
+          fields:
+            theme:
+              label: Layout Theme
+              type: select
+              default: plain-blocks-padded
+              options:
+                - value: plain-blocks
+                  text: Plain Grid - no background or padding
+                - value: plain-blocks-padded
+                  text: Plain Grid - with padding
+                - value: card-blocks
+                  text: Cards Grid - with background and padding
+                - value: full-bleed-grid
+                  text: Full bleed - explains it all.
+        layouts:
+          - "1/1"
+          - "1/2, 1/2"
+          - "1/3, 1/3, 1/3"
+          - "1/6, 3/6, 1/6, 1/6"
+          - "1/6, 4/6, 1/6"
+          - "1/12, 5/12, 6/12"
+          - "2/12, 6/12, 4/12"
+          - "3/12, 7/12, 2/12"
+          - "4/12, 3/12, 5/12"
         fieldsets:
           - swiper
+          - text

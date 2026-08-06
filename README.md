@@ -39,7 +39,7 @@ git clone https://github.com/ianhobbs/swiper-block site/plugins/kirby-swiper-blo
 
 ## Zero-config setup
 
-No template changes needed. When a page contains a Swiper block, the snippet automatically injects the Swiper CDN scripts and plugin CSS **once per page load** using a static flag. Everything is self-contained.
+No template changes needed. When a page contains a Swiper block, the snippet automatically injects the Swiper CDN scripts and plugin CSS **once per page load** — the first block to render claims the injection, so a page with several sliders down it still loads Swiper once. Everything is self-contained.
 
 If you prefer to control asset placement (e.g. move them to `<head>` for performance), see [Manual asset loading](#manual-asset-loading) below.
 
@@ -52,10 +52,14 @@ Add the `swiper` block type to any blocks or layout field in your blueprint:
 ```yaml
 fields:
   content:
-    type: blocks
+    type: layout
     fieldsets:
       - swiper
 ```
+
+> **One slider per layout row.** Several sliders **down** a page are fine and fully
+> independent; two in the *same* row are not — the second is skipped. See
+> [Using the block in a layout field](#using-the-block-in-a-layout-field).
 
 The block editor opens with **5 tabs** covering all configuration options:
 
@@ -68,6 +72,8 @@ The block editor opens with **5 tabs** covering all configuration options:
 | Subtext / Caption | Optional body text |
 | CTA Link + Label | Optional call-to-action button |
 | Content Position | Left / Centre / Right |
+| Vertical Position | Top / Middle / Bottom — see [Caption colour, placement & type](#caption-colour-placement--type) |
+| Caption Colour | Colour picker (with alpha) for this slide's heading, subtext and CTA. Empty inherits the page |
 
 Uploads use the plugin's `swiper-image` file blueprint, which adds an **Alt text** field. Alt text falls back to the slide heading when left empty.
 
@@ -75,6 +81,7 @@ Uploads use the plugin's `swiper-image` file blueprint, which adds an **Alt text
 
 | Field | Default | Description |
 |---|---|---|
+| Column Width | Auto | How much of the layout row the slider fills. Auto reads the real column. See [Column-aware image sizes](#column-aware-image-sizes) |
 | Slider Height | 0 (auto) | Explicit container height — `0` means each slide keeps its image's own ratio. See [Slider height & avoiding collapse](#slider-height--avoiding-collapse) |
 | Height Unit | px | Unit for Slider Height — px / vh / svh |
 | Slide Direction | Horizontal | Scroll direction — Horizontal or Vertical |
@@ -83,6 +90,8 @@ Uploads use the plugin's `swiper-image` file blueprint, which adds an **Alt text
 | Gap Between Slides | 0 px | Spacing between slides |
 | Centre Active Slide | Off | Keeps the active slide centred |
 | Starting Slide | 0 | Zero-based index of the first visible slide |
+| Heading Size | `text-4xl` | Caption heading size, shared by every slide — a Tailwind class name. See [Caption colour, placement & type](#caption-colour-placement--type) |
+| Subtext Size | `text-lg` | Caption subtext size, shared by every slide |
 
 ### Tab 3 — Animation
 
@@ -128,10 +137,12 @@ Fade and Creative effects require **Slides Visible = 1**.
 `thumbs.presets` / `thumbs.srcsets` into `site/config/config.php`. That is no longer the
 case — the block builds every thumb inline, so it works on a stock Kirby install.
 
-Images are **never cropped**. Each slide keeps its source image's own aspect ratio: the
-snippet reads the image's real dimensions and sets them as an inline `aspect-ratio` on the
-slide's `<figure>`, so a portrait and a landscape image can sit in the same slider without
-either being re-framed.
+In **auto** height mode images are **never cropped**. Each slide keeps its source image's own
+aspect ratio: the snippet reads the image's real dimensions and sets them as an inline
+`aspect-ratio` on the slide's `<figure>`, so a portrait and a landscape image can sit in the
+same slider without either being re-framed. Set a **Slider Height** (or a custom fixed image
+height) and the box stops following the image — the image then fills that box and is
+centre-cropped on whichever axis overflows.
 
 What the block generates per slide, all **WebP**:
 
@@ -143,18 +154,111 @@ What the block generates per slide, all **WebP**:
 
 Further behaviour worth knowing:
 
-- The `sizes` attribute is computed per block from **Slides Visible** (`slidesPerView`) and
-  **Gap Between Slides** (`spaceBetween`), so the browser downloads an image matched to the
-  slot it actually fills — not the whole viewport. A single full-width slide stays `100vw`;
-  3-per-view becomes `calc((100vw − gaps) / 3)`; `auto` assumes 3 across, a safe floor of at
-  least three images per page width.
-- The sharp image is `object-fit: contain`, so it is shown in full. The blurred LQIP sits
-  behind it as an `object-fit: cover` backdrop, so any letterbox area reads as intentional
-  rather than as empty bars.
+- The `sizes` attribute is computed per block from the **layout column** the slider sits in,
+  plus **Slides Visible** (`slidesPerView`) and **Gap Between Slides** (`spaceBetween`), so the
+  browser downloads an image matched to the slot it actually fills — not the whole viewport.
+  See [Column-aware image sizes](#column-aware-image-sizes).
+- The sharp image is `object-fit: cover`, so it always fills the slide box — full width and
+  the full designated height — with no letterbox bars; the overflowing axis is centre-cropped.
+  The blurred LQIP sits behind it, also `object-fit: cover`, so the placeholder and the final
+  image are framed identically through the fade-in.
 - The first slide loads with `loading="eager"` / `decoding="sync"`; every later slide is
   `lazy` / `async`.
 
 Thumbs are generated on demand by Kirby's media manager and cached under `/media`.
+
+---
+
+## Using the block in a layout field
+
+The block's normal home is a **layout field**, in a column of some fraction width. Two things
+follow from that.
+
+### One slider per layout row
+
+**Only the first slider in a layout row renders.** A second one in the same row — in another
+column, or stacked in the same column — is skipped, leaving an HTML comment in its place. With
+`debug` on it also renders a visible note on the page, so the block doesn't just silently
+vanish while you're building.
+
+Side-by-side sliders compete for the same drag and keyboard gestures, and each ends up in a
+column too narrow to show its imagery. Put each slider in **a row of its own**; as many rows
+down a page as you like, all fully independent.
+
+### Column-aware image sizes
+
+The `sizes` hint tells the browser how wide the image will actually be, so a slider in a
+one-third column doesn't download a full-viewport image. The block finds its own layout column
+and sizes accordingly:
+
+| Column | Slides Visible | `sizes` |
+| --- | --- | --- |
+| Full row | 1 | `100vw` |
+| Full row | 3, 16 px gap | `calc((100vw - 32px) / 3)` |
+| 1/2 | 1 | `(max-width: 768px) 100vw, 50vw` |
+| 1/3 | 2 | `(max-width: 768px) calc(100vw / 2), calc(33.3333vw / 2)` |
+
+Part-width columns emit **two candidates**, because layout rows stack on small screens: the
+full-width size below the breakpoint, the column fraction above it. The breakpoint defaults to
+`768px` — set it to whatever your layout CSS actually uses:
+
+```php
+return [
+    'ianhobbs.kirby-swiper-block.stackBreakpoint' => '60rem',
+];
+```
+
+**Column Width** (Layout tab) overrides the detection. Leave it on **Auto** unless the slider
+sits inside a wrapper of your own that is narrower than its column — Auto can only see the
+column, not your CSS. It affects the `sizes` hint only, never the rendered width: the slider is
+always `width: 100%` of whatever contains it.
+
+Outside a layout field — in a plain `blocks` field, say — there is no column to detect and the
+block assumes a full-width row.
+
+---
+
+## Caption colour, placement & type
+
+**Colour is per slide, type is per block.** Each slide sits over a different image and needs
+its own text colour; the type scale should stay consistent down the slider, so it is set once.
+
+- **Caption Colour** (Slides tab) — a Panel colour picker with alpha. The value is written as
+  an inline `color` on the caption wrapper, and the heading, subtext and CTA all inherit it.
+  Left empty, nothing is emitted and the caption inherits your page's text colour. Only hex
+  and `rgb()` / `hsl()` values are accepted; anything else in the content file is dropped.
+- The caption area carries **`1rem` of padding** (border-box), so text never sits flush against
+  the slide edge and the padding stays inside whatever layout column the block is dropped into.
+- **Content Position** + **Vertical Position** (Slides tab) — horizontal and vertical placement,
+  giving nine zones. Vertical placement only bites when the caption has room to move inside —
+  i.e. when **Slider Height** is set and the caption overlays the media. In auto height the
+  caption sits below the image in normal flow, so Top / Middle / Bottom look the same.
+
+### Font sizes are Tailwind class names
+
+**Heading Size** and **Subtext Size** (Layout tab) emit the Tailwind utility of the same name
+onto the element:
+
+```html
+<p class="swiper-slide-heading text-4xl">…</p>
+<p class="swiper-slide-subtext text-lg">…</p>
+```
+
+On a Tailwind site those classes are already yours — Tailwind styles them, and the plugin
+stays out of the way. **Tailwind is not required.** `swiper-block.css` ships a fallback table
+covering the same scale at Tailwind's own values:
+
+```css
+:where(.swiper-slide-caption .text-4xl) { font-size: 2.25rem; line-height: 2.5rem; }
+```
+
+The `:where()` wrapper gives those rules **zero specificity**, so a real Tailwind utility — or
+any rule of your own targeting `.swiper-slide-heading` — always wins, whatever order the
+stylesheets load in. The fallback only applies when nothing else has an opinion.
+
+If you use Tailwind with a content scan, the class names come from this plugin's PHP rather
+than your own templates, so add the plugin to your `content` / `@source` paths (or safelist
+`text-base` through `text-7xl`) to stop them being purged.
 
 ---
 

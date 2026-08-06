@@ -54,11 +54,40 @@ places `type: kirby-cms` packages there) and Pest into `dev/vendor/`.
 **The plugin root needs no `composer install`.** Its only dependency is the installer that
 consumers use to place the plugin in `site/plugins/`.
 
+### Kirby MCP (agent tooling)
+
+`bnomei/kirby-mcp` is a dev dependency of `dev/`. It lets an agent (Claude Code, Cursor, Codex)
+inspect and **run** the dev site — read blueprints, render a page, eval in a live Kirby context —
+instead of reasoning about the plugin from source alone. It is not part of the test suite: Pest
+can't call MCP, and the plugin never ships it (`dev/` is `export-ignore`d).
+
+`composer install` pulls the package; one command generates the rest:
+
+```bash
+cd dev
+vendor/bin/kirby-mcp install --project=.
+```
+
+That writes `dev/.kirby-mcp/mcp.json` and 24 runtime commands into `dev/site/commands/mcp/`.
+Both are generated and gitignored — rerun the installer after updating the package.
+
+The server itself is already registered for Claude Code in the repo-root `.mcp.json`:
+
+```json
+{ "mcpServers": { "kirby": { "command": "dev/vendor/bin/kirby-mcp", "args": ["--project=dev"] } } }
+```
+
+Paths are relative to the repo root, so run your agent from there, not from `dev/`.
+
+> Eval and CLI tools reach a real runtime. `.kirby-mcp/mcp.json` ships with an empty CLI
+> allow-list and eval gated behind `KIRBY_MCP_ENABLE_EVAL=1` — leave it that way unless you
+> need it for a specific debugging session.
+
 ## Run the tests
 
 ```bash
 cd dev
-composer test              # 53 tests
+composer test              # 87 tests
 composer test:coverage     # requires xdebug or pcov
 ```
 
@@ -74,11 +103,23 @@ Panel account.
 | Plugin | `tests/Feature/PluginTest.php` | Registration, version, blueprints, snippets, icon; guards against re-adding a `thumbs` extension or a custom field type |
 | Blueprint | `tests/Feature/BlueprintTest.php` | YAML validity, tabs, field types, conditional `when:` logic |
 | Block model | `tests/Feature/BlockModelTest.php` | `jsConfig`, `imgSizes`, `aspectStyle`, `sliderHeight`, native-mode thumbs, `uid` |
-| Snippet | `tests/Feature/SnippetTest.php` | HTML output, aria roles, JS config JSON, slider height, nav/pagination |
+| Snippet | `tests/Feature/SnippetTest.php` | HTML output, aria roles, JS config JSON, slider height, nav/pagination, caption colour/placement/type |
+| Layout | `tests/Feature/LayoutTest.php` | The block **in its real host**: a layout field. Column detection, column-aware `sizes`, the one-slider-per-row rule, sliders down a page, id collisions, once-per-page asset injection, themed wrappers |
+
+### The layout fixture
+
+`dev/tests/fixtures/site/blueprints/fields/layout.yml` is a copy of a typical host site's
+layout field — themes in `settings`, the column ratios editors actually pick, and `swiper`
+among its `fieldsets`. The fixture page blueprint extends it, so `LayoutTest` can resolve the
+block's blueprint the way the Panel does and render blocks from inside real `LayoutColumn`
+objects rather than in isolation.
+
+Keep it in step with the host site's field if that changes shape — it's the only place the
+suite sees the block in context.
 
 ### Test helpers
 
-`dev/tests/Pest.php` provides two global helpers:
+`dev/tests/Pest.php` provides these global helpers:
 
 ```php
 // Create a block with default swiper content — override any field
@@ -86,10 +127,44 @@ $block = makeBlock(['effect' => 'fade', 'loop' => 'true']);
 
 // Render the snippet and return HTML
 $html = renderBlock($block);
+
+// Build one layout row: columns of the given widths, each holding swiper blocks
+$layouts = makeLayout([
+    ['width' => '1/3', 'blocks' => [['effect' => 'fade', 'slides' => [...]]]],
+    ['width' => '2/3', 'blocks' => []],
+], theme: 'card-blocks');
+
+// Several rows — the supported "sliders down a page" arrangement
+$layouts = makeLayoutRows([
+    sliderRow('Hero'),                 // one row, one full-width slider
+    sliderRow('Feature', '8/12'),      // …in an 8/12 column
+]);
+
+// Render it the way a host layout template does (themed row → columns → blocks)
+$html = renderLayout($layouts);
+
+// The first slider as a model, for computed values that never reach the markup
+expect(firstSlider($layouts)->columnSpan())->toBe(8);
 ```
 
-Structure fields (like `slides`) are passed as PHP arrays — `makeBlock()` YAML-encodes them
+Structure fields (like `slides`) are passed as PHP arrays — the helpers YAML-encode them
 automatically, matching how Kirby stores content on disk.
+
+`makeLayout()` / `makeLayoutRows()` build the layouts **through a content field**, not through
+`Layouts::factory()` directly. That matters: the field is how a block finds its own column
+again (`SwiperBlock::layoutContext()`), and without it every block looks full-width.
+
+Two per-request caches need clearing between tests that touch them — asset injection
+(`SwiperBlock::forgetAssets()`) and the layout scan (`SwiperBlock::forgetLayoutScans()`).
+`LayoutTest` does both in `beforeEach`.
+
+### The visual dev site
+
+`dev/site/` renders the layout field with a minimal 12-column grid and the four themes from the
+field's settings, so column widths, stacking and the one-per-row rule are all visible in a
+browser at `localhost:8000`. The grid CSS lives in the dev template only — **the plugin ships no
+layout CSS**; the host site owns that. The dev grid stacks at `768px`, matching the plugin's
+default `stackBreakpoint`, so the `sizes` hint and the CSS agree.
 
 Keep the `makeBlock()` defaults in sync with the blueprint. Fields left in there after being
 removed from `blueprints/blocks/swiper.yml` will silently keep dead code paths alive and make

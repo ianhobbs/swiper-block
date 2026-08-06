@@ -78,7 +78,6 @@
 }
 .swiper-block[style*="--swiper-block-fixed-height"] .swiper-slide-caption {
   height: 100%;
-  padding: 2rem;
 }
 
 .swiper-slide__lqip,
@@ -90,8 +89,8 @@
   object-position: center;
 }
 
-/* The LQIP is a cover backdrop: it fills the whole box (blurred), so any
-   letterbox area left by the contained sharp image reads as intentional. */
+/* The LQIP is the blur-up placeholder behind the sharp image; it covers the
+   same box, so the two are framed identically during the fade-in. */
 .swiper-slide__lqip {
   z-index: 1;
   object-fit: cover;
@@ -99,12 +98,13 @@
   transform: scale(1.05);
 }
 
-/* The sharp image is contained, not cropped: it shows in full and fills its
-   constrained axis — vertical (portrait) crops fill the height, horizontal
-   (landscape) crops fill the width — within the box's aspect_ratio. */
+/* The sharp image covers the box: it fills the full width and the box's height
+   (native ratio, custom fixed height, or Slider Height), centre-cropping the
+   overflowing axis rather than leaving letterbox bars. In native mode the box
+   already carries the image's own ratio, so nothing is cropped there. */
 .swiper-slide__img {
   z-index: 2;
-  object-fit: contain;
+  object-fit: cover;
   opacity: 0;
   transition: opacity 0.5s;
 }
@@ -112,7 +112,10 @@
 /* Reveal the sharp image; the blurred LQIP stays behind as the backdrop. */
 .swiper-slide-media.is-loaded .swiper-slide__img { opacity: 1; }
 
-/* ── Slide content ───────────────────────────────────────────────────────── */
+/* ── Slide content ───────────────────────────────────────────────────────────
+   Colour is not set here: the caption inherits the page's text colour unless the
+   editor picked a per-slide Caption Colour, which the snippet writes as an inline
+   `color` on this element (and the heading, subtext and CTA all inherit it). */
 .swiper-slide-caption {
   z-index: 10;
   position: relative;
@@ -122,9 +125,13 @@
   justify-content: center;
   gap: 1rem;
   max-width: 70ch;
-  color: default;
+  padding: 1rem;
+  /* border-box so the padding stays inside the slide — the block is usually
+     dropped into a layout column that already has its own theme padding. */
+  box-sizing: border-box;
 }
 
+/* Horizontal placement (Content Position) */
 .swiper-slide-caption--left {
   text-align: left;
   align-items: flex-start;
@@ -144,18 +151,45 @@
   margin-left: auto;
 }
 
+/* Vertical placement (Vertical Position). Only has an effect when the caption
+   has height to move within — i.e. when Slider Height gives the slide an
+   explicit height and the caption overlays the media. In auto height the caption
+   sits below the image in normal flow and these are no-ops. */
+.swiper-slide-caption--top    { justify-content: flex-start; }
+.swiper-slide-caption--middle { justify-content: center; }
+.swiper-slide-caption--bottom { justify-content: flex-end; }
+
+/* Size and line-height come from the size class below, not from here, so the
+   two never fight over specificity. */
 .swiper-slide-heading {
   margin: 0;
-  font-size: default;
-  line-height: 1.15;
 }
 
 .swiper-slide-subtext {
   margin: 0;
-  font-size: default;
-  line-height: 1.5;
   opacity: 0.9;
 }
+
+/* ── Caption typography (Tailwind-native with a fallback) ────────────────────
+   Heading Size / Subtext Size emit the Tailwind class of the same name onto the
+   heading and subtext. On a Tailwind site those classes are already defined and
+   style the text natively — nothing here needs to know about it.
+
+   The rules below are the fallback for sites without Tailwind: the same scale,
+   wrapped in :where() so they carry ZERO specificity. A real Tailwind utility
+   (specificity 0,1,0) therefore always wins, regardless of stylesheet order, and
+   so does any site rule targeting these elements. Values match Tailwind's default
+   font-size scale (size / line-height). */
+:where(.swiper-slide-caption .text-sm)   { font-size: 0.875rem; line-height: 1.25rem; }
+:where(.swiper-slide-caption .text-base) { font-size: 1rem;     line-height: 1.5rem; }
+:where(.swiper-slide-caption .text-lg)   { font-size: 1.125rem; line-height: 1.75rem; }
+:where(.swiper-slide-caption .text-xl)   { font-size: 1.25rem;  line-height: 1.75rem; }
+:where(.swiper-slide-caption .text-2xl)  { font-size: 1.5rem;   line-height: 2rem; }
+:where(.swiper-slide-caption .text-3xl)  { font-size: 1.875rem; line-height: 2.25rem; }
+:where(.swiper-slide-caption .text-4xl)  { font-size: 2.25rem;  line-height: 2.5rem; }
+:where(.swiper-slide-caption .text-5xl)  { font-size: 3rem;     line-height: 1; }
+:where(.swiper-slide-caption .text-6xl)  { font-size: 3.75rem;  line-height: 1; }
+:where(.swiper-slide-caption .text-7xl)  { font-size: 4.5rem;   line-height: 1; }
 
 .swiper-slide__cta {
   display: inline-flex;
