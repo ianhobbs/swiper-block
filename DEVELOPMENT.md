@@ -21,8 +21,9 @@ kirby-swiper-block/
     ├── composer.json                 ← getkirby/cms + pestphp/pest
     ├── phpunit.xml
     ├── tests/
+    ├── index.php  site/              ← visual test site scaffold (tracked)
     ├── kirby/  vendor/               ← generated, gitignored
-    └── site/  content/  media/       ← optional visual site, gitignored
+    └── content/  media/              ← your images + Panel data, gitignored
 ```
 
 `dev/` is tracked so the suite is versioned alongside the code it tests, but
@@ -108,59 +109,35 @@ set in `index.php`'s `Kirby::plugin()` call.
 
 ---
 
-## Optional: a visual test site
+## The visual test site
 
 The automated suite covers logic and markup. For Panel UI, real images and Swiper behaviour in
-a browser, add a site around the Kirby install already in `dev/`. All of it is gitignored, so
-your images and Panel account never enter the repo.
-
-**1. Point Kirby at `dev/` as the site root**
-
-```php
-<?php // dev/index.php
-require __DIR__ . '/kirby/bootstrap.php';
-
-echo (new Kirby([
-    'roots' => [
-        'index'   => __DIR__,
-        'base'    => __DIR__,
-        'content' => __DIR__ . '/content',
-        'site'    => __DIR__ . '/site',
-        'media'   => __DIR__ . '/media',
-    ],
-]))->render();
-```
-
-**2. Symlink the plugin into the site**
-
-```bash
-mkdir -p dev/site/plugins
-ln -s ../../.. dev/site/plugins/kirby-swiper-block
-```
-
-The relative target resolves to the repo root, so the plugin loads exactly the way it will on
-a real site — asset injection and media publishing included. (On Windows, symlinks need
-Developer Mode or an elevated shell.)
-
-**3. Add a page that renders blocks**
-
-`dev/site/blueprints/pages/home.yml` with a `blocks` field whose `fieldsets` include `swiper`,
-a matching `dev/site/templates/home.php` that echoes `$page->yourField()->toBlocks()`, and a
-`dev/content/1_home/home.txt`. Set `'debug' => true` in `dev/site/config/config.php` so the
-Panel installer will run.
-
-**4. Serve it**
+a browser, `dev/` doubles as a working Kirby site. Its scaffold is tracked, so there is nothing
+to create:
 
 ```bash
 cd dev
-php -S localhost:8000 kirby/router.php
+composer install
+composer start          # php -S localhost:8000 kirby/router.php
 ```
 
-Use **Kirby's own `router.php`** — it sets `$_SERVER['SCRIPT_NAME'] = '/index.php'`, which
-Kirby needs to parse request paths. A hand-rolled router that omits this serves `/` fine but
-404s every `/media/plugins/...` asset URL.
+Open `http://localhost:8000/panel`, create an account, add a Swiper block to Dev Home and
+upload images.
 
-Then open `http://localhost:8000/panel`, create an account and add a Swiper block.
+What's tracked: `index.php`, `site/blueprints/`, `site/templates/`, `site/config/` and the
+`site/plugins/kirby-swiper-block` symlink. What never is: `content/`, `media/`,
+`site/accounts/`, `site/sessions/`, `site/cache/` — your images and Panel credentials stay on
+your machine.
+
+The symlink target is relative (`../../..` → the repo root), so the plugin loads exactly the
+way it will on a real site, asset injection and media publishing included. Git stores it as a
+symlink and recreates it on clone. (On Windows, symlinks need Developer Mode or an elevated
+shell.)
+
+`composer start` uses **Kirby's own `router.php`** — it sets
+`$_SERVER['SCRIPT_NAME'] = '/index.php'`, which Kirby needs to parse request paths. A
+hand-rolled router that omits this serves `/` fine but 404s every `/media/plugins/...` asset
+URL.
 
 ### Visual checklist
 

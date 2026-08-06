@@ -1,15 +1,19 @@
-# Everything Composer generates, plus anything a visual test site creates.
-# The tracked part of dev/ is just: composer.json, phpunit.xml and tests/.
-
+# Composer output
 /vendor/
 /kirby/
 composer.lock
 .phpunit.cache/
 /coverage/
 
-# Optional visual test site (see DEVELOPMENT.md) — real images and Panel
-# accounts must never be committed to the plugin repo.
-/index.php
+# Private to your machine — never commit these.
+# content/ and media/ hold real test images; accounts/ holds hashed Panel
+# credentials; sessions/ and cache/ are runtime state.
 /content/
 /media/
-/site/
+/site/accounts/
+/site/sessions/
+/site/cache/
+
+# The visual site's scaffold (index.php, site/blueprints, site/templates,
+# site/config and the plugin symlink) IS tracked, so a fresh clone only needs:
+#   cd dev && composer install && composer start

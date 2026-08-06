@@ -1,0 +1,14 @@
+title: Dev Home
+options:
+  changeSlug: false
+  changeStatus: false
+  delete: false
+sections:
+  content:
+    type: fields
+    fields:
+      slider:
+        label: Swiper blocks
+        type: blocks
+        fieldsets:
+          - swiper

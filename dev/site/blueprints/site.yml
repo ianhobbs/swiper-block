@@ -1,0 +1,11 @@
+title: Swiper Block Dev
+sections:
+  pages:
+    type: pages
+    templates:
+      - home
+  files:
+    label: Test images
+    type: files
+    layout: cards
+    info: "{{ file.dimensions }}"
