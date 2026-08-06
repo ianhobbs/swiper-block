@@ -16,10 +16,9 @@ public/build/
 /kirby
 composer.phar
 
-# Local Kirby dev site for visual testing — holds real images and Panel
-# accounts, neither of which belong in the plugin repo. Recreate with:
-#   composer dev:setup
-/dev/
+# dev/ holds the whole development environment (Kirby install + Pest suite).
+# Its tracked files are composer.json, phpunit.xml and tests/ — everything
+# generated is ignored by dev/.gitignore, not from here.
 *.log
 # Libraries typically don't commit composer.lock
 composer.lock

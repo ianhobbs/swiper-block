@@ -11,7 +11,7 @@ use Kirby\Data\Yaml;
 
 beforeEach(function () {
     $this->blueprint = Yaml::read(
-        __DIR__ . '/../../blueprints/blocks/swiper.yml'
+        __DIR__ . '/../../../blueprints/blocks/swiper.yml'
     );
 });
 

@@ -1,0 +1,25 @@
+{
+  "name": "ianhobbs/kirby-swiper-block-dev",
+  "description": "Development environment for the kirby-swiper-block plugin — Kirby install + Pest suite. Not published.",
+  "license": "MIT",
+  "type": "project",
+  "require-dev": {
+    "getkirby/cms": "^5.0",
+    "pestphp/pest": "^3.0"
+  },
+  "scripts": {
+    "test": "pest --colors=always",
+    "test:coverage": "pest --colors=always --coverage"
+  },
+  "scripts-descriptions": {
+    "test": "Run the Pest suite against the plugin in the parent directory"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "getkirby/composer-installer": true,
+      "pestphp/pest-plugin": true,
+      "php-http/discovery": false
+    }
+  }
+}

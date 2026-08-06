@@ -203,10 +203,18 @@ layout-class changes required):
 
 ## For plugin developers
 
+The repo root is the plugin only. The whole development environment — Kirby install and Pest
+suite — lives in `dev/`, so the plugin's own `composer.json` carries no dev dependencies or
+scripts:
+
 ```bash
-composer install     # PHP deps + a local Kirby in kirby/ (dev-only)
-composer test        # Pest suite
+cd dev
+composer install     # Kirby + Pest, into dev/
+composer test        # 53 tests
 ```
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for the full guide, including how to add an optional
+visual test site inside `dev/`.
 
 Node is only required if you are modifying the **Panel editor** component
 (`src/SwiperBlock.vue`). The frontend JS (`assets/js/swiper-block.js`) is plain hand-authored
@@ -222,19 +230,6 @@ npm run dev        # kirbyup dev server with hot reload
 
 The bundle is built with [kirbyup](https://github.com/johannschopplich/kirbyup), Kirby's official Panel plugin bundler — it compiles against the Panel's own Vue 2.7 runtime, and Kirby auto-loads `index.js` / `index.css` from the plugin root.
 
-### Local dev site
-
-For visual testing with real images, scaffold a throwaway Kirby site that loads the plugin
-exactly the way a consumer does:
-
-```bash
-composer dev:setup   # scaffold dev/ (gitignored)
-composer dev         # serve on http://localhost:8000, Panel at /panel
-```
-
-Create an account at `/panel`, add a Swiper block, upload images. The scaffold never
-overwrites existing files, so your content survives a re-run.
-
 ### Deployment
 
 Commit the compiled Panel output alongside your source changes:
@@ -245,9 +240,8 @@ git commit -m "Build: update panel and assets"
 ```
 
 Kirby will never see `.vue` files on the live server — only the pre-compiled `index.js`.
-Development material (`tests/`, `dev/`, `bin/`, `src/`, npm and PHPUnit config) is stripped
-from the released package via `.gitattributes` `export-ignore`, so `composer require` pulls
-only the runtime files.
+Development material (`dev/`, `src/`, npm config) is stripped from the released package via
+`.gitattributes` `export-ignore`, so `composer require` pulls only the runtime files.
 
 ---
 

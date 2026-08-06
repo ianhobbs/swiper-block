@@ -12,17 +12,11 @@
         </testsuite>
     </testsuites>
 
+    <!-- Coverage targets the plugin itself, which lives one level up. -->
     <source>
         <include>
-            <directory>.</directory>
+            <directory>../classes</directory>
+            <directory>../snippets</directory>
         </include>
-        <exclude>
-            <directory>vendor</directory>
-            <directory>kirby</directory>
-            <directory>node_modules</directory>
-            <directory>tests</directory>
-            <directory>panel</directory>
-            <directory>assets</directory>
-        </exclude>
     </source>
 </phpunit>

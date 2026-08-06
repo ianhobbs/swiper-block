@@ -18,31 +18,13 @@
     "php": ">=8.3",
     "getkirby/composer-installer": "^1.2"
   },
-  "require-dev": {
-    "pestphp/pest": "^3.0",
-    "getkirby/cms": "^5.0"
-  },
   "extra": {
     "installer-name": "kirby-swiper-block"
-  },
-  "scripts": {
-    "test": "pest --colors=always",
-    "test:coverage": "pest --colors=always --coverage",
-    "test:watch": "pest --colors=always --watch",
-    "dev:setup": "bin/dev-setup.sh",
-    "dev": "php -S localhost:8000 -t dev kirby/router.php"
-  },
-  "scripts-descriptions": {
-    "test": "Run the Pest suite against the Kirby dev dependency",
-    "dev:setup": "Scaffold the gitignored dev/ Kirby site for visual testing",
-    "dev": "Serve the dev site on http://localhost:8000 (Panel at /panel)"
   },
   "config": {
     "optimize-autoloader": true,
     "allow-plugins": {
-      "getkirby/composer-installer": true,
-      "php-http/discovery": false,
-      "pestphp/pest-plugin": true
+      "getkirby/composer-installer": true
     }
   }
 }
