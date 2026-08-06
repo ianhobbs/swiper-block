@@ -8,7 +8,7 @@ sections:
     type: fields
     fields:
       # A layout field, not a plain blocks field: the block's real host. Column
-      # widths drive the responsive `sizes` hint and the one-slider-per-row rule,
+      # widths drive the responsive `sizes` hint and the one-block-per-row rule,
       # neither of which is visible in a plain blocks field.
       layout:
         label: Page layout

@@ -40,7 +40,7 @@ class SwiperBlock extends Block
      * request. Lives here, not as a `static` inside the snippet: Kirby renders
      * snippets through `F::loadIsolated()`, which `include`s the file afresh
      * every time, so a snippet-local static resets between blocks and a page
-     * with several sliders emitted the CDN tags once per block.
+     * with several Swiper blocks emitted the CDN tags once per block.
      */
     protected static bool $assetsInjected = false;
 
@@ -151,9 +151,9 @@ class SwiperBlock extends Block
      * the column the block sits in (twelfths of the row) plus slidesPerView and
      * spaceBetween, so we tell the browser the real fraction it fills instead of
      * assuming the full viewport. 'auto' slidesPerView assumes 3 across — a safe
-     * floor of at least three images per slider width.
+     * floor of at least three images per block width.
      *
-     * A slider in a part-width column emits two candidates, because layout rows
+     * A block in a part-width column emits two candidates, because layout rows
      * stack on small screens: the stacked (full-width) size below the breakpoint,
      * the column-fraction size above it.
      */
@@ -163,15 +163,15 @@ class SwiperBlock extends Block
         $n      = $spvRaw === 'auto' ? 3 : max(1, (int) $spvRaw);
         $gap    = (int) $this->space_between()->or(0)->value();
 
-        // The width of one slide, given the slider's own width as a CSS length.
-        $perSlide = function (string $sliderWidth) use ($n, $gap): string {
+        // The width of one slide, given the block's own width as a CSS length.
+        $perSlide = function (string $blockWidth) use ($n, $gap): string {
             if ($n <= 1) {
-                return $sliderWidth;
+                return $blockWidth;
             }
             if ($gap > 0) {
-                return sprintf('calc((%s - %dpx) / %d)', $sliderWidth, ($n - 1) * $gap, $n);
+                return sprintf('calc((%s - %dpx) / %d)', $blockWidth, ($n - 1) * $gap, $n);
             }
-            return sprintf('calc(%s / %d)', $sliderWidth, $n);
+            return sprintf('calc(%s / %d)', $blockWidth, $n);
         };
 
         $span = $this->columnSpan();
@@ -197,7 +197,7 @@ class SwiperBlock extends Block
     /**
      * Per-request cache of the layout scan, keyed by the parent field. Scanning
      * walks every layout, column and block, so it runs once per field however
-     * many sliders that field holds.
+     * many Swiper blocks that field holds.
      *
      * @var array<int, array<string, array{span: int, firstInRow: bool}>>
      */
@@ -205,7 +205,7 @@ class SwiperBlock extends Block
 
     /**
      * Where this block sits in its layout field: the width of its column in
-     * twelfths, and whether it is the first slider in its layout row.
+     * twelfths, and whether it is the first Swiper block in its layout row.
      *
      * Kirby hands the block snippet nothing but the block, so we find the block
      * again from the other end — through the field it came from. A block in a
@@ -229,7 +229,7 @@ class SwiperBlock extends Block
             $scan = [];
 
             foreach ($field->toLayouts() as $layout) {
-                $rowHasSlider = false;
+                $rowHasSwiper = false;
 
                 foreach ($layout->columns() as $column) {
                     foreach ($column->blocks() as $block) {
@@ -239,10 +239,10 @@ class SwiperBlock extends Block
 
                         $scan[$block->id()] = [
                             'span'       => $column->span(),
-                            'firstInRow' => $rowHasSlider === false,
+                            'firstInRow' => $rowHasSwiper === false,
                         ];
 
-                        $rowHasSlider = true;
+                        $rowHasSwiper = true;
                     }
                 }
             }
@@ -254,7 +254,7 @@ class SwiperBlock extends Block
     }
 
     /**
-     * How much of the layout row the slider fills, in twelfths. The Column Width
+     * How much of the layout row the block fills, in twelfths. The Column Width
      * field wins when the editor sets it; `auto` (the default) reads the real
      * column from the layout field.
      */
@@ -270,10 +270,10 @@ class SwiperBlock extends Block
     }
 
     /**
-     * Whether this slider is a second (or third…) one in the same layout row.
-     * One slider per row is the supported arrangement — several side by side
-     * fight over the same drag/keyboard gestures and force each into a column too
-     * narrow for the imagery. Sliders stacked down a page are fine and unlimited.
+     * Whether this block is a second (or third…) Swiper block in the same layout
+     * row. One per row is the supported arrangement — several side by side fight
+     * over the same drag/keyboard gestures and force each into a column too
+     * narrow for the imagery. Blocks stacked down a page are fine and unlimited.
      */
     public function isRowDuplicate(): bool
     {
@@ -293,7 +293,7 @@ class SwiperBlock extends Block
     {
         $styles = [];
 
-        // Explicit container height (Slider Height field) — decouples the slider
+        // Explicit container height (Fixed Height field) — decouples the block
         // height from the image box so text-only / empty slides don't collapse.
         // Emitted first; the stylesheet lets it take precedence over the ratio.
         if ($height = $this->sliderHeight()) {
@@ -316,7 +316,10 @@ class SwiperBlock extends Block
     /**
      * Explicit container height as a CSS length (e.g. "600px", "80vh"), or null
      * when the editor left it at auto (0). Drives an explicit height on the
-     * parent <div> so the slider never collapses when slides have no image.
+     * parent <div> so the block never collapses when slides have no image.
+     *
+     * The `slider_height` content keys are v1 legacy — v2 renames them to
+     * `height` / `height_unit` and this method to `fixedHeight()`.
      */
     public function sliderHeight(): ?string
     {
@@ -355,7 +358,7 @@ class SwiperBlock extends Block
 
     /**
      * Vertical caption placement for a slide (top|middle|bottom). Only visible
-     * when Slider Height is set — that's the mode where the caption overlays a
+     * when Fixed Height is set — that's the mode where the caption overlays a
      * full-height slide box; in auto mode it sits below the image in flow.
      */
     public static function verticalPosition(?string $value): string

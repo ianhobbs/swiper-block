@@ -6,7 +6,7 @@ require_once __DIR__ . '/classes/SwiperBlock.php';
 /**
  * Kirby Swiper Block Plugin
  *
- * A custom layout block that renders a full-featured Swiper 12 slider
+ * A custom layout block that renders a full-featured Swiper 12 carousel
  * with server-side image cropping via Kirby thumb presets.
  */
 
@@ -15,7 +15,7 @@ use IanHobbs\Swiper\SwiperBlock;
 
 Kirby::plugin('ianhobbs/kirby-swiper-block', [
 
-    'version' => '1.3.5',
+    'version' => '1.3.6',
 
     // Set to false to skip the automatic CDN + plugin asset injection
     // (e.g. when Swiper is already bundled/loaded globally by the site).

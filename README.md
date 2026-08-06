@@ -4,7 +4,7 @@
 
 # Kirby Swiper Block
 
-A Kirby CMS layout block plugin that renders a full-featured [Swiper 12](https://swiperjs.com/) slider with a Panel editor, responsive WebP images, lazy loading, and LQIP blur-up placeholders.
+A Kirby CMS layout block plugin that renders a full-featured [Swiper 12](https://swiperjs.com/) carousel with a Panel editor, responsive WebP images, lazy loading, and LQIP blur-up placeholders.
 
 Swiper is loaded via CDN — no npm or build step required to use the plugin. No site config required either: images are handled entirely by the plugin.
 
@@ -39,7 +39,7 @@ git clone https://github.com/ianhobbs/swiper-block site/plugins/kirby-swiper-blo
 
 ## Zero-config setup
 
-No template changes needed. When a page contains a Swiper block, the snippet automatically injects the Swiper CDN scripts and plugin CSS **once per page load** — the first block to render claims the injection, so a page with several sliders down it still loads Swiper once. Everything is self-contained.
+No template changes needed. When a page contains a Swiper block, the snippet automatically injects the Swiper CDN scripts and plugin CSS **once per page load** — the first block to render claims the injection, so a page with several Swiper blocks down it still loads Swiper once. Everything is self-contained.
 
 If you prefer to control asset placement (e.g. move them to `<head>` for performance), see [Manual asset loading](#manual-asset-loading) below.
 
@@ -57,7 +57,7 @@ fields:
       - swiper
 ```
 
-> **One slider per layout row.** Several sliders **down** a page are fine and fully
+> **One Swiper block per layout row.** Several **down** a page are fine and fully
 > independent; two in the *same* row are not — the second is skipped. See
 > [Using the block in a layout field](#using-the-block-in-a-layout-field).
 
@@ -81,9 +81,9 @@ Uploads use the plugin's `swiper-image` file blueprint, which adds an **Alt text
 
 | Field | Default | Description |
 |---|---|---|
-| Column Width | Auto | How much of the layout row the slider fills. Auto reads the real column. See [Column-aware image sizes](#column-aware-image-sizes) |
-| Slider Height | 0 (auto) | Explicit container height — `0` means each slide keeps its image's own ratio. See [Slider height & avoiding collapse](#slider-height--avoiding-collapse) |
-| Height Unit | px | Unit for Slider Height — px / vh / svh |
+| Column Width | Auto | How much of the layout row the block fills. Auto reads the real column. See [Column-aware image sizes](#column-aware-image-sizes) |
+| Fixed Height | 0 (auto) | Explicit container height — `0` means each slide keeps its image's own ratio. See [Fixed height & avoiding collapse](#fixed-height--avoiding-collapse) |
+| Height Unit | px | Unit for Fixed Height — px / vh / svh |
 | Slide Direction | Horizontal | Scroll direction — Horizontal or Vertical |
 | Slides Visible | 1 | 1 / 2 / 3 / 4 / Auto (by width) |
 | Advance Per Click | 1 | Slides to jump per navigation action |
@@ -126,7 +126,7 @@ Fade and Creative effects require **Slides Visible = 1**.
 | Grab Cursor | On | Shows a hand cursor when dragging on desktop |
 | Touch on Desktop | On | Allows mouse drag to simulate touch |
 | Swipe Threshold | 5 px | Minimum drag distance to register a swipe |
-| Long Swipes | On | Long swipe gestures advance the slider |
+| Long Swipes | On | Long swipe gestures advance slides |
 | Edge Resistance | On | Drag resistance at the first and last slide |
 
 ---
@@ -140,7 +140,7 @@ case — the block builds every thumb inline, so it works on a stock Kirby insta
 In **auto** height mode images are **never cropped**. Each slide keeps its source image's own
 aspect ratio: the snippet reads the image's real dimensions and sets them as an inline
 `aspect-ratio` on the slide's `<figure>`, so a portrait and a landscape image can sit in the
-same slider without either being re-framed. Set a **Slider Height** (or a custom fixed image
+same block without either being re-framed. Set a **Fixed Height** (or a custom fixed image
 height) and the box stops following the image — the image then fills that box and is
 centre-cropped on whichever axis overflows.
 
@@ -154,7 +154,7 @@ What the block generates per slide, all **WebP**:
 
 Further behaviour worth knowing:
 
-- The `sizes` attribute is computed per block from the **layout column** the slider sits in,
+- The `sizes` attribute is computed per block from the **layout column** the block sits in,
   plus **Slides Visible** (`slidesPerView`) and **Gap Between Slides** (`spaceBetween`), so the
   browser downloads an image matched to the slot it actually fills — not the whole viewport.
   See [Column-aware image sizes](#column-aware-image-sizes).
@@ -174,20 +174,20 @@ Thumbs are generated on demand by Kirby's media manager and cached under `/media
 The block's normal home is a **layout field**, in a column of some fraction width. Two things
 follow from that.
 
-### One slider per layout row
+### One Swiper block per layout row
 
-**Only the first slider in a layout row renders.** A second one in the same row — in another
-column, or stacked in the same column — is skipped, leaving an HTML comment in its place. With
-`debug` on it also renders a visible note on the page, so the block doesn't just silently
-vanish while you're building.
+**Only the first Swiper block in a layout row renders.** A second one in the same row — in
+another column, or stacked in the same column — is skipped, leaving an HTML comment in its
+place. With `debug` on it also renders a visible note on the page, so the block doesn't just
+silently vanish while you're building.
 
-Side-by-side sliders compete for the same drag and keyboard gestures, and each ends up in a
-column too narrow to show its imagery. Put each slider in **a row of its own**; as many rows
+Side-by-side blocks compete for the same drag and keyboard gestures, and each ends up in a
+column too narrow to show its imagery. Put each one in **a row of its own**; as many rows
 down a page as you like, all fully independent.
 
 ### Column-aware image sizes
 
-The `sizes` hint tells the browser how wide the image will actually be, so a slider in a
+The `sizes` hint tells the browser how wide the image will actually be, so a block in a
 one-third column doesn't download a full-viewport image. The block finds its own layout column
 and sizes accordingly:
 
@@ -208,9 +208,9 @@ return [
 ];
 ```
 
-**Column Width** (Layout tab) overrides the detection. Leave it on **Auto** unless the slider
+**Column Width** (Layout tab) overrides the detection. Leave it on **Auto** unless the block
 sits inside a wrapper of your own that is narrower than its column — Auto can only see the
-column, not your CSS. It affects the `sizes` hint only, never the rendered width: the slider is
+column, not your CSS. It affects the `sizes` hint only, never the rendered width: the block is
 always `width: 100%` of whatever contains it.
 
 Outside a layout field — in a plain `blocks` field, say — there is no column to detect and the
@@ -221,7 +221,7 @@ block assumes a full-width row.
 ## Caption colour, placement & type
 
 **Colour is per slide, type is per block.** Each slide sits over a different image and needs
-its own text colour; the type scale should stay consistent down the slider, so it is set once.
+its own text colour; the type scale should stay consistent down the block, so it is set once.
 
 - **Caption Colour** (Slides tab) — a Panel colour picker with alpha. The value is written as
   an inline `color` on the caption wrapper, and the heading, subtext and CTA all inherit it.
@@ -231,7 +231,7 @@ its own text colour; the type scale should stay consistent down the slider, so i
   the slide edge and the padding stays inside whatever layout column the block is dropped into.
 - **Content Position** + **Vertical Position** (Slides tab) — horizontal and vertical placement,
   giving nine zones. Vertical placement only bites when the caption has room to move inside —
-  i.e. when **Slider Height** is set and the caption overlays the media. In auto height the
+  i.e. when **Fixed Height** is set and the caption overlays the media. In auto height the
   caption sits below the image in normal flow, so Top / Middle / Bottom look the same.
 
 ### Font sizes are Tailwind class names
@@ -288,22 +288,22 @@ return [
 
 ---
 
-## Slider height & avoiding collapse
+## Fixed height & avoiding collapse
 
-Swiper containers have **no intrinsic height** — a slider whose slides have nothing to give
+Swiper containers have **no intrinsic height** — a block whose slides have nothing to give
 them height collapses to zero. The block handles that in two ways, both applied automatically
 to the `.swiper-block` parent `<div>` via an inline CSS custom property (no template or
 layout-class changes required):
 
-- **Auto** (`Slider Height = 0`, the default) — each slide's height comes from its **image**,
+- **Auto** (`Fixed Height = 0`, the default) — each slide's height comes from its **image**,
   at the image's own aspect ratio. Because this is image-driven, a **text-only or empty slide
   has no height and collapses.**
-- **Slider Height** — sets an **explicit height on the container** (in `px`, `vh`, or `svh`),
-  decoupled from the images. Use it for text-only slides, mixed-content sliders, or
+- **Fixed Height** — sets an **explicit height on the container** (in `px`, `vh`, or `svh`),
+  decoupled from the images. Use it for text-only slides, mixed-content blocks, or
   fixed-height heroes. When set, the media fills the slide box and the caption overlays it.
 
-> You don't need to add custom classes to your layout field to give the slider a height — set
-> **Slider Height** in the Layout tab instead. The plugin's CSS reads the value from the parent
+> You don't need to add custom classes to your layout field to give the block a height — set
+> **Fixed Height** in the Layout tab instead. The plugin's CSS reads the value from the parent
 > `.swiper-block` element, so per-block height control lives entirely in the Panel.
 
 ---

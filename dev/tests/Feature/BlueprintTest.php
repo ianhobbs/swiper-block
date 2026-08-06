@@ -75,7 +75,7 @@ test('layout tab offers Tailwind-named caption sizes', function () {
 test('layout tab has no fixed-ratio directives (native by default)', function () {
     $fields = $this->blueprint['tabs']['layout']['fields'];
     // Ratio/orientation controls were removed — each slide uses its image's
-    // native ratio. Only the explicit Slider Height override remains.
+    // native ratio. Only the explicit Fixed Height override remains.
     expect($fields)->not->toHaveKey('aspect_ratio');
     expect($fields)->not->toHaveKey('custom_height');
     expect($fields)->not->toHaveKey('orientation');
@@ -92,7 +92,7 @@ test('layout tab has the column width hint, defaulting to auto-detect', function
     }
 });
 
-test('layout tab keeps the slider height override', function () {
+test('layout tab keeps the fixed height override', function () {
     $fields = $this->blueprint['tabs']['layout']['fields'];
     expect($fields)->toHaveKey('slider_height');
     expect($fields['slider_height']['type'])->toBe('number');

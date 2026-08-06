@@ -1,6 +1,6 @@
 {
   "name": "ianhobbs/kirby-swiper-block",
-  "description": "Kirby CMS layout block plugin — Swiper 12 slider with panel editor and image cropping",
+  "description": "Kirby CMS layout block plugin — Swiper 12 carousel with panel editor and image cropping",
   "type": "kirby-plugin",
   "license": "MIT",
   "authors": [

@@ -74,7 +74,7 @@
         // ── Controls ──────────────────────────────────────────────────────────
 
         // Navigation — pass the elements directly (scoped to this block,
-        // so multiple sliders on a page never collide)
+        // so multiple blocks on a page never collide)
         navigation: raw.showNavigation
           ? {
               nextEl: el.querySelector('.swiper-button-next'),

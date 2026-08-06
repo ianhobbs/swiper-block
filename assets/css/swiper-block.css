@@ -9,7 +9,7 @@
  */
 
 /* ── Slide layout: image figure on top, caption below ───────────────────────
-   By default the slider has no explicit height: each slide stacks its figure
+   By default the block has no explicit height: each slide stacks its figure
    (which carries the image's native aspect-ratio inline) and the caption
    beneath it in normal flow, so the container takes the height of its tallest
    slide. --swiper-block-height (custom fixed image height) and
@@ -58,7 +58,7 @@
   padding-bottom: 0;
 }
 
-/* ── Explicit container height (Slider Height field) ────────────────────────
+/* ── Explicit container height (Fixed Height field) ─────────────────────────
    --swiper-block-fixed-height gives the .swiper-block PARENT an explicit height,
    decoupled from the image box, so text-only or empty slides never collapse. It
    takes precedence over the aspect ratio (these rules come last): the media fills
@@ -99,7 +99,7 @@
 }
 
 /* The sharp image covers the box: it fills the full width and the box's height
-   (native ratio, custom fixed height, or Slider Height), centre-cropping the
+   (native ratio, custom fixed height, or Fixed Height), centre-cropping the
    overflowing axis rather than leaving letterbox bars. In native mode the box
    already carries the image's own ratio, so nothing is cropped there. */
 .swiper-slide__img {
@@ -152,7 +152,7 @@
 }
 
 /* Vertical placement (Vertical Position). Only has an effect when the caption
-   has height to move within — i.e. when Slider Height gives the slide an
+   has height to move within — i.e. when Fixed Height gives the slide an
    explicit height and the caption overlays the media. In auto height the caption
    sits below the image in normal flow and these are no-ops. */
 .swiper-slide-caption--top    { justify-content: flex-start; }

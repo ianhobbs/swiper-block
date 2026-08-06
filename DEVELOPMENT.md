@@ -103,8 +103,8 @@ Panel account.
 | Plugin | `tests/Feature/PluginTest.php` | Registration, version, blueprints, snippets, icon; guards against re-adding a `thumbs` extension or a custom field type |
 | Blueprint | `tests/Feature/BlueprintTest.php` | YAML validity, tabs, field types, conditional `when:` logic |
 | Block model | `tests/Feature/BlockModelTest.php` | `jsConfig`, `imgSizes`, `aspectStyle`, `sliderHeight`, native-mode thumbs, `uid` |
-| Snippet | `tests/Feature/SnippetTest.php` | HTML output, aria roles, JS config JSON, slider height, nav/pagination, caption colour/placement/type |
-| Layout | `tests/Feature/LayoutTest.php` | The block **in its real host**: a layout field. Column detection, column-aware `sizes`, the one-slider-per-row rule, sliders down a page, id collisions, once-per-page asset injection, themed wrappers |
+| Snippet | `tests/Feature/SnippetTest.php` | HTML output, aria roles, JS config JSON, fixed height, nav/pagination, caption colour/placement/type |
+| Layout | `tests/Feature/LayoutTest.php` | The block **in its real host**: a layout field. Column detection, column-aware `sizes`, the one-block-per-row rule, blocks down a page, id collisions, once-per-page asset injection, themed wrappers |
 
 ### The layout fixture
 
@@ -134,17 +134,17 @@ $layouts = makeLayout([
     ['width' => '2/3', 'blocks' => []],
 ], theme: 'card-blocks');
 
-// Several rows — the supported "sliders down a page" arrangement
+// Several rows — the supported "blocks down a page" arrangement
 $layouts = makeLayoutRows([
-    sliderRow('Hero'),                 // one row, one full-width slider
-    sliderRow('Feature', '8/12'),      // …in an 8/12 column
+    swiperRow('Hero'),                 // one row, one full-width block
+    swiperRow('Feature', '8/12'),      // …in an 8/12 column
 ]);
 
 // Render it the way a host layout template does (themed row → columns → blocks)
 $html = renderLayout($layouts);
 
-// The first slider as a model, for computed values that never reach the markup
-expect(firstSlider($layouts)->columnSpan())->toBe(8);
+// The first block as a model, for computed values that never reach the markup
+expect(firstSwiper($layouts)->columnSpan())->toBe(8);
 ```
 
 Structure fields (like `slides`) are passed as PHP arrays — the helpers YAML-encode them
@@ -223,14 +223,14 @@ URL.
 
 ### Visual checklist
 
-- [ ] Swiper Slider block appears in the block picker, with its custom icon
+- [ ] Swiper Block appears in the block picker, with its custom icon
 - [ ] The edit drawer opens with all five tabs (Slides, Layout, Animation, Controls, Touch & Input)
 - [ ] A slide with image, heading, subtext and CTA saves and renders
 - [ ] Collapsed block preview shows slide count, height and effect
 - [ ] Navigation arrows and pagination appear when enabled
 - [ ] Autoplay, loop and effect settings behave as configured
-- [ ] Slides keep their source aspect ratio; setting Slider Height overrides it
-- [ ] Text-only slides do not collapse when Slider Height is set
+- [ ] Slides keep their source aspect ratio; setting Fixed Height overrides it
+- [ ] Text-only slides do not collapse when Fixed Height is set
 
 ---
 

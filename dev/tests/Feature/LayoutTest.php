@@ -7,7 +7,7 @@
  * field, inside a column of some fraction width, under a theme that adds its own
  * padding or background. fixtures/site/blueprints/fields/layout.yml is a copy of
  * such a field — these tests render the block through it rather than in isolation,
- * so column widths, multiple sliders per row and theme wrappers are all covered.
+ * so column widths, multiple blocks per row and theme wrappers are all covered.
  */
 
 use IanHobbs\Swiper\SwiperBlock;
@@ -48,7 +48,7 @@ test('the block blueprint resolves through the host field, tabs and all', functi
     $swiper    = $fieldsets->get('swiper');
 
     expect($swiper)->not->toBeNull();
-    expect($swiper->name())->toBe('Swiper Slider');
+    expect($swiper->name())->toBe('Swiper Block');
     expect(array_keys($swiper->tabs()))->toBe(['slides', 'layout', 'animation', 'controls', 'touch']);
 });
 
@@ -68,7 +68,7 @@ test('a swiper block renders in full when nested in a layout column', function (
                  ->toContain('In a column');
 });
 
-test('the slider renders identically in a narrow column — width comes from CSS, not markup', function () {
+test('the block renders identically in a narrow column — width comes from CSS, not markup', function () {
     $slides = [
         ['heading' => 'Narrow', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ];
@@ -76,22 +76,22 @@ test('the slider renders identically in a narrow column — width comes from CSS
     $full   = renderLayout(makeLayout([['width' => '1/1',  'blocks' => [['slides' => $slides]]]]));
     $narrow = renderLayout(makeLayout([['width' => '3/12', 'blocks' => [['slides' => $slides]]]]));
 
-    // Identical slider markup either way — only the surrounding column differs.
+    // Identical block markup either way — only the surrounding column differs.
     // The block emits no width of its own (.swiper-block is width:100%), so the
     // column decides; a markup-level width would break the other layouts.
-    $slider = function (string $html): string {
+    $blockMarkup = function (string $html): string {
         preg_match('/<div\s+class="swiper swiper-block.*?<\/div><!-- \/\.swiper-block -->/s', $html, $m);
         return $m[0] ?? '';
     };
 
-    expect($slider($narrow))->not->toBeEmpty()
-                            ->not->toContain('width')
-                            ->toBe($slider($full));
+    expect($blockMarkup($narrow))->not->toBeEmpty()
+                                 ->not->toContain('width')
+                                 ->toBe($blockMarkup($full));
 });
 
-// ── One slider per layout row ────────────────────────────────────────────────
+// ── One block per layout row ────────────────────────────────────────────────
 
-test('a second slider in the same row is skipped, whichever column it is in', function () {
+test('a second block in the same row is skipped, whichever column it is in', function () {
     $html = renderLayout(makeLayout([
         ['width' => '1/2', 'blocks' => [['slides' => [
             ['heading' => 'Left', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
@@ -104,10 +104,10 @@ test('a second slider in the same row is skipped, whichever column it is in', fu
     expect(substr_count($html, 'class="swiper swiper-block"'))->toBe(1);
     expect($html)->toContain('Left')
                  ->not->toContain('Right')
-                 ->toContain('a layout row can hold only one slider');
+                 ->toContain('a layout row can hold only one Swiper block');
 });
 
-test('two sliders stacked in one column: only the first renders', function () {
+test('two blocks stacked in one column: only the first renders', function () {
     $slide = fn (string $heading) => ['slides' => [
         ['heading' => $heading, 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]];
@@ -142,30 +142,30 @@ test('the skip is silent in production and explained in debug', function () {
     restore_exception_handler();
 });
 
-// ── Sliders down a page ──────────────────────────────────────────────────────
+// ── Blocks down a page ──────────────────────────────────────────────────────
 
-test('one slider per row, several rows down a page: all of them render', function () {
+test('one block per row, several rows down a page: all of them render', function () {
     $html = renderLayout(makeLayoutRows([
-        sliderRow('Hero'),
-        // A slider beside an empty column is still the only slider in its row.
-        [...sliderRow('Feature', '8/12'), ['width' => '4/12', 'blocks' => []]],
-        sliderRow('Gallery'),
+        swiperRow('Hero'),
+        // A block beside an empty column is still the only block in its row.
+        [...swiperRow('Feature', '8/12'), ['width' => '4/12', 'blocks' => []]],
+        swiperRow('Gallery'),
     ]));
 
     expect(substr_count($html, 'class="swiper swiper-block"'))->toBe(3);
     expect($html)->toContain('Hero')->toContain('Feature')->toContain('Gallery')
-                 ->not->toContain('only one slider');
+                 ->not->toContain('only one Swiper block');
 });
 
-test('sliders down a page get distinct ids so their configs never collide', function () {
-    $html = renderLayout(makeLayoutRows([sliderRow('One'), sliderRow('Two')]));
+test('blocks down a page get distinct ids so their configs never collide', function () {
+    $html = renderLayout(makeLayoutRows([swiperRow('One'), swiperRow('Two')]));
 
     preg_match_all('/id="(sb-[a-f0-9]{8})"/', $html, $m);
     expect($m[1])->toHaveCount(2);
     expect($m[1][0])->not->toBe($m[1][1]);
 });
 
-test('each slider down the page keeps its own settings', function () {
+test('each block down the page keeps its own settings', function () {
     $html = renderLayout(makeLayoutRows([
         [['width' => '1/1', 'blocks' => [[
             'effect' => 'fade',
@@ -189,7 +189,7 @@ test('the block finds its own column width in the layout field', function () {
     $spanOf = function (string $width, array $content = []): int {
         SwiperBlock::forgetLayoutScans();
 
-        return firstSlider(makeLayoutRows([sliderRow('Slide', $width, $content)]))->columnSpan();
+        return firstSwiper(makeLayoutRows([swiperRow('Slide', $width, $content)]))->columnSpan();
     };
 
     expect($spanOf('1/1'))->toBe(12);
@@ -198,17 +198,17 @@ test('the block finds its own column width in the layout field', function () {
     expect($spanOf('3/12'))->toBe(3);
     expect($spanOf('1/6'))->toBe(2);
 
-    // Column Width overrides the detected column — for a slider inside a
+    // Column Width overrides the detected column — for a block inside a
     // narrower wrapper of the site's own.
     expect($spanOf('1/1', ['column_width' => '6']))->toBe(6);
     expect($spanOf('1/3', ['column_width' => 'auto']))->toBe(4);
 });
 
-test('a slider in a part-width column asks for a smaller image', function () {
+test('a block in a part-width column asks for a smaller image', function () {
     $sizes = function (string $width): string {
         SwiperBlock::forgetLayoutScans();
 
-        return firstSlider(makeLayoutRows([sliderRow('Slide', $width)]))->imgSizes();
+        return firstSwiper(makeLayoutRows([swiperRow('Slide', $width)]))->imgSizes();
     };
 
     // Full width is unchanged — one candidate, the whole viewport.
@@ -220,14 +220,14 @@ test('a slider in a part-width column asks for a smaller image', function () {
     expect($sizes('1/6'))->toBe('(max-width: 768px) 100vw, 16.6667vw');
 });
 
-test('shared assets are injected once per page, however many sliders', function () {
+test('shared assets are injected once per page, however many blocks', function () {
     // Regression: the guard used to be a `static` inside the snippet, which Kirby
-    // re-initialises on every render — so a page of three sliders emitted the CDN
+    // re-initialises on every render — so a page of three blocks emitted the CDN
     // <link>/<script> tags three times, loading and running Swiper three times.
     $html = renderLayout(makeLayoutRows([
-        sliderRow('One'),
-        sliderRow('Two'),
-        sliderRow('Three'),
+        swiperRow('One'),
+        swiperRow('Two'),
+        swiperRow('Three'),
     ]));
 
     expect(substr_count($html, 'swiper-bundle.min.css'))->toBe(1);
@@ -297,7 +297,7 @@ test('caption colour and placement survive the layout wrapper', function () {
                  ->toContain('class="swiper-slide-heading text-3xl"');
 });
 
-test('an empty column renders no slider markup', function () {
+test('an empty column renders no block markup', function () {
     $html = renderLayout(makeLayout([
         ['width' => '1/2', 'blocks' => []],
         ['width' => '1/2', 'blocks' => [['slides' => [

@@ -2,7 +2,7 @@
 /**
  * Swiper Block Snippet
  *
- * Renders a Swiper 12 slider from a Kirby layout block. All computed values
+ * Renders a Swiper 12 carousel from a Kirby layout block. All computed values
  * (JS config, aspect CSS, thumb presets, responsive `sizes`) come from the
  * SwiperBlock model — see classes/SwiperBlock.php — so this snippet stays
  * markup-only. CDN scripts and plugin CSS are injected automatically on first
@@ -15,15 +15,15 @@
 $slides = $block->slidesData();
 if ($slides->count() === 0) return;
 
-// ── One slider per layout row ────────────────────────────────────────────────
-// Side-by-side sliders fight over the same drag and keyboard gestures and leave
+// ── One Swiper block per layout row ──────────────────────────────────────────
+// Side-by-side blocks fight over the same drag and keyboard gestures and leave
 // each other too little width for the imagery, so only the first in a row
-// renders. Sliders stacked down a page are unaffected.
+// renders. Blocks stacked down a page are unaffected.
 if ($block->isRowDuplicate()) {
-    echo '<!-- kirby-swiper-block: skipped — a layout row can hold only one slider -->' . "\n";
+    echo '<!-- kirby-swiper-block: skipped — a layout row can hold only one Swiper block -->' . "\n";
 
     if (kirby()->option('debug', false) === true) {
-        echo '<p class="swiper-block-warning">Only one Swiper slider per layout row. '
+        echo '<p class="swiper-block-warning">Only one Swiper block per layout row. '
            . 'Move this one to a row of its own.</p>' . "\n";
     }
 
@@ -33,7 +33,7 @@ if ($block->isRowDuplicate()) {
 // ── Inject CDN + plugin assets once per page ─────────────────────────────────
 // The claim lives on the model, not in a static here: Kirby `include`s a snippet
 // afresh for every render, so a snippet-local static resets between blocks and a
-// page with several sliders repeated the CDN tags once per block.
+// page with several Swiper blocks repeated the CDN tags once per block.
 // Honour the injectAssets option — sites that load Swiper themselves can disable it.
 if (kirby()->option('ianhobbs.kirby-swiper-block.injectAssets', true) && \IanHobbs\Swiper\SwiperBlock::claimAssets()) {
     $plugin = kirby()->plugin('ianhobbs/kirby-swiper-block');

@@ -65,9 +65,10 @@ export default {
       return map[this.content?.effect] ?? 'Slide';
     },
 
-    // Slider Height replaced the old Aspect Ratio field: 0 means each slide
+    // Fixed Height replaced the old Aspect Ratio field: 0 means each slide
     // follows its image's native ratio, anything else is an explicit container
-    // height in the chosen unit.
+    // height in the chosen unit. The `slider_height` keys are v1 legacy — v2
+    // renames them to `height` / `height_unit`.
     heightLabel() {
       const height = Number(this.content?.slider_height) || 0;
       if (height <= 0) return 'Auto height';

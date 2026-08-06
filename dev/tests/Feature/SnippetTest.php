@@ -79,7 +79,7 @@ test('data-swiper-config includes loop setting', function () {
     expect($config['loop'])->toBeTrue();
 });
 
-// ── Slider height ─────────────────────────────────────────────────────────────
+// ── Fixed height ─────────────────────────────────────────────────────────────
 
 test('auto height emits no sizing custom properties', function () {
     $html = renderBlock(makeBlock([
@@ -92,7 +92,7 @@ test('auto height emits no sizing custom properties', function () {
                  ->not->toContain('--swiper-block-');
 });
 
-test('explicit slider height sets the fixed-height custom property', function () {
+test('explicit fixed height sets the fixed-height custom property', function () {
     $html = renderBlock(makeBlock([
         'slider_height'      => '80',
         'slider_height_unit' => 'vh',

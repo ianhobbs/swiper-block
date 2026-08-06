@@ -40,7 +40,7 @@
       gap: 0;
     }
 
-    /* Only shown when a second slider lands in the same row (debug only) */
+    /* Only shown when a second block lands in the same row (debug only) */
     .swiper-block-warning {
       padding: .75rem 1rem;
       color: #7a2e0e;

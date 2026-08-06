@@ -1,4 +1,4 @@
-name: Swiper Slider
+name: Swiper Block
 icon: swiper-block
 
 tabs:
@@ -79,7 +79,7 @@ tabs:
                 text: Middle
               - value: bottom
                 text: Bottom
-            help: Applies when Slider Height is set — the caption then overlays the image.
+            help: Applies when Fixed Height is set — the caption then overlays the image.
             width: 1/3
 
           caption_color:
@@ -97,14 +97,14 @@ tabs:
     fields:
 
       slider_height:
-        label: Slider Height
+        label: Fixed Height
         type: number
         default: 0
         min: 0
         max: 2000
         step: 10
         help: >
-          Explicit height for the slider container. 0 = auto (each slide follows
+          Explicit height for the block container. 0 = auto (each slide follows
           its image's native ratio). Set this for text-only slides or fixed-height
           heroes — it overrides the native ratio and stops empty slides collapsing.
         width: 1/3
@@ -120,7 +120,7 @@ tabs:
             text: Viewport height (vh)
           - value: svh
             text: Small viewport (svh)
-        help: Unit for Slider Height. Ignored when Slider Height is 0.
+        help: Unit for Fixed Height. Ignored when Fixed Height is 0.
         width: 1/3
 
       column_width:
@@ -145,9 +145,9 @@ tabs:
           - value: "2"
             text: One sixth (1/6)
         help: >
-          How much of the layout row the slider fills. Only affects the responsive
+          How much of the layout row the block fills. Only affects the responsive
           `sizes` hint — how big an image the browser downloads — not the rendered
-          width, which always follows the column. Set it if the slider sits inside
+          width, which always follows the column. Set it if the block sits inside
           a wrapper narrower than its column.
         width: 1/3
 
@@ -406,7 +406,7 @@ tabs:
         text:
           - "Off"
           - "On"
-        help: Arrow keys navigate slides when the slider is in the viewport.
+        help: Arrow keys navigate slides when the block is in the viewport.
         width: 1/3
 
       mousewheel:
@@ -462,7 +462,7 @@ tabs:
         text:
           - "Off"
           - "On"
-        help: Allow long swipes to advance the slider.
+        help: Allow long swipes to advance slides.
         width: 1/3
 
       resistance:

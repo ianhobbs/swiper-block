@@ -102,7 +102,7 @@ function makeLayout(array $columns, string $theme = 'plain-blocks-padded'): Kirb
         foreach (($column['blocks'] ?? []) as $j => $content) {
             $blocks[] = [
                 // Distinct ids — uid() hashes them, so colliding ids would mean
-                // two sliders sharing one DOM id and one Swiper instance.
+                // two blocks sharing one DOM id and one Swiper instance.
                 'id'      => "block-{$i}-{$j}",
                 'type'    => 'swiper',
                 'content' => swiperContent($content),
@@ -124,10 +124,10 @@ function makeLayout(array $columns, string $theme = 'plain-blocks-padded'): Kirb
 }
 
 /**
- * One layout row holding a single slider — the supported arrangement, and the
+ * One layout row holding a single block — the supported arrangement, and the
  * shape most layout tests need. Returns a row in makeLayoutRows() format.
  */
-function sliderRow(string $heading, string $width = '1/1', array $content = []): array
+function swiperRow(string $heading, string $width = '1/1', array $content = []): array
 {
     return [[
         'width'  => $width,
@@ -156,8 +156,8 @@ function makeLayoutsField(array $layouts): Kirby\Cms\Layouts
 }
 
 /**
- * Several layout rows in one field — the common "sliders down a page" case,
- * and the only way to exercise the one-slider-per-row rule across rows.
+ * Several layout rows in one field — the common "blocks down a page" case,
+ * and the only way to exercise the one-block-per-row rule across rows.
  * Each entry is a list of columns, in makeLayout()'s column format.
  */
 function makeLayoutRows(array $rows, string $theme = 'plain-blocks-padded'): Kirby\Cms\Layouts
@@ -200,7 +200,7 @@ function makeLayoutRows(array $rows, string $theme = 'plain-blocks-padded'): Kir
  * on computed values (columnSpan, imgSizes) that never reach the markup when a
  * fixture slide has no image.
  */
-function firstSlider(Kirby\Cms\Layouts $layouts): IanHobbs\Swiper\SwiperBlock
+function firstSwiper(Kirby\Cms\Layouts $layouts): IanHobbs\Swiper\SwiperBlock
 {
     foreach ($layouts as $layout) {
         foreach ($layout->columns() as $column) {
