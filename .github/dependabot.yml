@@ -1,0 +1,52 @@
+version: 2
+
+# Two npm/composer manifests live here: the plugin itself at the repo root, and the
+# Kirby test harness under dev/. Neither ships to consumers — releases carry the
+# pre-built index.js/index.css only — so everything below is build/test tooling.
+
+updates:
+  # Plugin build toolchain (kirbyup and its transitive vite/esbuild/postcss).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      build-toolchain:
+        patterns:
+          - "*"
+    ignore:
+      # The Kirby 5 Panel is Vue 2, so kirbyup must stay on the Vue 2 plugin line.
+      # Vue 3 arrives with the v2.0.0 / Kirby 6 split, not as an update here.
+      - dependency-name: vue
+        versions: [">=3.0.0"]
+      - dependency-name: "@vitejs/plugin-vue2"
+        update-types: [version-update:semver-major]
+      - dependency-name: "@vitejs/plugin-vue2-jsx"
+        update-types: [version-update:semver-major]
+
+  # Plugin composer manifest — runtime require/conflict constraints.
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      # composer.json pins the v1 line to Kirby 5 via `conflict`; a K6 bump is a
+      # deliberate major-version effort, not a dependency update.
+      - dependency-name: getkirby/cms
+        update-types: [version-update:semver-major]
+
+  # Pest test harness. Test-only, never released.
+  - package-ecosystem: composer
+    directory: /dev
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      test-harness:
+        patterns:
+          - "*"
+    ignore:
+      - dependency-name: getkirby/cms
+        update-types: [version-update:semver-major]
