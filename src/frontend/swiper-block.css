@@ -24,6 +24,25 @@
   --swiper-block-height: 0;
   width: 100%;
   position: relative;
+
+  /* Never let the block be sized by its own contents.
+
+     The block's min-content width is its slides laid out in a row, and Swiper
+     then sets each slide to match the container — so any ancestor that sizes to
+     content feeds a runaway: wider container, wider slides, wider container. On
+     a host grid using `repeat(12, 1fr)` (i.e. `minmax(auto, 1fr)`, whose `auto`
+     minimum is the track's min-content size) this ran away to five figures on a
+     phone, and `observer: true` re-measured at every step — the flicker.
+
+     `contain: inline-size` makes the block contribute nothing to intrinsic
+     inline sizing, so no ancestor can be inflated by it, however many levels up
+     the content-sized box is. Only the inline axis is contained: block size
+     still comes from the content, which auto-height mode depends on.
+
+     min-width covers the simpler case where the block is itself the flex or
+     grid item; it does nothing for a distant ancestor, hence the containment. */
+  contain: inline-size;
+  min-width: 0;
 }
 
 /* Stack figure + caption; height:auto overrides Swiper's default 100% so the
