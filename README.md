@@ -39,7 +39,9 @@ git clone https://github.com/ianhobbs/swiper-block site/plugins/kirby-swiper-blo
 
 ## Zero-config setup
 
-No template changes needed. When a page contains a Swiper block, the snippet automatically injects the Swiper CDN scripts and plugin CSS **once per page load** — the first block to render claims the injection, so a page with several Swiper blocks down it still loads Swiper once. Everything is self-contained.
+No template changes needed. When a page contains a Swiper block, the snippet automatically injects Swiper and the plugin CSS **once per page load** — the first block to render claims the injection, so a page with several Swiper blocks down it still loads Swiper once. Everything is self-contained.
+
+Swiper 12.2.0 ships with the plugin (`assets/vendor/swiper`, MIT) and is served from your own origin, so there is **no CDN dependency and nothing to allow in a Content-Security-Policy**. See [Content-Security-Policy](#content-security-policy).
 
 If you prefer to control asset placement (e.g. move them to `<head>` for performance), see [Manual asset loading](#manual-asset-loading) below.
 
@@ -289,18 +291,19 @@ stop them being purged.
 
 ## Manual asset loading
 
-By default the snippet injects Swiper's CDN links at the point the block is rendered in the page body. For performance-sensitive sites you may want to place them in `<head>` instead. Add this to your head snippet:
+By default the snippet injects the asset tags at the point the block is rendered in the page body. For performance-sensitive sites you may want to place them in `<head>` instead. Add this to your head snippet:
 
 ```php
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
-<link rel="stylesheet" href="<?= $kirby->plugin('ianhobbs/kirby-swiper-block')->asset('css/swiper-block.css')->url() ?>">
+<?php $swiper = $kirby->plugin('ianhobbs/kirby-swiper-block') ?>
+<link rel="stylesheet" href="<?= $swiper->asset('vendor/swiper/swiper-bundle.min.css')->url() ?>">
+<link rel="stylesheet" href="<?= $swiper->asset('css/swiper-block.css')->url() ?>">
 ```
 
 And before `</body>`:
 
 ```php
-<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js" defer></script>
-<script src="<?= $kirby->plugin('ianhobbs/kirby-swiper-block')->asset('js/swiper-block.js')->url() ?>" defer></script>
+<script src="<?= $swiper->asset('vendor/swiper/swiper-bundle.min.js')->url() ?>" defer></script>
+<script src="<?= $swiper->asset('js/swiper-block.js')->url() ?>" defer></script>
 ```
 
 Then suppress auto-injection in `site/config/config.php`:
@@ -310,6 +313,48 @@ return [
     'ianhobbs.kirby-swiper-block.injectAssets' => false,
 ];
 ```
+
+### Loading Swiper from the CDN instead
+
+To use jsDelivr rather than the bundled copy:
+
+```php
+return [
+    'ianhobbs.kirby-swiper-block.useCdn' => true,
+];
+```
+
+The plugin's own CSS and JS stay local either way — only Swiper's bundle moves. If you run a
+CSP, `https://cdn.jsdelivr.net` then has to be allowed in **both** `script-src` and
+`style-src`.
+
+---
+
+## Content-Security-Policy
+
+The plugin is designed to pass a strict CSP with **no extra hosts and no policy changes**.
+Everything it loads — Swiper's bundle included — comes from `/media/plugins/`, which `'self'`
+already covers.
+
+Two details are worth knowing if you use a strict-CSP plugin such as
+[`akibeo/kirby-csp`](https://github.com/wdebusschere/kirby-csp), whose defaults are:
+
+```
+script-src 'self' 'nonce-{nonce}' 'strict-dynamic' https: 'unsafe-inline'
+style-src  'self' 'unsafe-inline'
+```
+
+**Scripts get a nonce.** When `cspNonce()` exists, the injected `<script>` tags carry
+`nonce="…"` automatically. This is required even though the files are same-origin:
+`'strict-dynamic'` tells the browser to ignore host expressions *including* `'self'`, so a
+nonce is the only thing that trusts a script under that policy. Sites without a CSP plugin
+get no nonce attribute and are unaffected.
+
+**Stylesheets can't use one.** There is no nonce or `'strict-dynamic'` in `style-src`, so an
+off-origin stylesheet has nothing to fall back on — which is why loading Swiper's CSS from a
+CDN reported violations, and why the bundle is now local. Inline `style` attributes (the block
+emits a few, carrying its height and caption colour) are covered by the `'unsafe-inline'` that
+policy already includes.
 
 ---
 

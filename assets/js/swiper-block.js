@@ -2,13 +2,15 @@
  * swiper-block.js — Kirby Swiper Block frontend init
  *
  * Reads per-block configuration from data-swiper-config and initialises
- * Swiper using the CDN global (window.Swiper) loaded by the snippet.
+ * Swiper using the global (window.Swiper) loaded by the snippet — from the
+ * bundle shipped in assets/vendor/swiper, or from the CDN when the `useCdn`
+ * option is on. Either way the global is the same.
  *
  * No build step required. Served directly as a Kirby plugin asset:
  *   kirby()->plugin('ianhobbs/kirby-swiper-block')->asset('js/swiper-block.js')
  *
- * The swiper-bundle CDN script pre-registers all modules, so no explicit
- * modules array is needed in the config object.
+ * The swiper-bundle script pre-registers all modules, so no explicit modules
+ * array is needed in the config object.
  */
 (function () {
   'use strict';
@@ -19,7 +21,7 @@
    */
   function initSwiperBlocks() {
     if (typeof window.Swiper === 'undefined') {
-      console.warn('[swiper-block] window.Swiper not found. Ensure the CDN <script> loads before this file.');
+      console.warn('[swiper-block] window.Swiper not found. Ensure the swiper-bundle <script> loads before this file.');
       return;
     }
 

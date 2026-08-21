@@ -37,14 +37,31 @@ if ($block->isRowDuplicate()) {
 // Honour the injectAssets option — sites that load Swiper themselves can disable it.
 if (kirby()->option('ianhobbs.kirby-swiper-block.injectAssets', true) && \IanHobbs\Swiper\SwiperBlock::claimAssets()) {
     $plugin = kirby()->plugin('ianhobbs/kirby-swiper-block');
+
     // Sites running a strict-dynamic CSP (e.g. akibeo/kirby-csp) ignore host
-    // allowlists on script-src — only a matching nonce trusts a <script>, CDN
-    // or not. function_exists keeps this plugin working without that
-    // dependency; sites without a CSP just get no nonce attribute.
+    // allowlists on script-src — only a matching nonce trusts a <script>. Note
+    // strict-dynamic drops 'self' too, so the nonce is required even for the
+    // same-origin files below, not just for the CDN. function_exists keeps this
+    // plugin working without that dependency; sites without a CSP just get no
+    // nonce attribute.
     $nonce = function_exists('cspNonce') ? ' nonce="' . cspNonce() . '"' : '';
-    echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">' . "\n";
+
+    // Swiper's own bundle ships with the plugin and is served from the site's
+    // own origin by default, so a strict CSP needs no extra hosts: the typical
+    // style-src is `'self' 'unsafe-inline'`, with no nonce or strict-dynamic to
+    // rescue an off-origin stylesheet the way script-src has for the JS.
+    // Opt back into the CDN with the `useCdn` option.
+    if (kirby()->option('ianhobbs.kirby-swiper-block.useCdn', false) === true) {
+        $swiperCss = 'https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css';
+        $swiperJs  = 'https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js';
+    } else {
+        $swiperCss = $plugin->asset('vendor/swiper/swiper-bundle.min.css')->url();
+        $swiperJs  = $plugin->asset('vendor/swiper/swiper-bundle.min.js')->url();
+    }
+
+    echo '<link rel="stylesheet" href="' . $swiperCss . '">' . "\n";
     echo '<link rel="stylesheet" href="' . $plugin->asset('css/swiper-block.css')->url() . '">' . "\n";
-    echo '<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js" defer' . $nonce . '></script>' . "\n";
+    echo '<script src="' . $swiperJs . '" defer' . $nonce . '></script>' . "\n";
     echo '<script src="' . $plugin->asset('js/swiper-block.js')->url() . '" defer' . $nonce . '></script>' . "\n";
 }
 

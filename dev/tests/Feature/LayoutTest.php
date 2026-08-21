@@ -277,6 +277,58 @@ test('the injectAssets option suppresses the tags without spending the claim', f
     expect(substr_count($render(), 'swiper-bundle.min.js'))->toBe(1);
 });
 
+test('Swiper is served from the site origin, so a strict CSP needs no extra hosts', function () {
+    $html = renderLayout(makeLayout([['width' => '1/1', 'blocks' => [['slides' => [
+        ['heading' => 'Slide', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+    ]]]]]));
+
+    // The whole point: no off-origin host in the emitted tags. A typical strict
+    // policy allows `style-src 'self' 'unsafe-inline'` with no nonce and no
+    // strict-dynamic, so a CDN stylesheet has nothing to fall back on and is
+    // simply blocked.
+    expect($html)->not->toContain('cdn.jsdelivr.net');
+
+    // Both Swiper's bundle and the plugin's own files come from /media/plugins.
+    expect($html)->toContain('/media/plugins/ianhobbs/kirby-swiper-block/')
+                 ->toContain('vendor/swiper/swiper-bundle.min.css')
+                 ->toContain('vendor/swiper/swiper-bundle.min.js');
+});
+
+test('the useCdn option puts the CDN back', function () {
+    $slides = [['heading' => 'Slide', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center']];
+    $render = fn () => renderLayout(makeLayout([['width' => '1/1', 'blocks' => [['slides' => $slides]]]]));
+
+    $default = kirby();
+    $reboot  = function (array $options = []) use ($default) {
+        $default->clone(['options' => $options]);
+        restore_error_handler();
+        restore_exception_handler();
+    };
+
+    SwiperBlock::forgetAssets();
+    $reboot(['ianhobbs.kirby-swiper-block.useCdn' => true]);
+
+    $html = $render();
+    expect($html)->toContain('https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css')
+                 ->toContain('https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js')
+                 // The plugin's own CSS/JS stay local either way.
+                 ->toContain('swiper-block.css')
+                 ->not->toContain('vendor/swiper/');
+
+    SwiperBlock::forgetAssets();
+    $reboot();
+});
+
+test('the bundled Swiper is the version the plugin claims, with its licence', function () {
+    // Vendored third-party code: pin it visibly, and ship the MIT licence next
+    // to it. A silent drift here means the docs describe a different Swiper.
+    $dir = __DIR__ . '/../../../assets/vendor/swiper';
+
+    expect(file_get_contents($dir . '/swiper-bundle.min.js'))->toContain('Swiper 12.2.0');
+    expect(file_get_contents($dir . '/swiper-bundle.min.css'))->toContain('Swiper 12.2.0');
+    expect(file_get_contents($dir . '/LICENSE'))->toContain('The MIT License');
+});
+
 // ── Captions inside a themed column ──────────────────────────────────────────
 
 test('caption colour and placement survive the layout wrapper', function () {

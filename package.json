@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "kirbyup serve src/index.js",
     "build": "kirbyup src/index.js",
-    "watch": "kirbyup src/index.js --watch"
+    "watch": "kirbyup src/index.js --watch",
+    "swiper:version": "grep -o 'Swiper [0-9.]*' assets/vendor/swiper/swiper-bundle.min.js | head -1",
+    "swiper:update": "V=${SWIPER_VERSION:-12.2.0}; for f in swiper-bundle.min.css swiper-bundle.min.js; do curl -sfL -o assets/vendor/swiper/$f https://cdn.jsdelivr.net/npm/swiper@$V/$f || exit 1; done; curl -sfL -o assets/vendor/swiper/LICENSE https://raw.githubusercontent.com/nolimits4web/swiper/v$V/LICENSE"
   },
   "engines": {
     "node": ">=18.0.0"
