@@ -72,6 +72,35 @@ test('layout tab offers Tailwind-named caption sizes', function () {
     }
 });
 
+test('the mobile height fields are revealed by the unit and the toggle', function () {
+    $fields = $this->blueprint['tabs']['layout']['fields'];
+
+    // The toggle appears only for absolute heights — vh/svh already scale.
+    expect($fields['mobile_height_enable']['when'])->toBe(['slider_height_unit' => 'px']);
+    expect($fields['mobile_height_enable']['default'])->toBeFalse();
+
+    // The number needs both: Kirby ANDs the conditions.
+    expect($fields['mobile_height']['when'])->toBe([
+        'slider_height_unit'   => 'px',
+        'mobile_height_enable' => true,
+    ]);
+
+    // Every unit the toggle can be gated on must exist in the unit field, or the
+    // condition silently never fires.
+    $units = array_column($fields['slider_height_unit']['options'], 'value');
+    expect($units)->toContain('px');
+});
+
+test('the stylesheet applies the mobile height below the stacking breakpoint', function () {
+    // Swiper can't carry this — `breakpoints` takes layout params only, and the
+    // `height` option makes the instance non-responsive. It has to be a media
+    // query, so the property the model emits must actually be consumed by one.
+    $css = file_get_contents(__DIR__ . '/../../../assets/css/swiper-block.css');
+
+    expect($css)->toContain('@media (max-width: 768px)')
+                ->toContain('--swiper-block-mobile-height');
+});
+
 test('layout tab offers caption fonts the model accepts and the CSS defines', function () {
     $field = $this->blueprint['tabs']['layout']['fields']['caption_font'];
 

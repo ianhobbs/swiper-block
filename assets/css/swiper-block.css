@@ -80,6 +80,22 @@
   height: 100%;
 }
 
+/* Small-screen height override (Separate Mobile Height). Only ever emitted for
+   px heights — vh/svh already track the viewport. This is a media query rather
+   than a Swiper breakpoint because Swiper's `breakpoints` accepts only layout
+   params (slidesPerView, spaceBetween, grid.rows), and its `height` option is
+   documented as making the instance non-responsive.
+
+   768px matches the default `stackBreakpoint` option, the width at which layout
+   rows stack and the block goes full-bleed. A site that has moved that option
+   can realign this by overriding the rule below at its own breakpoint — the
+   custom property stays readable either way. */
+@media (max-width: 768px) {
+  .swiper-block[style*="--swiper-block-mobile-height"] {
+    height: var(--swiper-block-mobile-height);
+  }
+}
+
 .swiper-slide__lqip,
 .swiper-slide__img {
   position: absolute;
@@ -245,21 +261,38 @@
 }
 
 /* ── Navigation & pagination (theme Swiper's base components) ─────────────── */
+/* Sized 20% below Swiper's own arrows and resting at 0.4 opacity, so they read
+   as available without competing with the slide. They come to full strength on
+   hover and on keyboard focus — :focus-visible matters here, or the control is
+   invisible to anyone tabbing to it. */
 .swiper-block .swiper-button-prev,
 .swiper-block .swiper-button-next {
-  --swiper-navigation-size: 2.5rem;
+  --swiper-navigation-size: 2rem;
   --swiper-theme-color: #fff;
-  width: 3rem;
-  height: 3rem;
+  width: 2.4rem;
+  height: 2.4rem;
   border-radius: 50%;
   background: #00000059;
   backdrop-filter: blur(4px);
-  transition: background 0.2s;
+  opacity: 0.4;
+  transition: background 0.2s, opacity 0.2s;
 }
 
 .swiper-block .swiper-button-prev:hover,
-.swiper-block .swiper-button-next:hover {
+.swiper-block .swiper-button-next:hover,
+.swiper-block .swiper-button-prev:focus-visible,
+.swiper-block .swiper-button-next:focus-visible {
   background: #0009;
+  opacity: 1;
+}
+
+/* Swiper marks the end-of-run arrow disabled and dims it to .35, but that rule
+   is a single class and now loses to the two-class resting rule above — leaving
+   the disabled arrow at 0.4, indistinguishable from a live one. Restate it
+   lower, and further down, so "you can't go this way" still reads. */
+.swiper-block .swiper-button-prev.swiper-button-disabled,
+.swiper-block .swiper-button-next.swiper-button-disabled {
+  opacity: 0.15;
 }
 
 .swiper-block .swiper-pagination {
@@ -272,7 +305,9 @@
 @media (prefers-reduced-motion: reduce) {
   .swiper-slide__lqip,
   .swiper-slide__img,
-  .swiper-slide__cta {
+  .swiper-slide__cta,
+  .swiper-block .swiper-button-prev,
+  .swiper-block .swiper-button-next {
     transition: none;
   }
 }

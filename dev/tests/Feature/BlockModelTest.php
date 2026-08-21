@@ -152,6 +152,40 @@ test('aspectStyle carries only the explicit container height', function () {
         ->toBe('--swiper-block-fixed-height:80vh');
 });
 
+// ── Mobile height override ───────────────────────────────────────────────────
+
+test('mobileHeight needs the px unit, the toggle and a non-zero number', function () {
+    $on = ['slider_height' => '720', 'mobile_height_enable' => 'true', 'mobile_height' => '320'];
+
+    expect(makeBlock($on)->mobileHeight())->toBe('320px');
+
+    // Each precondition dropped in turn — the toggle alone is not enough, since
+    // an editor can leave it on after clearing the number or changing the unit.
+    expect(makeBlock([...$on, 'mobile_height_enable' => 'false'])->mobileHeight())->toBeNull();
+    expect(makeBlock([...$on, 'mobile_height' => '0'])->mobileHeight())->toBeNull();
+    expect(makeBlock([...$on, 'slider_height_unit' => 'vh'])->mobileHeight())->toBeNull();
+    expect(makeBlock([...$on, 'slider_height_unit' => 'svh'])->mobileHeight())->toBeNull();
+
+    // Nothing configured at all
+    expect(makeBlock()->mobileHeight())->toBeNull();
+});
+
+test('aspectStyle emits the mobile height only alongside a fixed height', function () {
+    expect(makeBlock([
+        'slider_height'        => '720',
+        'mobile_height_enable' => 'true',
+        'mobile_height'        => '320',
+    ])->aspectStyle())->toBe('--swiper-block-fixed-height:720px;--swiper-block-mobile-height:320px');
+
+    // With no desktop height there is nothing to override, so the mobile value
+    // stays out of the style attribute even when the toggle and number are set.
+    expect(makeBlock([
+        'slider_height'        => '0',
+        'mobile_height_enable' => 'true',
+        'mobile_height'        => '320',
+    ])->aspectStyle())->toBe('');
+});
+
 // ── thumb presets ─────────────────────────────────────────────────────────────
 
 test('native mode builds thumbs inline so no site config is required', function () {

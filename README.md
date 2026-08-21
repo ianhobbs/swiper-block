@@ -84,6 +84,8 @@ Uploads use the plugin's `swiper-image` file blueprint, which adds an **Alt text
 | Column Width | Auto | How much of the layout row the block fills. Auto reads the real column. See [Column-aware image sizes](#column-aware-image-sizes) |
 | Fixed Height | 0 (auto) | Explicit container height — `0` means each slide keeps its image's own ratio. See [Fixed height & avoiding collapse](#fixed-height--avoiding-collapse) |
 | Height Unit | px | Unit for Fixed Height — px / vh / svh |
+| Separate Mobile Height | Off | Reveals the mobile height field. Shown only when Height Unit is `px` |
+| Mobile Fixed Height | 0 | Height in px below 768px viewport width. `0` falls back to Fixed Height |
 | Slide Direction | Horizontal | Scroll direction — Horizontal or Vertical |
 | Slides Visible | 1 | 1 / 2 / 3 / 4 / Auto (by width) |
 | Advance Per Click | 1 | Slides to jump per navigation action |
@@ -328,6 +330,34 @@ layout-class changes required):
 > You don't need to add custom classes to your layout field to give the block a height — set
 > **Fixed Height** in the Layout tab instead. The plugin's CSS reads the value from the parent
 > `.swiper-block` element, so per-block height control lives entirely in the Panel.
+
+### A different height on phones
+
+A pixel height chosen for a desktop hero is usually far too tall on a phone. Switch
+**Separate Mobile Height** on and set **Mobile Fixed Height**; below `768px` the block uses
+that instead.
+
+Both fields appear only when **Height Unit** is `px` — `vh` and `svh` already track the
+viewport, so an override would just fight them. The toggle exists because Kirby's `when:`
+conditions match a field's *value*, not whether it has one, so revealing the number field
+needs an explicit trigger. All three must hold (px unit, toggle on, non-zero number) before
+anything is emitted.
+
+This is a CSS media query, not a Swiper setting. Swiper's `breakpoints` only accepts layout
+parameters — `slidesPerView`, `slidesPerGroup`, `spaceBetween`, `grid.rows` — and its
+standalone `height` option is documented as making the instance non-responsive. Nothing runs
+on resize to maintain it.
+
+`768px` matches the default `stackBreakpoint`. If you've moved that option, realign the rule
+at your own breakpoint — the custom property is readable either way:
+
+```css
+@media (max-width: 60rem) {
+  .swiper-block[style*="--swiper-block-mobile-height"] {
+    height: var(--swiper-block-mobile-height);
+  }
+}
+```
 
 ---
 

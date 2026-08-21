@@ -312,6 +312,15 @@ class SwiperBlock extends Block
         // Emitted first; the stylesheet lets it take precedence over the ratio.
         if ($height = $this->sliderHeight()) {
             $styles[] = "--swiper-block-fixed-height:{$height}";
+
+            // Small-screen override, applied by a media query in the stylesheet.
+            // Swiper itself can't carry this: `breakpoints` only accepts layout
+            // params (slidesPerView, spaceBetween, grid.rows), and the `height`
+            // option is documented as making Swiper non-responsive. So it stays
+            // CSS — which also means no JS runs on resize to maintain it.
+            if ($mobile = $this->mobileHeight()) {
+                $styles[] = "--swiper-block-mobile-height:{$mobile}";
+            }
         }
 
         $aspect = $this->aspect_ratio()->or('native')->value();
@@ -346,6 +355,37 @@ class SwiperBlock extends Block
         $unit = in_array($unit, ['px', 'vh', 'svh', 'dvh'], true) ? $unit : 'px';
 
         return "{$value}{$unit}";
+    }
+
+    /**
+     * Small-screen height override as a CSS length, or null when it doesn't
+     * apply. Three things must all hold, and the toggle alone isn't enough —
+     * an editor can leave it on after clearing the number, or after switching
+     * the unit away from px:
+     *
+     *  - the unit is px. vh/svh already track the viewport, so an override
+     *    would only fight the thing that makes them work.
+     *  - the toggle is on. Kirby's `when:` can't test "the field has a value",
+     *    so the Panel needs an explicit trigger to reveal the number field.
+     *  - the number is above zero. Zero means "no override" and falls through
+     *    to the desktop height, matching how Fixed Height itself reads 0.
+     *
+     * Callers should only emit this when sliderHeight() is set — with no fixed
+     * height there is nothing to override.
+     */
+    public function mobileHeight(): ?string
+    {
+        if ($this->slider_height_unit()->or('px')->value() !== 'px') {
+            return null;
+        }
+
+        if ($this->mobile_height_enable()->isTrue() === false) {
+            return null;
+        }
+
+        $value = (int) $this->mobile_height()->or(0)->value();
+
+        return $value > 0 ? "{$value}px" : null;
     }
 
     /** Stable unique id so multiple blocks on a page don't collide. */

@@ -123,6 +123,41 @@ tabs:
         help: Unit for Fixed Height. Ignored when Fixed Height is 0.
         width: 1/3
 
+      # Only absolute (px) heights need a mobile override — vh/svh already scale
+      # with the viewport. Kirby's `when:` matches values, not emptiness, so it
+      # can gate on the unit but not on "Fixed Height is non-zero": this toggle
+      # is the editor's explicit trigger, and the model ignores the mobile value
+      # unless a Fixed Height is actually set.
+      mobile_height_enable:
+        label: Separate Mobile Height
+        type: toggle
+        default: false
+        text:
+          - "Off"
+          - "On"
+        when:
+          slider_height_unit: px
+        help: >
+          Use a different height on small screens. Only applies when Fixed Height
+          is set above — a fixed pixel height sized for a desktop hero is usually
+          far too tall on a phone.
+        width: 1/3
+
+      mobile_height:
+        label: Mobile Fixed Height
+        type: number
+        default: 0
+        min: 0
+        max: 2000
+        step: 10
+        when:
+          slider_height_unit: px
+          mobile_height_enable: true
+        help: >
+          Height in pixels below 768px viewport width. 0 falls back to the desktop
+          Fixed Height.
+        width: 1/3
+
       column_width:
         label: Column Width
         type: select
