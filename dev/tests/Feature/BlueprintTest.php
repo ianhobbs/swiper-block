@@ -101,6 +101,15 @@ test('the stylesheet applies the mobile height below the stacking breakpoint', f
                 ->toContain('--swiper-block-mobile-height');
 });
 
+test('the easing field offers only keys the model maps', function () {
+    $field = $this->blueprint['tabs']['animation']['fields']['easing'];
+
+    expect($field['default'])->toBe('smooth');
+
+    $values = array_column($field['options'], 'value');
+    expect($values)->toBe(array_keys(IanHobbs\Swiper\SwiperBlock::EASINGS));
+});
+
 test('layout tab offers caption fonts the model accepts and the CSS defines', function () {
     $field = $this->blueprint['tabs']['layout']['fields']['caption_font'];
 

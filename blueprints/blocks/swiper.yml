@@ -332,6 +332,21 @@ tabs:
         step: 50
         width: 1/3
 
+      easing:
+        label: Easing
+        type: select
+        default: smooth
+        options:
+          - { value: smooth, text: "Smooth (default)" }
+          - { value: gentle, text: "Gentle" }
+          - { value: ease,   text: "Swiper default" }
+          - { value: linear, text: "Linear" }
+        help: >
+          Shape of the slide transition. Swiper has no JavaScript easing option —
+          this sets the CSS timing function on the slide wrapper. Smooth
+          decelerates into place; Swiper's own default stops more abruptly.
+        width: 1/3
+
       loop:
         label: Loop
         type: toggle

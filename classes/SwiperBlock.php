@@ -50,6 +50,25 @@ class SwiperBlock extends Block
     ];
 
     /**
+     * Slide transition easing, as Panel value => CSS timing function.
+     *
+     * Swiper has no JS easing option — the slide transition is a plain CSS
+     * transition on `.swiper-wrapper`, and Swiper 12 exposes
+     * `--swiper-wrapper-transition-timing-function` for it, defaulting to
+     * `initial` (i.e. `ease`). Setting that property on the block cascades to
+     * the wrapper, so this is styling, not scripting.
+     *
+     * The value lands in a style attribute, so it is never taken from content:
+     * the stored key selects one of these, and anything unrecognised falls back.
+     */
+    public const EASINGS = [
+        'smooth'  => 'cubic-bezier(0.22, 1, 0.36, 1)',
+        'gentle'  => 'cubic-bezier(0.65, 0, 0.35, 1)',
+        'ease'    => 'ease',
+        'linear'  => 'linear',
+    ];
+
+    /**
      * Whether the shared CDN + plugin assets have already been injected in this
      * request. Lives here, not as a `static` inside the snippet: Kirby renders
      * snippets through `F::loadIsolated()`, which `include`s the file afresh
@@ -386,6 +405,38 @@ class SwiperBlock extends Block
         $value = (int) $this->mobile_height()->or(0)->value();
 
         return $value > 0 ? "{$value}px" : null;
+    }
+
+    /**
+     * The slide transition easing as a CSS custom property declaration, or ''
+     * when the editor chose Swiper's own default and there is nothing to say.
+     */
+    public function easingStyle(): string
+    {
+        $key = $this->easing()->or('smooth')->value();
+
+        if (isset(self::EASINGS[$key]) === false) {
+            $key = 'smooth';
+        }
+
+        if ($key === 'ease') {
+            return '';
+        }
+
+        return '--swiper-wrapper-transition-timing-function:' . self::EASINGS[$key];
+    }
+
+    /**
+     * Everything the block needs on its inline `style` attribute: the height
+     * custom properties plus the easing. Kept separate from aspectStyle() so
+     * that method stays about layout only.
+     */
+    public function blockStyle(): string
+    {
+        return implode(';', array_filter([
+            $this->aspectStyle(),
+            $this->easingStyle(),
+        ]));
     }
 
     /** Stable unique id so multiple blocks on a page don't collide. */

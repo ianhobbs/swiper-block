@@ -74,7 +74,7 @@ $captionFont      = $block->captionFontClass();
 <div
   class="swiper swiper-block<?= $effect !== 'slide' ? ' swiper-block--' . $effect : '' ?>"
   id="<?= $block->uid() ?>"
-  style="<?= $block->aspectStyle() ?>"
+  style="<?= $block->blockStyle() ?>"
   data-swiper-config="<?= htmlspecialchars($block->jsConfig(), ENT_QUOTES, 'UTF-8') ?>"
   aria-roledescription="carousel"
   aria-label="<?= $slides->count() ?> slides"

@@ -106,6 +106,7 @@ Uploads use the plugin's `swiper-image` file blueprint, which adds an **Alt text
 |---|---|---|
 | Transition Effect | Slide | Slide / Fade / Creative (zoom) / Coverflow |
 | Transition Speed | 600 ms | 100–3000 ms |
+| Easing | Smooth | Shape of the slide transition — Smooth / Gentle / Swiper default / Linear |
 | Loop | On | Infinite loop |
 | Autoplay | Off | Auto-advances slides |
 | Autoplay Delay | 4000 ms | Delay between slides (when Autoplay is On) |
@@ -311,6 +312,31 @@ Then suppress auto-injection in `site/config/config.php`:
 return [
     'ianhobbs.kirby-swiper-block.injectAssets' => false,
 ];
+```
+
+### Easing
+
+Swiper has **no JavaScript easing option** — the slide transition is an ordinary CSS
+transition on `.swiper-wrapper`, and Swiper 12 exposes a custom property for its timing
+function. The **Easing** field sets that property on the block, which cascades down:
+
+| Option | Timing function | |
+|---|---|---|
+| Smooth | `cubic-bezier(0.22, 1, 0.36, 1)` | Default. Decelerates hard into place |
+| Gentle | `cubic-bezier(0.65, 0, 0.35, 1)` | Symmetric ease-in-out |
+| Swiper default | *(none emitted)* | Swiper's own `ease` — stops more abruptly |
+| Linear | `linear` | Constant speed |
+
+Easing shapes the motion; **Transition Speed** sets its duration. If a slide still feels
+abrupt on Smooth, raise the speed — the curve can only distribute the time it's given.
+
+To use a curve that isn't offered, override the property yourself — it's Swiper's own, so
+nothing in this plugin needs to know:
+
+```css
+.swiper-block {
+  --swiper-wrapper-transition-timing-function: cubic-bezier(0.87, 0, 0.13, 1);
+}
 ```
 
 ---

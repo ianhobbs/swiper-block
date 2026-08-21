@@ -88,8 +88,34 @@ test('auto height emits no sizing custom properties', function () {
             ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
-    expect($html)->toContain('style=""')
-                 ->not->toContain('--swiper-block-');
+    // No --swiper-block-* sizing properties. The style attribute is not empty:
+    // easing lives there too and defaults to a non-Swiper curve.
+    expect($html)->not->toContain('--swiper-block-');
+});
+
+test('a block with nothing to style emits an empty style attribute', function () {
+    // Auto height and Swiper's own easing: no declarations, and no stray
+    // semicolon from joining two empty segments.
+    $html = renderBlock(makeBlock([
+        'slider_height' => '0',
+        'easing'        => 'ease',
+        'slides' => [
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+        ],
+    ]));
+    expect($html)->toContain('style=""');
+});
+
+test('the easing custom property reaches the block element', function () {
+    $html = renderBlock(makeBlock([
+        'easing' => 'linear',
+        'slides' => [
+            ['heading' => 'Test', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+        ],
+    ]));
+    // Swiper's own stylesheet reads this on .swiper-wrapper; setting it on the
+    // block cascades down, so no JS and no extra rule of ours is involved.
+    expect($html)->toContain('style="--swiper-wrapper-transition-timing-function:linear"');
 });
 
 test('explicit fixed height sets the fixed-height custom property', function () {

@@ -152,6 +152,38 @@ test('aspectStyle carries only the explicit container height', function () {
         ->toBe('--swiper-block-fixed-height:80vh');
 });
 
+// ── Easing ───────────────────────────────────────────────────────────────────
+
+test('easing maps to a CSS timing function and rejects anything else', function () {
+    // Swiper has no JS easing option — this drives the custom property its own
+    // stylesheet reads on .swiper-wrapper.
+    expect(makeBlock(['easing' => 'smooth'])->easingStyle())
+        ->toBe('--swiper-wrapper-transition-timing-function:cubic-bezier(0.22, 1, 0.36, 1)');
+    expect(makeBlock(['easing' => 'linear'])->easingStyle())
+        ->toBe('--swiper-wrapper-transition-timing-function:linear');
+
+    // 'ease' IS Swiper's default, so say nothing rather than restate it.
+    expect(makeBlock(['easing' => 'ease'])->easingStyle())->toBe('');
+
+    // Unset defaults to smooth; junk falls back rather than reaching the
+    // style attribute, where it could close the quote.
+    expect(makeBlock()->easingStyle())->toContain('cubic-bezier');
+    expect(makeBlock(['easing' => 'x;background:url(evil)'])->easingStyle())
+        ->toBe('--swiper-wrapper-transition-timing-function:cubic-bezier(0.22, 1, 0.36, 1)');
+});
+
+test('blockStyle joins the height and easing declarations', function () {
+    $both = makeBlock(['slider_height' => '420', 'easing' => 'linear'])->blockStyle();
+    expect($both)->toBe('--swiper-block-fixed-height:420px;--swiper-wrapper-transition-timing-function:linear');
+
+    // No height, Swiper-default easing: nothing to emit, and no stray semicolon.
+    expect(makeBlock(['slider_height' => '0', 'easing' => 'ease'])->blockStyle())->toBe('');
+
+    // Easing alone must not be prefixed by an empty aspect segment.
+    expect(makeBlock(['slider_height' => '0', 'easing' => 'linear'])->blockStyle())
+        ->toBe('--swiper-wrapper-transition-timing-function:linear');
+});
+
 // ── Mobile height override ───────────────────────────────────────────────────
 
 test('mobileHeight needs the px unit, the toggle and a non-zero number', function () {
