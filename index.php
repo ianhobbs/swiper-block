@@ -20,13 +20,11 @@ Kirby::plugin('ianhobbs/kirby-swiper-block', [
     // Set injectAssets to false to skip the automatic asset injection entirely
     // (e.g. when Swiper is already bundled/loaded globally by the site).
     //
-    // Swiper itself ships with the plugin (assets/vendor/swiper, v12.2.0, MIT)
-    // and is served from the site's own origin, so a strict CSP needs no extra
-    // hosts. Set useCdn to true to load it from jsDelivr instead — that host
-    // then has to be allowed in style-src and script-src.
+    // The block ships one stylesheet and one script in assets/dist, each
+    // bundling Swiper (v12.2.0, MIT) with the block's own code. Both are served
+    // from the site's own origin, so a strict CSP needs no extra hosts.
     'options' => [
         'injectAssets' => true,
-        'useCdn'       => false,
     ],
 
     'icons' => [

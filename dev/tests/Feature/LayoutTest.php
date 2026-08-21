@@ -222,7 +222,7 @@ test('a block in a part-width column asks for a smaller image', function () {
 
 test('shared assets are injected once per page, however many blocks', function () {
     // Regression: the guard used to be a `static` inside the snippet, which Kirby
-    // re-initialises on every render — so a page of three blocks emitted the CDN
+    // re-initialises on every render — so a page of three blocks emitted the
     // <link>/<script> tags three times, loading and running Swiper three times.
     $html = renderLayout(makeLayoutRows([
         swiperRow('One'),
@@ -230,10 +230,8 @@ test('shared assets are injected once per page, however many blocks', function (
         swiperRow('Three'),
     ]));
 
-    expect(substr_count($html, 'swiper-bundle.min.css'))->toBe(1);
-    expect(substr_count($html, 'swiper-bundle.min.js'))->toBe(1);
-    expect(substr_count($html, 'swiper-block.css'))->toBe(1);
-    expect(substr_count($html, 'swiper-block.js'))->toBe(1);
+    expect(substr_count($html, 'dist/swiper-block.css'))->toBe(1);
+    expect(substr_count($html, 'dist/swiper-block.js'))->toBe(1);
     expect(substr_count($html, 'class="swiper swiper-block"'))->toBe(3);
 });
 
@@ -244,12 +242,12 @@ test('a second page load injects the assets again', function () {
         ]]]],
     ]));
 
-    expect(substr_count($page(), 'swiper-bundle.min.js'))->toBe(1);
+    expect(substr_count($page(), 'dist/swiper-block.js'))->toBe(1);
     // Same request, already claimed — no repeat.
-    expect(substr_count($page(), 'swiper-bundle.min.js'))->toBe(0);
+    expect(substr_count($page(), 'dist/swiper-block.js'))->toBe(0);
 
     SwiperBlock::forgetAssets();
-    expect(substr_count($page(), 'swiper-bundle.min.js'))->toBe(1);
+    expect(substr_count($page(), 'dist/swiper-block.js'))->toBe(1);
 });
 
 test('the injectAssets option suppresses the tags without spending the claim', function () {
@@ -269,64 +267,47 @@ test('the injectAssets option suppresses the tags without spending the claim', f
     };
 
     $reboot(['ianhobbs.kirby-swiper-block.injectAssets' => false]);
-    expect($render())->not->toContain('swiper-bundle.min.js');
+    expect($render())->not->toContain('dist/swiper-block.js');
 
     // Turning injection back on still works — an opted-out render must not have
     // consumed the one-shot claim.
     $reboot();
-    expect(substr_count($render(), 'swiper-bundle.min.js'))->toBe(1);
+    expect(substr_count($render(), 'dist/swiper-block.js'))->toBe(1);
 });
 
-test('Swiper is served from the site origin, so a strict CSP needs no extra hosts', function () {
+test('the whole frontend ships as two same-origin files', function () {
     $html = renderLayout(makeLayout([['width' => '1/1', 'blocks' => [['slides' => [
         ['heading' => 'Slide', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
     ]]]]]));
 
-    // The whole point: no off-origin host in the emitted tags. A typical strict
-    // policy allows `style-src 'self' 'unsafe-inline'` with no nonce and no
-    // strict-dynamic, so a CDN stylesheet has nothing to fall back on and is
-    // simply blocked.
+    // The point of bundling: no off-origin host, and one request each. A typical
+    // strict policy allows `style-src 'self' 'unsafe-inline'` with no nonce and
+    // no strict-dynamic, so a CDN stylesheet has nothing to fall back on.
     expect($html)->not->toContain('cdn.jsdelivr.net');
+    expect($html)->toContain('/media/plugins/ianhobbs/kirby-swiper-block/');
 
-    // Both Swiper's bundle and the plugin's own files come from /media/plugins.
-    expect($html)->toContain('/media/plugins/ianhobbs/kirby-swiper-block/')
-                 ->toContain('vendor/swiper/swiper-bundle.min.css')
-                 ->toContain('vendor/swiper/swiper-bundle.min.js');
+    expect(substr_count($html, '<link rel="stylesheet"'))->toBe(1);
+    expect(substr_count($html, '<script src='))->toBe(1);
 });
 
-test('the useCdn option puts the CDN back', function () {
-    $slides = [['heading' => 'Slide', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center']];
-    $render = fn () => renderLayout(makeLayout([['width' => '1/1', 'blocks' => [['slides' => $slides]]]]));
+test('the built bundle carries Swiper and its licence', function () {
+    // The build output is committed, so a stale or failed build would ship a
+    // bundle without Swiper in it — and the block would silently do nothing.
+    $dist = __DIR__ . '/../../../assets/dist';
 
-    $default = kirby();
-    $reboot  = function (array $options = []) use ($default) {
-        $default->clone(['options' => $options]);
-        restore_error_handler();
-        restore_exception_handler();
-    };
+    $js = file_get_contents($dist . '/swiper-block.js');
+    expect($js)->toContain('Swiper 12.2.0')          // banner
+               ->toContain('swiper-block')            // our own code made it in
+               ->toContain('data-swiper-config');
 
-    SwiperBlock::forgetAssets();
-    $reboot(['ianhobbs.kirby-swiper-block.useCdn' => true]);
+    // Only the modules the block registers. These strings appear in the full
+    // bundle but must be absent once tree-shaken.
+    foreach (['effect-cube', 'effect-flip', 'swiper-zoom-container'] as $dropped) {
+        expect($js)->not->toContain($dropped);
+    }
 
-    $html = $render();
-    expect($html)->toContain('https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css')
-                 ->toContain('https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js')
-                 // The plugin's own CSS/JS stay local either way.
-                 ->toContain('swiper-block.css')
-                 ->not->toContain('vendor/swiper/');
-
-    SwiperBlock::forgetAssets();
-    $reboot();
-});
-
-test('the bundled Swiper is the version the plugin claims, with its licence', function () {
-    // Vendored third-party code: pin it visibly, and ship the MIT licence next
-    // to it. A silent drift here means the docs describe a different Swiper.
-    $dir = __DIR__ . '/../../../assets/vendor/swiper';
-
-    expect(file_get_contents($dir . '/swiper-bundle.min.js'))->toContain('Swiper 12.2.0');
-    expect(file_get_contents($dir . '/swiper-bundle.min.css'))->toContain('Swiper 12.2.0');
-    expect(file_get_contents($dir . '/LICENSE'))->toContain('The MIT License');
+    expect(file_get_contents($dist . '/swiper-block.css'))->toContain('Swiper 12.2.0');
+    expect(file_get_contents($dist . '/LICENSE.swiper'))->toContain('The MIT License');
 });
 
 // ── Captions inside a themed column ──────────────────────────────────────────

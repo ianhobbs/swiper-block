@@ -14,8 +14,10 @@ into the plugin.
 ```text
 kirby-swiper-block/
 ├── index.php  index.js  index.css     ← plugin entry + built Panel bundle
+├── assets/dist/                      ← built frontend bundle (committed)
 ├── assets/  blueprints/  classes/  snippets/
 ├── src/                              ← Panel Vue source (built into index.js)
+├── src/frontend/                     ← frontend source (built into assets/dist)
 ├── composer.json                     ← plugin manifest only, no dev tooling
 └── dev/                              ← the whole development environment
     ├── composer.json                 ← getkirby/cms + pestphp/pest
@@ -234,16 +236,48 @@ URL.
 
 ---
 
-## Panel asset build
+## Asset builds
 
-The Panel Vue component is pre-built and committed to `index.js` and `index.css` in the plugin
-root — the only locations Kirby auto-loads Panel assets from. End users do not need Node.
+There are **two** builds, both pre-built and committed. End users never need Node.
 
 ```bash
 npm install
-npm run build      # index.js + index.css (plugin root)
-npm run dev        # kirbyup dev server, hot-reloads on src/ changes
+npm run build            # both of the below
+npm run build:panel      # src/index.js       → index.js / index.css  (plugin root)
+npm run build:frontend   # src/frontend/*     → assets/dist/*
+npm run dev              # kirbyup dev server, hot-reloads on src/ changes
 ```
+
+### Frontend bundle — `src/frontend/` → `assets/dist/`
+
+`assets/dist/swiper-block.js` and `.css` are what the snippet loads on the site. Each bundles
+**Swiper 12.2.0 (MIT)** with the block's own code, via esbuild.
+
+Edit the sources, never the output:
+
+| Source | Purpose |
+|---|---|
+| `src/frontend/swiper-block.js` | Init logic **and** the Swiper module registration |
+| `src/frontend/swiper-block.css` | The block's own rules — this is the file the tests assert against |
+| `src/frontend/swiper-block.entry.css` | Chooses which Swiper stylesheets come along |
+
+Two things to know before changing it:
+
+- **Swiper is imported inside `swiper-block.js`, not from a separate entry.** Static imports
+  are hoisted, so an entry that imported the init module *and then* assigned `window.Swiper`
+  would run the init first and find nothing there.
+- **Adding a Swiper feature means registering its module.** Only the ten the block can use are
+  compiled in. A config key whose module is missing fails silently — Swiper ignores options it
+  has no module for, so the feature simply does nothing rather than erroring. If you add a
+  Panel effect, add its module and its stylesheet.
+
+`assets/dist/` is committed deliberately: a Composer install has no build step, so an
+uncommitted or stale bundle ships a plugin whose frontend does nothing. Note that the root
+`.gitignore` scopes its Node `dist/` rule to `/dist/` for exactly this reason.
+
+### Panel bundle — `src/` → `index.js` / `index.css`
+
+The plugin root is the only location Kirby auto-loads Panel assets from.
 
 Built with [kirbyup](https://github.com/johannschopplich/kirbyup), the official Kirby Panel
 plugin bundler. It compiles SFCs against the Panel's bundled Vue 2.7 runtime (instead of
@@ -260,7 +294,8 @@ matches what the frontend renders.
 
 1. Update `'version' => 'x.y.z'` in `index.php` and `"version"` in `package.json`
 2. `cd dev && composer test` — all tests must pass
-3. `npm run build` if `src/` changed, and commit `index.js` / `index.css`
+3. `npm run build` if anything under `src/` changed, and commit the output —
+   `index.js` / `index.css` for the Panel, `assets/dist/` for the frontend
 4. Check the README still matches the blueprint — fields removed from
    `blueprints/blocks/swiper.yml` have to leave the docs too
 5. Commit everything, **then** tag — the tag must contain the version bump:

@@ -1,17 +1,53 @@
 /**
- * swiper-block.js — Kirby Swiper Block frontend init
+ * swiper-block.js — Kirby Swiper Block frontend init (bundle source)
  *
- * Reads per-block configuration from data-swiper-config and initialises
- * Swiper using the global (window.Swiper) loaded by the snippet — from the
- * bundle shipped in assets/vendor/swiper, or from the CDN when the `useCdn`
- * option is on. Either way the global is the same.
+ * Reads per-block configuration from data-swiper-config and initialises Swiper.
  *
- * No build step required. Served directly as a Kirby plugin asset:
- *   kirby()->plugin('ianhobbs/kirby-swiper-block')->asset('js/swiper-block.js')
+ * BUILD ARTIFACT: this is the source. `npm run build` bundles it, together with
+ * only the Swiper modules listed below, into assets/dist/swiper-block.js —
+ * which is what the snippet actually loads. Editing the built file directly is
+ * pointless; it is overwritten on the next build.
  *
- * The swiper-bundle script pre-registers all modules, so no explicit modules
- * array is needed in the config object.
+ * Swiper is imported here rather than in a separate entry file on purpose:
+ * static imports are hoisted, so an entry that imported this module *and* then
+ * assigned the global would run this file's body first and find nothing there.
+ *
+ * Only the modules the block can actually use are registered. The bundle drops
+ * the rest (cube/flip/cards effects, thumbs, zoom, parallax, scrollbar, grid,
+ * virtual, hash & history navigation) — roughly a third of Swiper's weight. All
+ * four Panel effects have to stay: editors choose per block, at runtime.
  */
+import Swiper from 'swiper';
+import {
+  Navigation,
+  Pagination,
+  Autoplay,
+  Keyboard,
+  Mousewheel,
+  FreeMode,
+  A11y,
+  EffectFade,
+  EffectCreative,
+  EffectCoverflow,
+} from 'swiper/modules';
+
+Swiper.use([
+  Navigation,
+  Pagination,
+  Autoplay,
+  Keyboard,
+  Mousewheel,
+  FreeMode,
+  A11y,
+  EffectFade,
+  EffectCreative,
+  EffectCoverflow,
+]);
+
+// Kept for sites (and site JS) that reach for the global, and for anyone who
+// loaded Swiper this way before the bundle existed.
+window.Swiper = Swiper;
+
 (function () {
   'use strict';
 
@@ -20,11 +56,6 @@
    * Safe to call multiple times (Turbo, htmx, manual re-init).
    */
   function initSwiperBlocks() {
-    if (typeof window.Swiper === 'undefined') {
-      console.warn('[swiper-block] window.Swiper not found. Ensure the swiper-bundle <script> loads before this file.');
-      return;
-    }
-
     document.querySelectorAll('.swiper-block').forEach(function (el) {
 
       // ── Skip already-initialised instances ─────────────────────────────────
@@ -156,7 +187,7 @@
       };
 
       // ── Initialise ───────────────────────────────────────────────────────────
-      var swiper = new window.Swiper(el, config);
+      var swiper = new Swiper(el, config);
       el._swiperInstance = swiper;
 
       // ── LQIP blur-up ─────────────────────────────────────────────────────────

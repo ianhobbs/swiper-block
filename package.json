@@ -6,19 +6,21 @@
   "type": "module",
   "scripts": {
     "dev": "kirbyup serve src/index.js",
-    "build": "kirbyup src/index.js",
-    "watch": "kirbyup src/index.js --watch",
-    "swiper:version": "grep -o 'Swiper [0-9.]*' assets/vendor/swiper/swiper-bundle.min.js | head -1",
-    "swiper:update": "V=${SWIPER_VERSION:-12.2.0}; for f in swiper-bundle.min.css swiper-bundle.min.js; do curl -sfL -o assets/vendor/swiper/$f https://cdn.jsdelivr.net/npm/swiper@$V/$f || exit 1; done; curl -sfL -o assets/vendor/swiper/LICENSE https://raw.githubusercontent.com/nolimits4web/swiper/v$V/LICENSE"
+    "build": "npm run build:panel && npm run build:frontend",
+    "build:panel": "kirbyup src/index.js",
+    "build:frontend": "esbuild src/frontend/swiper-block.js --bundle --minify --format=iife --target=es2019 --legal-comments=none --banner:js='/*! Bundles Swiper 12.2.0 (MIT) - https://swiperjs.com - Copyright 2019 Vladimir Kharlampidi. See assets/dist/LICENSE.swiper */' --outfile=assets/dist/swiper-block.js && esbuild src/frontend/swiper-block.entry.css --bundle --minify --legal-comments=none --banner:css='/*! Bundles Swiper 12.2.0 (MIT) - https://swiperjs.com - Copyright 2019 Vladimir Kharlampidi. See assets/dist/LICENSE.swiper */' --outfile=assets/dist/swiper-block.css",
+    "watch": "kirbyup src/index.js --watch"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "kirbyup": "^3.4.1"
+    "esbuild": "^0.25.12",
+    "kirbyup": "^3.4.1",
+    "swiper": "12.2.0"
   },
   "overrides": {
     "vite": "^6.4.3",
-    "esbuild": "^0.25.12"
+    "esbuild": "$esbuild"
   }
 }

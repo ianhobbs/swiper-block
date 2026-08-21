@@ -66,7 +66,7 @@ test('layout tab offers Tailwind-named caption sizes', function () {
     expect($headings)->toBe(IanHobbs\Swiper\SwiperBlock::HEADING_SIZES);
     expect($subtexts)->toBe(IanHobbs\Swiper\SwiperBlock::SUBTEXT_SIZES);
 
-    $css = file_get_contents(__DIR__ . '/../../../assets/css/swiper-block.css');
+    $css = file_get_contents(__DIR__ . '/../../../src/frontend/swiper-block.css');
     foreach (array_unique([...$headings, ...$subtexts]) as $class) {
         expect($css)->toContain(".swiper-slide-caption .{$class})");
     }
@@ -95,7 +95,7 @@ test('the stylesheet applies the mobile height below the stacking breakpoint', f
     // Swiper can't carry this — `breakpoints` takes layout params only, and the
     // `height` option makes the instance non-responsive. It has to be a media
     // query, so the property the model emits must actually be consumed by one.
-    $css = file_get_contents(__DIR__ . '/../../../assets/css/swiper-block.css');
+    $css = file_get_contents(__DIR__ . '/../../../src/frontend/swiper-block.css');
 
     expect($css)->toContain('@media (max-width: 768px)')
                 ->toContain('--swiper-block-mobile-height');
@@ -111,7 +111,7 @@ test('layout tab offers caption fonts the model accepts and the CSS defines', fu
 
     // Same contract as the sizes: every offered class needs a fallback rule, or
     // a non-Tailwind site picks a font and sees nothing change.
-    $css = file_get_contents(__DIR__ . '/../../../assets/css/swiper-block.css');
+    $css = file_get_contents(__DIR__ . '/../../../src/frontend/swiper-block.css');
     foreach ($values as $class) {
         expect($css)->toContain(".swiper-slide-caption.{$class})");
     }

@@ -4,7 +4,10 @@ Thumbs.db
 
 # Node
 node_modules/
-dist/
+# Root-level only: assets/dist holds the COMMITTED frontend bundle (Swiper +
+# the block's own code). A bare `dist/` pattern swallowed it, which would ship
+# a Composer install with no frontend assets at all.
+/dist/
 build/
 .vite/
 .parcel-cache/

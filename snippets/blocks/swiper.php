@@ -46,23 +46,14 @@ if (kirby()->option('ianhobbs.kirby-swiper-block.injectAssets', true) && \IanHob
     // nonce attribute.
     $nonce = function_exists('cspNonce') ? ' nonce="' . cspNonce() . '"' : '';
 
-    // Swiper's own bundle ships with the plugin and is served from the site's
-    // own origin by default, so a strict CSP needs no extra hosts: the typical
-    // style-src is `'self' 'unsafe-inline'`, with no nonce or strict-dynamic to
-    // rescue an off-origin stylesheet the way script-src has for the JS.
-    // Opt back into the CDN with the `useCdn` option.
-    if (kirby()->option('ianhobbs.kirby-swiper-block.useCdn', false) === true) {
-        $swiperCss = 'https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css';
-        $swiperJs  = 'https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js';
-    } else {
-        $swiperCss = $plugin->asset('vendor/swiper/swiper-bundle.min.css')->url();
-        $swiperJs  = $plugin->asset('vendor/swiper/swiper-bundle.min.js')->url();
-    }
-
-    echo '<link rel="stylesheet" href="' . $swiperCss . '">' . "\n";
-    echo '<link rel="stylesheet" href="' . $plugin->asset('css/swiper-block.css')->url() . '">' . "\n";
-    echo '<script src="' . $swiperJs . '" defer' . $nonce . '></script>' . "\n";
-    echo '<script src="' . $plugin->asset('js/swiper-block.js')->url() . '" defer' . $nonce . '></script>' . "\n";
+    // One stylesheet and one script: Swiper and the block's own code are built
+    // together into assets/dist (see package.json → build:frontend), carrying
+    // only the Swiper modules the block can use. Both come from the site's own
+    // origin, so a strict CSP needs no extra hosts — the typical style-src is
+    // `'self' 'unsafe-inline'`, with no nonce or strict-dynamic to rescue an
+    // off-origin stylesheet the way script-src has for the JS.
+    echo '<link rel="stylesheet" href="' . $plugin->asset('dist/swiper-block.css')->url() . '">' . "\n";
+    echo '<script src="' . $plugin->asset('dist/swiper-block.js')->url() . '" defer' . $nonce . '></script>' . "\n";
 }
 
 // Per-slide image params — resolved once; identical for every slide in the block.

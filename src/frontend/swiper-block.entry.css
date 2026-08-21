@@ -1,0 +1,23 @@
+/**
+ * swiper-block.entry.css — Kirby Swiper Block frontend styles (bundle source)
+ *
+ * BUILD ARTIFACT: `npm run build` bundles this into assets/dist/swiper-block.css,
+ * which is what the snippet loads. Author rules in swiper-block.css, not here —
+ * this file only decides which of Swiper's own stylesheets come along.
+ *
+ * Swiper ships per-module CSS. Pulling in only the modules the block registers
+ * (see swiper-block.js) drops the styles for cube/flip/cards, thumbs, zoom,
+ * parallax, scrollbar and grid — a little over half the CSS weight once gzipped.
+ */
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/css/free-mode';
+@import 'swiper/css/a11y';
+@import 'swiper/css/effect-fade';
+@import 'swiper/css/effect-creative';
+@import 'swiper/css/effect-coverflow';
+
+/* The block's own rules come last, so they layer over Swiper's base styles —
+   the same order the two separate <link> tags used to guarantee. */
+@import './swiper-block.css';
