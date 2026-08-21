@@ -176,15 +176,15 @@ test('native mode builds thumbs inline so no site config is required', function 
 // ── Caption typography & colour ───────────────────────────────────────────────
 
 test('caption size classes default and reject values outside the scale', function () {
-    expect(makeBlock()->headingSizeClass())->toBe('text-lg');
+    expect(makeBlock()->headingSizeClass())->toBe('text-sm');
     expect(makeBlock()->subtextSizeClass())->toBe('text-lg');
 
     expect(makeBlock(['heading_size' => 'text-xs'])->headingSizeClass())->toBe('text-xs');
     expect(makeBlock(['subtext_size' => 'text-sm'])->subtextSizeClass())->toBe('text-sm');
 
     // Anything off the list falls back — the value lands in a class attribute.
-    expect(makeBlock(['heading_size' => 'text-9xl'])->headingSizeClass())->toBe('text-lg');
-    expect(makeBlock(['heading_size' => 'foo" onload="x'])->headingSizeClass())->toBe('text-lg');
+    expect(makeBlock(['heading_size' => 'text-9xl'])->headingSizeClass())->toBe('text-sm');
+    expect(makeBlock(['heading_size' => 'foo" onload="x'])->headingSizeClass())->toBe('text-sm');
     expect(makeBlock(['subtext_size' => 'text-9xl'])->subtextSizeClass())->toBe('text-lg');
 });
 

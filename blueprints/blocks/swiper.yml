@@ -242,12 +242,12 @@ tabs:
       heading_size:
         label: Heading Size
         type: select
-        default: text-lg
+        default: text-sm
         options:
           - { value: text-xs,   text: "XS" }
-          - { value: text-sm,   text: "S" }
+          - { value: text-sm,   text: "S (default)" }
           - { value: text-base, text: "Base" }
-          - { value: text-lg,   text: "L (default)" }
+          - { value: text-lg,   text: "L" }
         help: >
           Emitted as the Tailwind class of the same name. Tailwind styles it if the
           site uses Tailwind; otherwise the plugin's own fallback matches the scale.

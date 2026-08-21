@@ -359,8 +359,8 @@ class SwiperBlock extends Block
     /** Tailwind size class for slide headings, validated against HEADING_SIZES. */
     public function headingSizeClass(): string
     {
-        $value = $this->heading_size()->or('text-lg')->value();
-        return in_array($value, self::HEADING_SIZES, true) ? $value : 'text-lg';
+        $value = $this->heading_size()->or('text-sm')->value();
+        return in_array($value, self::HEADING_SIZES, true) ? $value : 'text-sm';
     }
 
     /** Tailwind size class for slide subtext, validated against SUBTEXT_SIZES. */

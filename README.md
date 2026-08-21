@@ -91,7 +91,7 @@ Uploads use the plugin's `swiper-image` file blueprint, which adds an **Alt text
 | Centre Active Slide | Off | Keeps the active slide centred |
 | Starting Slide | 0 | Zero-based index of the first visible slide |
 | Caption Font | `font-sans` | Font family for the whole caption — a Tailwind class name. See [Caption colour, placement & type](#caption-colour-placement--type) |
-| Heading Size | `text-lg` | Caption heading size, shared by every slide — a Tailwind class name |
+| Heading Size | `text-sm` | Caption heading size, shared by every slide — a Tailwind class name |
 | Subtext Size | `text-lg` | Caption subtext size, shared by every slide |
 
 ### Tab 3 — Animation
@@ -243,7 +243,7 @@ subtext and CTA all share a single face:
 
 ```html
 <div class="swiper-slide-caption swiper-slide-caption--center swiper-slide-caption--middle font-sans">
-  <p class="swiper-slide-heading text-lg">…</p>
+  <p class="swiper-slide-heading text-sm">…</p>
   <p class="swiper-slide-subtext text-lg">…</p>
 </div>
 ```
@@ -253,7 +253,7 @@ stays out of the way. **Tailwind is not required.** `swiper-block.css` ships a f
 covering the same scale at Tailwind's own values:
 
 ```css
-:where(.swiper-slide-caption .text-lg) { font-size: 1.125rem; line-height: 1.75rem; }
+:where(.swiper-slide-caption .text-sm) { font-size: 0.875rem; line-height: 1.25rem; }
 ```
 
 The `:where()` wrapper gives those rules **zero specificity**, so a real Tailwind utility — or

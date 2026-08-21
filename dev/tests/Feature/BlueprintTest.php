@@ -56,7 +56,7 @@ test('slides structure has per-slide caption colour and vertical position', func
 test('layout tab offers Tailwind-named caption sizes', function () {
     $fields = $this->blueprint['tabs']['layout']['fields'];
 
-    expect($fields['heading_size']['default'])->toBe('text-lg');
+    expect($fields['heading_size']['default'])->toBe('text-sm');
     expect($fields['subtext_size']['default'])->toBe('text-lg');
 
     // Every offered value must be one the model accepts, and one the CSS
