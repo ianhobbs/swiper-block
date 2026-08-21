@@ -33,7 +33,7 @@ tabs:
             help: Recommended minimum 1920 × 810 px. JPG or WebP.
 
           heading:
-            label: Heading
+            label: Caption Heading
             type: text
             width: 1/1
 
@@ -223,24 +223,35 @@ tabs:
         type: headline
         label: Caption Typography
 
+      caption_font:
+        label: Caption Font
+        type: select
+        default: font-sans
+        options:
+          - { value: font-sans,  text: "Sans (default)" }
+          - { value: font-body,  text: "Body" }
+          - { value: font-serif, text: "Serif" }
+          - { value: font-mono,  text: "Mono" }
+        help: >
+          Applies to the whole caption — heading, subtext and CTA. Emitted as the
+          Tailwind class of the same name, so a Tailwind site resolves it from its
+          own theme. Sites without Tailwind can point each one at their own face
+          by setting --swiper-block-font-sans / -body / -serif / -mono in CSS.
+        width: 1/3
+
       heading_size:
         label: Heading Size
         type: select
-        default: text-4xl
+        default: text-lg
         options:
+          - { value: text-xs,   text: "XS" }
+          - { value: text-sm,   text: "S" }
           - { value: text-base, text: "Base" }
-          - { value: text-lg,   text: "L" }
-          - { value: text-xl,   text: "XL" }
-          - { value: text-2xl,  text: "2XL" }
-          - { value: text-3xl,  text: "3XL" }
-          - { value: text-4xl,  text: "4XL (default)" }
-          - { value: text-5xl,  text: "5XL" }
-          - { value: text-6xl,  text: "6XL" }
-          - { value: text-7xl,  text: "7XL" }
+          - { value: text-lg,   text: "L (default)" }
         help: >
           Emitted as the Tailwind class of the same name. Tailwind styles it if the
           site uses Tailwind; otherwise the plugin's own fallback matches the scale.
-        width: 1/2
+        width: 1/3
 
       subtext_size:
         label: Subtext Size
@@ -253,7 +264,7 @@ tabs:
           - { value: text-xl,   text: "XL" }
           - { value: text-2xl,  text: "2XL" }
           - { value: text-3xl,  text: "3XL" }
-        width: 1/2
+        width: 1/3
 
 
   # ── Tab 3: Animation ─────────────────────────────────────────────────────────

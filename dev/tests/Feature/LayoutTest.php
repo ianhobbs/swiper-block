@@ -282,7 +282,7 @@ test('the injectAssets option suppresses the tags without spending the claim', f
 test('caption colour and placement survive the layout wrapper', function () {
     $html = renderLayout(makeLayout([
         ['width' => '1/2', 'blocks' => [[
-            'heading_size' => 'text-3xl',
+            'heading_size' => 'text-base',
             'slides' => [
                 ['heading' => 'Themed', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '',
                  'content_position' => 'left', 'content_position_y' => 'bottom', 'caption_color' => '#ffcc00'],
@@ -294,7 +294,7 @@ test('caption colour and placement survive the layout wrapper', function () {
                  ->toContain('swiper-slide-caption--left')
                  ->toContain('swiper-slide-caption--bottom')
                  ->toContain('style="color:#ffcc00"')
-                 ->toContain('class="swiper-slide-heading text-3xl"');
+                 ->toContain('class="swiper-slide-heading text-base"');
 });
 
 test('an empty column renders no block markup', function () {

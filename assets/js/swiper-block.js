@@ -44,7 +44,16 @@
         // ── Layout ────────────────────────────────────────────────────────────
         // Captions sit below the figure, so slide heights vary — let Swiper grow
         // the container to fit the active slide.
-        autoHeight:     true,
+        //
+        // Off when the block has an explicit Fixed Height. autoHeight measures
+        // the active slide and writes an inline height onto .swiper-wrapper, but
+        // in fixed-height mode the stylesheet gives .swiper-slide height:100% of
+        // that same wrapper — so the measurement depends on the value it is
+        // producing. With `observer` on (below), each write is a style mutation
+        // that triggers another update, and the height oscillates every tick:
+        // the mobile flicker. Fixed height already sizes the container, so
+        // autoHeight has nothing to contribute there.
+        autoHeight:     !raw.fixedHeight,
         direction:      raw.direction     || 'horizontal',
         slidesPerView:  raw.slidesPerView || 1,       // int or 'auto'
         slidesPerGroup: raw.slidesPerGroup || 1,
@@ -135,8 +144,13 @@
         },
 
         // ── Stability ─────────────────────────────────────────────────────────
+        // observer re-inits the instance when the block's own styles or child
+        // elements change — what makes the block survive being revealed from a
+        // tab or accordion. observeParents extended that to every ancestor,
+        // which on mobile meant an update on each address-bar resize (a vh/svh
+        // Fixed Height changes with it) for no benefit the block relies on.
         observer:       true,
-        observeParents: true,
+        observeParents: false,
       };
 
       // ── Initialise ───────────────────────────────────────────────────────────

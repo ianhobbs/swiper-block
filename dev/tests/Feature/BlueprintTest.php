@@ -56,7 +56,7 @@ test('slides structure has per-slide caption colour and vertical position', func
 test('layout tab offers Tailwind-named caption sizes', function () {
     $fields = $this->blueprint['tabs']['layout']['fields'];
 
-    expect($fields['heading_size']['default'])->toBe('text-4xl');
+    expect($fields['heading_size']['default'])->toBe('text-lg');
     expect($fields['subtext_size']['default'])->toBe('text-lg');
 
     // Every offered value must be one the model accepts, and one the CSS
@@ -69,6 +69,22 @@ test('layout tab offers Tailwind-named caption sizes', function () {
     $css = file_get_contents(__DIR__ . '/../../../assets/css/swiper-block.css');
     foreach (array_unique([...$headings, ...$subtexts]) as $class) {
         expect($css)->toContain(".swiper-slide-caption .{$class})");
+    }
+});
+
+test('layout tab offers caption fonts the model accepts and the CSS defines', function () {
+    $field = $this->blueprint['tabs']['layout']['fields']['caption_font'];
+
+    expect($field['default'])->toBe('font-sans');
+
+    $values = array_column($field['options'], 'value');
+    expect($values)->toBe(IanHobbs\Swiper\SwiperBlock::CAPTION_FONTS);
+
+    // Same contract as the sizes: every offered class needs a fallback rule, or
+    // a non-Tailwind site picks a font and sees nothing change.
+    $css = file_get_contents(__DIR__ . '/../../../assets/css/swiper-block.css');
+    foreach ($values as $class) {
+        expect($css)->toContain(".swiper-slide-caption.{$class})");
     }
 });
 

@@ -27,12 +27,26 @@ class SwiperBlock extends Block
      * ignored — the value lands in a class attribute.
      */
     public const HEADING_SIZES = [
-        'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl',
-        'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl',
+        'text-xs', 'text-sm', 'text-base', 'text-lg',
     ];
 
     public const SUBTEXT_SIZES = [
         'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl',
+    ];
+
+    /**
+     * Caption font families offered in the Panel, as Tailwind utility class
+     * names. Same contract as the sizes: a Tailwind site resolves them from its
+     * own theme, and swiper-block.css defines each one as a `:where()` fallback
+     * pointing at a `--swiper-block-font-*` custom property, so a site without
+     * Tailwind can restyle the whole set by setting those properties.
+     *
+     * `font-body` is not a Tailwind stock utility — it is the conventional name
+     * for a theme's body face, and is included because most Kirby themes define
+     * one. On a site that doesn't, the CSS fallback keeps it rendering.
+     */
+    public const CAPTION_FONTS = [
+        'font-sans', 'font-body', 'font-serif', 'font-mono',
     ];
 
     /**
@@ -345,8 +359,8 @@ class SwiperBlock extends Block
     /** Tailwind size class for slide headings, validated against HEADING_SIZES. */
     public function headingSizeClass(): string
     {
-        $value = $this->heading_size()->or('text-4xl')->value();
-        return in_array($value, self::HEADING_SIZES, true) ? $value : 'text-4xl';
+        $value = $this->heading_size()->or('text-lg')->value();
+        return in_array($value, self::HEADING_SIZES, true) ? $value : 'text-lg';
     }
 
     /** Tailwind size class for slide subtext, validated against SUBTEXT_SIZES. */
@@ -354,6 +368,16 @@ class SwiperBlock extends Block
     {
         $value = $this->subtext_size()->or('text-lg')->value();
         return in_array($value, self::SUBTEXT_SIZES, true) ? $value : 'text-lg';
+    }
+
+    /**
+     * Tailwind font-family class for the whole caption. Emitted on the caption
+     * wrapper, so the heading, subtext and CTA all inherit one face.
+     */
+    public function captionFontClass(): string
+    {
+        $value = $this->caption_font()->or('font-sans')->value();
+        return in_array($value, self::CAPTION_FONTS, true) ? $value : 'font-sans';
     }
 
     /**
@@ -406,6 +430,12 @@ class SwiperBlock extends Block
 
         $config = [
             // Layout
+            // Whether the block carries an explicit container height. Drives
+            // autoHeight in swiper-block.js: with a fixed height the slides are
+            // height:100% of the wrapper, so measuring the active slide to size
+            // that same wrapper is circular and oscillates on every observer
+            // tick. Fixed height ⇒ autoHeight off.
+            'fixedHeight'    => $this->sliderHeight() !== null,
             'direction'      => $this->direction()->or('horizontal')->value(),
             'slidesPerView'  => $slidesPerView,
             'slidesPerGroup' => (int) $this->slides_per_group()->or(1)->value(),

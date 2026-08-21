@@ -30,6 +30,24 @@ test('jsConfig returns valid JSON of Swiper options', function () {
     expect($data['loop'])->toBeTrue();                 // toggle → bool
 });
 
+test('jsConfig reports whether the block has an explicit height', function () {
+    // swiper-block.js turns autoHeight off when this is true. With a Fixed
+    // Height the slides are height:100% of the wrapper, so letting autoHeight
+    // size that wrapper from the active slide is circular — and with `observer`
+    // on, each write triggers another update and the height oscillates. That
+    // feedback loop was the mobile flicker.
+    expect(json_decode(makeBlock()->jsConfig(), true)['fixedHeight'])->toBeFalse();
+    expect(json_decode(makeBlock(['slider_height' => '0'])->jsConfig(), true)['fixedHeight'])->toBeFalse();
+
+    foreach (['px', 'vh', 'svh'] as $unit) {
+        $data = json_decode(makeBlock([
+            'slider_height'      => '600',
+            'slider_height_unit' => $unit,
+        ])->jsConfig(), true);
+        expect($data['fixedHeight'])->toBeTrue();
+    }
+});
+
 test('jsConfig keeps slidesPerView "auto" as a string', function () {
     $data = json_decode(makeBlock(['slides_per_view' => 'auto'])->jsConfig(), true);
     expect($data['slidesPerView'])->toBe('auto');
@@ -158,16 +176,27 @@ test('native mode builds thumbs inline so no site config is required', function 
 // ── Caption typography & colour ───────────────────────────────────────────────
 
 test('caption size classes default and reject values outside the scale', function () {
-    expect(makeBlock()->headingSizeClass())->toBe('text-4xl');
+    expect(makeBlock()->headingSizeClass())->toBe('text-lg');
     expect(makeBlock()->subtextSizeClass())->toBe('text-lg');
 
-    expect(makeBlock(['heading_size' => 'text-6xl'])->headingSizeClass())->toBe('text-6xl');
+    expect(makeBlock(['heading_size' => 'text-xs'])->headingSizeClass())->toBe('text-xs');
     expect(makeBlock(['subtext_size' => 'text-sm'])->subtextSizeClass())->toBe('text-sm');
 
     // Anything off the list falls back — the value lands in a class attribute.
-    expect(makeBlock(['heading_size' => 'text-9xl'])->headingSizeClass())->toBe('text-4xl');
-    expect(makeBlock(['heading_size' => 'foo" onload="x'])->headingSizeClass())->toBe('text-4xl');
-    expect(makeBlock(['subtext_size' => 'text-7xl'])->subtextSizeClass())->toBe('text-lg');
+    expect(makeBlock(['heading_size' => 'text-9xl'])->headingSizeClass())->toBe('text-lg');
+    expect(makeBlock(['heading_size' => 'foo" onload="x'])->headingSizeClass())->toBe('text-lg');
+    expect(makeBlock(['subtext_size' => 'text-9xl'])->subtextSizeClass())->toBe('text-lg');
+});
+
+test('caption font class defaults to font-sans and rejects anything off the list', function () {
+    expect(makeBlock()->captionFontClass())->toBe('font-sans');
+
+    foreach (SwiperBlock::CAPTION_FONTS as $font) {
+        expect(makeBlock(['caption_font' => $font])->captionFontClass())->toBe($font);
+    }
+
+    expect(makeBlock(['caption_font' => 'font-comic'])->captionFontClass())->toBe('font-sans');
+    expect(makeBlock(['caption_font' => 'x" onload="y'])->captionFontClass())->toBe('font-sans');
 });
 
 test('verticalPosition accepts the three placements and defaults to middle', function () {

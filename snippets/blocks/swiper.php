@@ -37,10 +37,15 @@ if ($block->isRowDuplicate()) {
 // Honour the injectAssets option — sites that load Swiper themselves can disable it.
 if (kirby()->option('ianhobbs.kirby-swiper-block.injectAssets', true) && \IanHobbs\Swiper\SwiperBlock::claimAssets()) {
     $plugin = kirby()->plugin('ianhobbs/kirby-swiper-block');
+    // Sites running a strict-dynamic CSP (e.g. akibeo/kirby-csp) ignore host
+    // allowlists on script-src — only a matching nonce trusts a <script>, CDN
+    // or not. function_exists keeps this plugin working without that
+    // dependency; sites without a CSP just get no nonce attribute.
+    $nonce = function_exists('cspNonce') ? ' nonce="' . cspNonce() . '"' : '';
     echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">' . "\n";
     echo '<link rel="stylesheet" href="' . $plugin->asset('css/swiper-block.css')->url() . '">' . "\n";
-    echo '<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js" defer></script>' . "\n";
-    echo '<script src="' . $plugin->asset('js/swiper-block.js')->url() . '" defer></script>' . "\n";
+    echo '<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js" defer' . $nonce . '></script>' . "\n";
+    echo '<script src="' . $plugin->asset('js/swiper-block.js')->url() . '" defer' . $nonce . '></script>' . "\n";
 }
 
 // Per-slide image params — resolved once; identical for every slide in the block.
@@ -55,6 +60,7 @@ $imgSizes         = $block->imgSizes();
 // that don't run Tailwind (see "Caption typography" there).
 $headingSize      = $block->headingSizeClass();
 $subtextSize      = $block->subtextSizeClass();
+$captionFont      = $block->captionFontClass();
 ?>
 
 <div
@@ -131,7 +137,7 @@ $subtextSize      = $block->subtextSizeClass();
 
       <?php if ($slide->heading()->isNotEmpty() || $slide->subtext()->isNotEmpty() || $slide->link()->isNotEmpty()) : ?>
       <div
-        class="swiper-slide-caption swiper-slide-caption--<?= $position ?> swiper-slide-caption--<?= $positionY ?>"
+        class="swiper-slide-caption swiper-slide-caption--<?= $position ?> swiper-slide-caption--<?= $positionY ?> <?= $captionFont ?>"
         <?php if ($captionColor) : ?>style="color:<?= htmlspecialchars($captionColor, ENT_QUOTES, 'UTF-8') ?>"<?php endif ?>
       >
 
