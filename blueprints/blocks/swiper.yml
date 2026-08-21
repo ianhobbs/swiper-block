@@ -56,7 +56,7 @@ tabs:
             width: 1/2
 
           content_position:
-            label: Content Position
+            label: Caption Position
             type: select
             default: center
             options:
