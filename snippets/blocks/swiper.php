@@ -60,6 +60,7 @@ $imgSizes         = $block->imgSizes();
 // that don't run Tailwind (see "Caption typography" there).
 $headingSize      = $block->headingSizeClass();
 $subtextSize      = $block->subtextSizeClass();
+$captionFont      = $block->captionFontClass();
 ?>
 
 <div
@@ -136,7 +137,7 @@ $subtextSize      = $block->subtextSizeClass();
 
       <?php if ($slide->heading()->isNotEmpty() || $slide->subtext()->isNotEmpty() || $slide->link()->isNotEmpty()) : ?>
       <div
-        class="swiper-slide-caption swiper-slide-caption--<?= $position ?> swiper-slide-caption--<?= $positionY ?>"
+        class="swiper-slide-caption swiper-slide-caption--<?= $position ?> swiper-slide-caption--<?= $positionY ?> <?= $captionFont ?>"
         <?php if ($captionColor) : ?>style="color:<?= htmlspecialchars($captionColor, ENT_QUOTES, 'UTF-8') ?>"<?php endif ?>
       >
 

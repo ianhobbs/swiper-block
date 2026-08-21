@@ -180,16 +180,44 @@
    (specificity 0,1,0) therefore always wins, regardless of stylesheet order, and
    so does any site rule targeting these elements. Values match Tailwind's default
    font-size scale (size / line-height). */
+:where(.swiper-slide-caption .text-xs)   { font-size: 0.75rem;  line-height: 1rem; }
 :where(.swiper-slide-caption .text-sm)   { font-size: 0.875rem; line-height: 1.25rem; }
 :where(.swiper-slide-caption .text-base) { font-size: 1rem;     line-height: 1.5rem; }
 :where(.swiper-slide-caption .text-lg)   { font-size: 1.125rem; line-height: 1.75rem; }
 :where(.swiper-slide-caption .text-xl)   { font-size: 1.25rem;  line-height: 1.75rem; }
 :where(.swiper-slide-caption .text-2xl)  { font-size: 1.5rem;   line-height: 2rem; }
 :where(.swiper-slide-caption .text-3xl)  { font-size: 1.875rem; line-height: 2.25rem; }
-:where(.swiper-slide-caption .text-4xl)  { font-size: 2.25rem;  line-height: 2.5rem; }
-:where(.swiper-slide-caption .text-5xl)  { font-size: 3rem;     line-height: 1; }
-:where(.swiper-slide-caption .text-6xl)  { font-size: 3.75rem;  line-height: 1; }
-:where(.swiper-slide-caption .text-7xl)  { font-size: 4.5rem;   line-height: 1; }
+
+/* ── Caption font family (same Tailwind-native + fallback contract) ──────────
+   Caption Font emits one of these classes onto .swiper-slide-caption, so the
+   heading, subtext and CTA all inherit a single face. On a Tailwind site the
+   utilities already exist and win on specificity; the :where() rules below are
+   the fallback for everyone else.
+
+   Each resolves a --swiper-block-font-* custom property first, so a site can
+   restyle the set without fighting selectors — set the properties anywhere that
+   cascades to the block:
+
+     :root {
+       --swiper-block-font-body: "Your Body Face", Georgia, serif;
+       --swiper-block-font-sans: "Your Display Face", system-ui, sans-serif;
+     }
+
+   font-body has no Tailwind stock definition — it is the conventional name for
+   a theme's body face. Its fallback inherits, so a site that neither defines the
+   utility nor the custom property simply keeps the page's own font. */
+:where(.swiper-slide-caption.font-sans) {
+  font-family: var(--swiper-block-font-sans, ui-sans-serif, system-ui, sans-serif);
+}
+:where(.swiper-slide-caption.font-serif) {
+  font-family: var(--swiper-block-font-serif, ui-serif, Georgia, Cambria, "Times New Roman", serif);
+}
+:where(.swiper-slide-caption.font-mono) {
+  font-family: var(--swiper-block-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+}
+:where(.swiper-slide-caption.font-body) {
+  font-family: var(--swiper-block-font-body, inherit);
+}
 
 .swiper-slide__cta {
   display: inline-flex;

@@ -68,7 +68,7 @@ The block editor opens with **5 tabs** covering all configuration options:
 | Field | Description |
 |---|---|
 | Image | Single image — min. 1920 px wide recommended. JPG, PNG or WebP |
-| Heading | Slide title |
+| Caption Heading | Slide title |
 | Subtext / Caption | Optional body text |
 | CTA Link + Label | Optional call-to-action button |
 | Content Position | Left / Centre / Right |
@@ -90,7 +90,8 @@ Uploads use the plugin's `swiper-image` file blueprint, which adds an **Alt text
 | Gap Between Slides | 0 px | Spacing between slides |
 | Centre Active Slide | Off | Keeps the active slide centred |
 | Starting Slide | 0 | Zero-based index of the first visible slide |
-| Heading Size | `text-4xl` | Caption heading size, shared by every slide — a Tailwind class name. See [Caption colour, placement & type](#caption-colour-placement--type) |
+| Caption Font | `font-sans` | Font family for the whole caption — a Tailwind class name. See [Caption colour, placement & type](#caption-colour-placement--type) |
+| Heading Size | `text-lg` | Caption heading size, shared by every slide — a Tailwind class name |
 | Subtext Size | `text-lg` | Caption subtext size, shared by every slide |
 
 ### Tab 3 — Animation
@@ -234,14 +235,17 @@ its own text colour; the type scale should stay consistent down the block, so it
   i.e. when **Fixed Height** is set and the caption overlays the media. In auto height the
   caption sits below the image in normal flow, so Top / Middle / Bottom look the same.
 
-### Font sizes are Tailwind class names
+### Font sizes and families are Tailwind class names
 
 **Heading Size** and **Subtext Size** (Layout tab) emit the Tailwind utility of the same name
-onto the element:
+onto the element, and **Caption Font** emits one onto the caption wrapper, so the heading,
+subtext and CTA all share a single face:
 
 ```html
-<p class="swiper-slide-heading text-4xl">…</p>
-<p class="swiper-slide-subtext text-lg">…</p>
+<div class="swiper-slide-caption swiper-slide-caption--center swiper-slide-caption--middle font-sans">
+  <p class="swiper-slide-heading text-lg">…</p>
+  <p class="swiper-slide-subtext text-lg">…</p>
+</div>
 ```
 
 On a Tailwind site those classes are already yours — Tailwind styles them, and the plugin
@@ -249,16 +253,35 @@ stays out of the way. **Tailwind is not required.** `swiper-block.css` ships a f
 covering the same scale at Tailwind's own values:
 
 ```css
-:where(.swiper-slide-caption .text-4xl) { font-size: 2.25rem; line-height: 2.5rem; }
+:where(.swiper-slide-caption .text-lg) { font-size: 1.125rem; line-height: 1.75rem; }
 ```
 
 The `:where()` wrapper gives those rules **zero specificity**, so a real Tailwind utility — or
 any rule of your own targeting `.swiper-slide-heading` — always wins, whatever order the
 stylesheets load in. The fallback only applies when nothing else has an opinion.
 
+#### Overriding the caption fonts
+
+The four font classes resolve a custom property before falling back to a stock stack, so you
+can point them at your own faces without writing a selector or fighting specificity:
+
+```css
+:root {
+  --swiper-block-font-sans:  "Your Display Face", system-ui, sans-serif;
+  --swiper-block-font-body:  "Your Body Face", Georgia, serif;
+  --swiper-block-font-serif: "Your Serif", Georgia, serif;
+  --swiper-block-font-mono:  "Your Mono", ui-monospace, monospace;
+}
+```
+
+`font-body` has no Tailwind stock definition — it is the conventional name for a theme's body
+face. Its fallback is `inherit`, so a site that defines neither the utility nor the custom
+property simply keeps the page's own font.
+
 If you use Tailwind with a content scan, the class names come from this plugin's PHP rather
 than your own templates, so add the plugin to your `content` / `@source` paths (or safelist
-`text-base` through `text-7xl`) to stop them being purged.
+`text-xs` through `text-3xl` plus `font-sans` / `font-body` / `font-serif` / `font-mono`) to
+stop them being purged.
 
 ---
 

@@ -206,14 +206,32 @@ test('caption falls back to middle when no vertical position is stored', functio
 
 test('heading and subtext carry the block-level Tailwind size classes', function () {
     $html = renderBlock(makeBlock([
-        'heading_size' => 'text-6xl',
+        'heading_size' => 'text-sm',
         'subtext_size' => 'text-xl',
         'slides' => [
             ['heading' => 'Big', 'image' => [], 'subtext' => 'Small', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
         ],
     ]));
-    expect($html)->toContain('class="swiper-slide-heading text-6xl"')
+    expect($html)->toContain('class="swiper-slide-heading text-sm"')
                  ->toContain('class="swiper-slide-subtext text-xl"');
+});
+
+test('the caption wrapper carries the block-level font class', function () {
+    // One face for the whole caption — the heading, subtext and CTA inherit it
+    // rather than each carrying their own class.
+    $html = renderBlock(makeBlock([
+        'caption_font' => 'font-body',
+        'slides' => [
+            ['heading' => 'Big', 'image' => [], 'subtext' => 'Small', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+        ],
+    ]));
+    expect($html)->toContain('swiper-slide-caption--middle font-body');
+
+    // Unset falls back to the default rather than emitting a bare class.
+    $plain = renderBlock(makeBlock(['slides' => [
+        ['heading' => 'Big', 'image' => [], 'subtext' => '', 'link' => '', 'link_text' => '', 'content_position' => 'center'],
+    ]]));
+    expect($plain)->toContain('swiper-slide-caption--middle font-sans');
 });
 
 test('caption colour renders as an inline color when set', function () {
