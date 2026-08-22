@@ -256,11 +256,13 @@ subtext and CTA all share a single face:
 ```
 
 On a Tailwind site those classes are already yours — Tailwind styles them, and the plugin
-stays out of the way. **Tailwind is not required.** `swiper-block.css` ships a fallback table
+stays out of the way. 
+If you are not using TW **Tailwind is not required.** `swiper-block.css` ships a fallback table
 covering the same scale at Tailwind's own values:
 
 ```css
 :where(.swiper-slide-caption .text-sm) { font-size: 0.875rem; line-height: 1.25rem; }
+
 ```
 
 The `:where()` wrapper gives those rules **zero specificity**, so a real Tailwind utility — or
@@ -274,7 +276,7 @@ can point them at your own faces without writing a selector or fighting specific
 
 ```css
 :root {
-  --swiper-block-font-sans:  "Your Display Face", system-ui, sans-serif;
+  --swiper-block-font-sans:  "Your Sans Face", system-ui, sans-serif;
   --swiper-block-font-body:  "Your Body Face", Georgia, serif;
   --swiper-block-font-serif: "Your Serif", Georgia, serif;
   --swiper-block-font-mono:  "Your Mono", ui-monospace, monospace;
