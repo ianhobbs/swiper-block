@@ -15,9 +15,9 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.28.2",
     "kirbyup": "^3.4.1",
-    "swiper": "12.2.0"
+    "swiper": "14.1.0"
   },
   "overrides": {
     "vite": "^6.4.3",
