@@ -466,3 +466,10 @@ Development material (`dev/`, `src/`, npm config) is stripped from the released 
 ## License
 
 MIT © [Ian Hobbs](https://ianhobbsmedia.com.au)
+
+## Credit 
+
+The final credit should go to the original developer of the source code.
+Copyright (c) 2019 Vladimir Kharlampidi - thanks for a well considered slider kit.!!
+
+Ian Hobbs

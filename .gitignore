@@ -44,3 +44,6 @@ phpunit.xml.cache
 /.vscode/
 *~
 CLAUDE.md
+.claude/settings.local.json
+.claude
+.mcp.json
