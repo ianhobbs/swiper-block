@@ -4,14 +4,11 @@
 
 # Kirby Swiper Block
 
-A Kirby CMS layout block plugin that renders a full-featured [Swiper 12](https://swiperjs.com/) carousel with a Panel editor, responsive WebP images, lazy loading, and LQIP blur-up placeholders.
+A [Kirby CMS](https://getkirby.com). layout block plugin that renders a full-featured [Swiper 12](https://swiperjs.com/) carousel with a Panel editor, responsive WebP images, lazy loading, and LQIP blur-up placeholders.
 
 Swiper is loaded via CDN — no npm or build step required to use the plugin. No site config required either: images are handled entirely by the plugin.
 
 **Requires:** Kirby 5 · PHP 8.3+
-
-This release line is pinned to Kirby 5. Composer will refuse to install it alongside Kirby 6 —
-K6 moves the Panel to Vue 3 and will be supported by a separate `v2.x` line.
 
 ---
 
@@ -466,6 +463,8 @@ Development material (`dev/`, `src/`, npm config) is stripped from the released 
 ## License
 
 MIT © [Ian Hobbs](https://ianhobbsmedia.com.au)
+
+This plugin is published as free, open-source software under the MIT License. It is provided "as is", without warranty of any kind, express or implied. You are free to use, copy, modify, merge, publish, and distribute it in personal and commercial projects. If you find it useful in a commercial context, please consider supporting Kirby by purchasing a license at [getkirby.com/buy](https://getkirby.com/buy) — this plugin is not affiliated with or endorsed by the Kirby team.
 
 ## Credit 
 
