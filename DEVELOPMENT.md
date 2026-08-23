@@ -251,7 +251,7 @@ npm run dev              # kirbyup dev server, hot-reloads on src/ changes
 ### Frontend bundle — `src/frontend/` → `assets/dist/`
 
 `assets/dist/swiper-block.js` and `.css` are what the snippet loads on the site. Each bundles
-**Swiper 12.2.0 (MIT)** with the block's own code, via esbuild.
+**Swiper 14.1.0 (MIT)** with the block's own code, via esbuild.
 
 Edit the sources, never the output:
 

@@ -6,7 +6,7 @@ require_once __DIR__ . '/classes/SwiperBlock.php';
 /**
  * Kirby Swiper Block Plugin
  *
- * A custom layout block that renders a full-featured Swiper 12 carousel
+ * A custom layout block that renders a full-featured Swiper 14 carousel
  * with server-side image cropping via Kirby thumb presets.
  */
 
@@ -15,13 +15,13 @@ use IanHobbs\Swiper\SwiperBlock;
 
 Kirby::plugin('ianhobbs/kirby-swiper-block', [
 
-    'version' => '1.4.4',
+    'version' => '1.5.0',
 
     // Set injectAssets to false to skip the automatic asset injection entirely
     // (e.g. when Swiper is already bundled/loaded globally by the site).
     //
     // The block ships one stylesheet and one script in assets/dist, each
-    // bundling Swiper (v12.2.0, MIT) with the block's own code. Both are served
+    // bundling Swiper (v14.1.0, MIT) with the block's own code. Both are served
     // from the site's own origin, so a strict CSP needs no extra hosts.
     'options' => [
         'injectAssets' => true,

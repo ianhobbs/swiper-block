@@ -2,7 +2,7 @@
 /**
  * Swiper Block Snippet
  *
- * Renders a Swiper 12 carousel from a Kirby layout block. All computed values
+ * Renders a Swiper 14 carousel from a Kirby layout block. All computed values
  * (JS config, aspect CSS, thumb presets, responsive `sizes`) come from the
  * SwiperBlock model — see classes/SwiperBlock.php — so this snippet stays
  * markup-only. CDN scripts and plugin CSS are injected automatically on first

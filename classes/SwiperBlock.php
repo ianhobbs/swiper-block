@@ -53,7 +53,7 @@ class SwiperBlock extends Block
      * Slide transition easing, as Panel value => CSS timing function.
      *
      * Swiper has no JS easing option — the slide transition is a plain CSS
-     * transition on `.swiper-wrapper`, and Swiper 12 exposes
+     * transition on `.swiper-wrapper`, and Swiper 14 exposes
      * `--swiper-wrapper-transition-timing-function` for it, defaulting to
      * `initial` (i.e. `ease`). Setting that property on the block cascades to
      * the wrapper, so this is styling, not scripting.

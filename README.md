@@ -4,9 +4,9 @@
 
 # Kirby Swiper Block
 
-A [Kirby CMS](https://getkirby.com). layout block plugin that renders a full-featured [Swiper 12](https://swiperjs.com/) carousel with a Panel editor, responsive WebP images, lazy loading, and LQIP blur-up placeholders.
+A [Kirby CMS](https://getkirby.com). layout block plugin that renders a full-featured [Swiper 14](https://swiperjs.com/) carousel with a Panel editor, responsive WebP images, lazy loading, and LQIP blur-up placeholders.
 
-Swiper is loaded via CDN — no npm or build step required to use the plugin. No site config required either: images are handled entirely by the plugin.
+Swiper ships pre-bundled with the plugin — no CDN, no npm, and no build step required to use it. No site config required either: images are handled entirely by the plugin.
 
 **Requires:** Kirby 5 · PHP 8.3+
 
@@ -38,9 +38,15 @@ git clone https://github.com/ianhobbs/swiper-block site/plugins/kirby-swiper-blo
 
 No template changes needed. When a page contains a Swiper block, the snippet automatically injects Swiper and the plugin CSS **once per page load** — the first block to render claims the injection, so a page with several Swiper blocks down it still loads Swiper once. Everything is self-contained.
 
-The whole frontend is **two same-origin files** — `assets/dist/swiper-block.css` and `assets/dist/swiper-block.js` — each bundling Swiper 12.2.0 (MIT) with the block's own code. No CDN dependency, and **nothing to allow in a Content-Security-Policy**. See [Content-Security-Policy](#content-security-policy).
+The whole frontend is **two same-origin files** — `assets/dist/swiper-block.css` and `assets/dist/swiper-block.js` — each bundling Swiper 14.1.0 (MIT) with the block's own code. No CDN dependency, and **nothing to allow in a Content-Security-Policy**. See [Content-Security-Policy](#content-security-policy).
 
-Only the Swiper modules the block can actually use are compiled in; the rest (cube/flip/cards effects, thumbs, zoom, parallax, scrollbar, grid, virtual, hash and history navigation) are dropped at build time — about a third off the JavaScript and half off the CSS, gzipped.
+Only the Swiper modules the block can actually use are compiled in; the rest (cube/flip/cards effects, thumbs, zoom, parallax, scrollbar, grid, virtual, hash and history navigation) are dropped at build time — roughly a quarter off both the JavaScript and the CSS, gzipped.
+
+### Browser support
+
+Swiper 14 targets the last couple of years of evergreen browsers: **Chrome/Edge 110+,
+Safari 16.4+ (iOS 16.4+), Firefox 110+**. Sites that still need older browsers should stay on
+kirby-swiper-block **1.4.x**, which bundles Swiper 12.
 
 If you prefer to control asset placement (e.g. move them to `<head>` for performance), see [Manual asset loading](#manual-asset-loading) below.
 
@@ -316,7 +322,7 @@ return [
 ### Easing
 
 Swiper has **no JavaScript easing option** — the slide transition is an ordinary CSS
-transition on `.swiper-wrapper`, and Swiper 12 exposes a custom property for its timing
+transition on `.swiper-wrapper`, and Swiper 14 exposes a custom property for its timing
 function. The **Easing** field sets that property on the block, which cascades down:
 
 | Option | Timing function | |
