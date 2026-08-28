@@ -4,6 +4,23 @@
 
 # Kirby Swiper Block
 
+> **This package is abandoned. It is continued as
+> [`ianhobbs/kirby-slider-block`](https://github.com/ianhobbs/kirby-slider-block).**
+>
+> ```
+> composer remove ianhobbs/kirby-swiper-block
+> composer require ianhobbs/kirby-slider-block
+> ```
+>
+> Same block, renamed. The block type stays `swiper`, so **saved content is untouched** — but
+> the install path, the plugin name and the option namespace all change from
+> `kirby-swiper-block` to `kirby-slider-block`. If you call
+> `kirby()->plugin('ianhobbs/kirby-swiper-block')` or set
+> `ianhobbs.kirby-swiper-block.*` options anywhere, update those too.
+>
+> This repo stays up so existing lockfiles keep resolving. It receives no further releases;
+> v1.6.0 onward, including AVIF sources and capped srcset ladders, is on the new package.
+
 A [Kirby CMS](https://getkirby.com). layout block plugin that renders a full-featured [Swiper 14](https://swiperjs.com/) carousel with a Panel editor, responsive WebP images, lazy loading, and LQIP blur-up placeholders.
 
 Swiper ships pre-bundled with the plugin — no CDN, no npm, and no build step required to use it. No site config required either: images are handled entirely by the plugin.
