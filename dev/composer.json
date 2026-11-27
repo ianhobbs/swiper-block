@@ -4,9 +4,9 @@
   "license": "MIT",
   "type": "project",
   "require-dev": {
-    "getkirby/cms": "^5.0",
+    "getkirby/cms": "^6.0",
     "pestphp/pest": "^3.0",
-    "bnomei/kirby-mcp": "^1.11"
+    "bnomei/kirby-mcp": "^6.4"
   },
   "scripts": {
     "test": "pest --colors=always",
